@@ -118,7 +118,19 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                                     } : {}}
                                     transition={{ repeat: Infinity, duration: 2 }}
                                 >
-                                    {icon}
+                                    {typeof icon === 'string' && (icon.startsWith('http') || icon.startsWith('/')) ? (
+                                        <img
+                                            src={icon}
+                                            alt=""
+                                            style={{
+                                                width: 60 * baseRadiusMultiplier,
+                                                height: 60 * baseRadiusMultiplier,
+                                                objectFit: 'contain'
+                                            }}
+                                        />
+                                    ) : (
+                                        icon
+                                    )}
                                 </motion.div>
                             </div>
                         )}

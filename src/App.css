@@ -214,6 +214,9 @@ body {
 .circular-timer-icon {
   font-size: 48px;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .task-progress-bar {
