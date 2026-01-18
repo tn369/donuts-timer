@@ -4,7 +4,7 @@ import type { Task } from '../types';
 interface DebugControlsProps {
   selectedTaskId: string | null;
   tasks: Task[];
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  setTasks: (tasks: Task[]) => void;
 }
 
 export const DebugControls: React.FC<DebugControlsProps> = ({
@@ -22,13 +22,12 @@ export const DebugControls: React.FC<DebugControlsProps> = ({
       <button
         className="btn-debug"
         onClick={() => {
-          setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-              task.id === selectedTaskId
-                ? { ...task, elapsedSeconds: Math.max(0, task.plannedSeconds - 60) }
-                : task
-            )
+          const newTasks = tasks.map((task) =>
+            task.id === selectedTaskId
+              ? { ...task, elapsedSeconds: Math.max(0, task.plannedSeconds - 60) }
+              : task
           );
+          setTasks(newTasks);
         }}
       >
         ⏩ 残り1分
@@ -36,13 +35,12 @@ export const DebugControls: React.FC<DebugControlsProps> = ({
       <button
         className="btn-debug"
         onClick={() => {
-          setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-              task.id === selectedTaskId
-                ? { ...task, elapsedSeconds: Math.max(0, task.plannedSeconds - 5) }
-                : task
-            )
+          const newTasks = tasks.map((task) =>
+            task.id === selectedTaskId
+              ? { ...task, elapsedSeconds: Math.max(0, task.plannedSeconds - 5) }
+              : task
           );
+          setTasks(newTasks);
         }}
       >
         ⏩ 残り5秒
