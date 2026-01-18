@@ -1,6 +1,7 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { CircularTimer } from './CircularTimer';
 import type { Task } from '../types';
 import { formatTime } from '../utils';
 
@@ -39,48 +40,32 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       }}
       onClick={() => isSelectable && onSelect(task.id)}
     >
-      <motion.div
-        className="task-icon"
-        animate={task.status === 'running' ? {
-          scale: [1, 1.1, 1],
-          transition: { repeat: Infinity, duration: 2 }
-        } : {}}
-      >
-        {task.icon}
-      </motion.div>
+      {isDone ? (
+        <div className="task-icon done">
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+            <Check size={48} color="var(--color-primary)" strokeWidth={3} />
+          </motion.div>
+        </div>
+      ) : (
+        <CircularTimer
+          totalSeconds={task.plannedSeconds}
+          elapsedSeconds={task.elapsedSeconds}
+          icon={task.icon}
+          isOverdue={isOverdue}
+          size={120}
+          strokeWidth={24}
+        />
+      )}
+
       <div className="task-name">{task.name}</div>
       <div className="task-time" style={{ color: isOverdue ? 'var(--color-danger)' : '' }}>
         {isDone ? (
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-            <Check size={28} color="var(--color-primary)" strokeWidth={3} />
-          </motion.div>
+          "完了"
         ) : (
           formatTime(remaining)
         )}
       </div>
 
-      <AnimatePresence>
-        {(task.status === 'running' || task.status === 'paused') && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 8 }}
-            exit={{ opacity: 0, height: 0 }}
-            className="task-progress-bar"
-          >
-            <motion.div
-              className="task-progress-fill"
-              initial={{ width: 0 }}
-              animate={{
-                width: `${Math.min(100, (task.elapsedSeconds / task.plannedSeconds) * 100)}%`
-              }}
-              transition={{ duration: 0.5 }}
-              style={{
-                backgroundColor: isOverdue ? 'var(--color-danger)' : 'var(--color-primary)'
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 };
