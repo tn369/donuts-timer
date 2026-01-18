@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import './App.css';
 import { ProgressBar } from './components/ProgressBar';
 import { TaskList } from './components/TaskList';
@@ -63,15 +64,17 @@ function App() {
         canStartOrStop={canStartOrStop}
       />
 
-      {showResetConfirm && (
-        <ResetModal
-          onCancel={() => setShowResetConfirm(false)}
-          onConfirm={() => {
-            reset();
-            setShowResetConfirm(false);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showResetConfirm && (
+          <ResetModal
+            onCancel={() => setShowResetConfirm(false)}
+            onConfirm={() => {
+              reset();
+              setShowResetConfirm(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <DebugControls
         selectedTaskId={selectedTaskId}

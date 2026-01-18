@@ -3,15 +3,28 @@
  * スマホ横画面（ランドスケープ）専用
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 :root {
-  --color-bg: #f5f5f5;
-  --color-primary: #4CAF50;
-  --color-danger: #f44336;
-  --color-card-bg: #ffffff;
-  --color-text: #333333;
-  --color-progress: #2196F3;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+  --color-bg: #f8fafc;
+  --color-primary: #10b981; /* Emerald 500 */
+  --color-primary-dark: #059669; /* Emerald 600 */
+  --color-danger: #ef4444; /* Red 500 */
+  --color-warning: #f59e0b; /* Amber 500 */
+  --color-info: #3b82f6; /* Blue 500 */
+  --color-card-bg: rgba(255, 255, 255, 0.8);
+  --color-text-main: #1e293b; /* Slate 800 */
+  --color-text-muted: #64748b; /* Slate 500 */
+  
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -21,13 +34,16 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-bg);
-  overflow: hidden; /* スクロール防止 */
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(59, 130, 246, 0.05) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.05) 0, transparent 50%);
+  overflow: hidden;
+  color: var(--color-text-main);
 }
 
 .app {
@@ -35,8 +51,8 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  gap: 12px;
+  padding: 16px;
+  gap: 16px;
 }
 
 /* ========================================
@@ -44,30 +60,37 @@ body {
    ======================================== */
 .progress-bar-container {
   width: 100%;
-  height: 32px;
-  background: linear-gradient(90deg, #fff3e0 0%, #e8f5e9 50%, #e3f2fd 100%);
-  border-radius: 16px;
+  height: 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: var(--glass-shadow);
   position: relative;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #ff9800 0%, var(--color-primary) 50%, var(--color-progress) 100%);
-  transition: width 0.3s ease;
-  border-radius: 16px;
+  background: linear-gradient(90deg, 
+    var(--color-info) 0%, 
+    var(--color-primary) 50%, 
+    var(--color-warning) 100%
+  );
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
 }
 
 /* ========================================
-   タスク一覧（横並び、幅可変）
+   タスク一覧
    ======================================== */
 .task-list {
   flex: 1;
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: stretch;
-  min-height: 0; /* flexアイテムのオーバーフロー対策 */
+  min-height: 0;
 }
 
 .task-card {
@@ -75,61 +98,65 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--color-card-bg);
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: var(--shadow);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--glass-shadow);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-smooth);
   position: relative;
-  min-width: 80px; /* 最小幅を確保 */
-  border: 3px solid transparent;
+  min-width: 100px;
 }
 
-.task-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+.task-card:hover:not(.done) {
+  transform: translateY(-4px) scale(1.02);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
 }
 
 .task-card.selected {
-  border-color: var(--color-primary);
-  transform: scale(1.05);
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+  background: white;
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15), var(--glass-shadow);
 }
 
 .task-card.done {
-  opacity: 0.6;
-  background: #e0e0e0;
+  opacity: 0.5;
+  background: rgba(241, 245, 249, 0.5);
+  cursor: default;
 }
 
 .task-icon {
-  font-size: 48px;
-  margin-bottom: 8px;
+  font-size: 40px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
 .task-name {
   font-size: 18px;
-  font-weight: bold;
-  color: var(--color-text);
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin-bottom: 6px;
   text-align: center;
 }
 
 .task-time {
-  font-size: 16px;
-  color: #666;
-  font-weight: 600;
+  font-size: 20px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 
-/* タスク内プログレスバー */
 .task-progress-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 6px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 0 0 13px 13px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   overflow: hidden;
 }
 
@@ -139,11 +166,9 @@ body {
   transition: width 0.3s ease;
 }
 
-/* 時間超過状態 */
 .task-card.overdue {
   border-color: var(--color-danger);
-  background: #fff5f5;
-  animation: pulse-overdue 2s infinite;
+  background: rgba(254, 242, 242, 0.8);
 }
 
 .task-card.overdue .task-time {
@@ -154,12 +179,6 @@ body {
   background: var(--color-danger);
 }
 
-@keyframes pulse-overdue {
-  0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
-}
-
 /* ========================================
    コントロールボタン
    ======================================== */
@@ -167,52 +186,62 @@ body {
   display: flex;
   gap: 16px;
   justify-content: center;
+  padding: 8px 0;
 }
 
 .btn {
   flex: 1;
-  max-width: 300px;
-  height: 64px;
-  font-size: 24px;
-  font-weight: bold;
+  max-width: 260px;
+  height: 72px;
+  font-size: 20px;
+  font-weight: 700;
   border: none;
-  border-radius: 32px;
+  border-radius: 36px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow);
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 .btn-start {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #66BB6A 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #34d399 100%);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
 
 .btn-stop {
-  background: linear-gradient(135deg, var(--color-danger) 0%, #EF5350 100%);
+  background: linear-gradient(135deg, var(--color-danger) 0%, #f87171 100%);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
 }
 
 .btn-back {
-  background: linear-gradient(135deg, #78909C 0%, #546E7A 100%);
-  max-width: 154px;
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  max-width: 120px;
 }
 
 .btn-reset {
-  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-  max-width: 154px;
+  background: linear-gradient(135deg, var(--color-warning) 0%, #fbbf24 100%);
+  max-width: 120px;
 }
 
 /* ========================================
@@ -220,23 +249,30 @@ body {
    ======================================== */
 .debug-controls {
   position: fixed;
-  bottom: 8px;
-  right: 8px;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
 }
 
 .btn-debug {
-  padding: 8px 16px;
-  font-size: 12px;
-  background: #9E9E9E;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--glass-bg);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text-muted);
+  border-radius: 8px;
   cursor: pointer;
-  opacity: 0.7;
+  transition: all 0.2s ease;
 }
 
 .btn-debug:hover {
-  opacity: 1;
+  background: white;
+  color: var(--color-text-main);
+  transform: translateY(-1px);
 }
 
 /* ========================================
