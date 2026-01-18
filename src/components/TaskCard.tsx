@@ -34,7 +34,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       whileHover={isSelectable && !isDone ? { y: -5, transition: { duration: 0.2 } } : {}}
       whileTap={isSelectable && !isDone ? { scale: 0.95 } : {}}
       className={`task-card ${isSelected ? 'selected' : ''} ${isDone ? 'done' : ''} ${isOverdue ? 'overdue' : ''}`}
-      style={{ flexGrow: task.plannedSeconds / 60 }}
+      style={{
+        flexGrow: (task.status === 'done' ? task.actualSeconds : Math.max(task.plannedSeconds, task.elapsedSeconds)) / 60
+      }}
       onClick={() => isSelectable && onSelect(task.id)}
     >
       <motion.div

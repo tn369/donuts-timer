@@ -7,7 +7,7 @@ import { Controls } from './components/Controls';
 import { ResetModal } from './components/ResetModal';
 import { DebugControls } from './components/DebugControls';
 import { useTaskTimer } from './useTaskTimer';
-import { calculateOverallProgress } from './utils';
+
 
 function App() {
   const {
@@ -25,7 +25,7 @@ function App() {
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
   // 派生状態の計算
-  const progress = useMemo(() => calculateOverallProgress(tasks), [tasks]);
+
 
   const selectedTask = useMemo(() =>
     tasks.find((t) => t.id === selectedTaskId),
@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className="app">
-      <ProgressBar progress={progress} />
+      <ProgressBar tasks={tasks} />
 
       <TaskList
         tasks={tasks}

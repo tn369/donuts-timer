@@ -78,7 +78,6 @@ body {
     var(--color-warning) 100%
   );
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 12px;
 }
 
