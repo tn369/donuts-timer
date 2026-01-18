@@ -340,18 +340,11 @@ function App() {
       {/* コントロールボタン */}
       <div className="controls">
         <button
-          className="btn btn-start"
-          onClick={handleStart}
-          disabled={!selectedTaskId || selectedTask?.status === 'done'}
+          className={`btn ${isRunning ? 'btn-stop' : 'btn-start'}`}
+          onClick={isRunning ? handleStop : handleStart}
+          disabled={!isRunning && (!selectedTaskId || selectedTask?.status === 'done')}
         >
-          ▶ スタート
-        </button>
-        <button
-          className="btn btn-stop"
-          onClick={handleStop}
-          disabled={!isRunning}
-        >
-          ⏸ ストップ
+          {isRunning ? '⏸ ストップ' : '▶ スタート'}
         </button>
       </div>
 
