@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import './App.css';
-import { ProgressBar } from './components/ProgressBar';
+
 import { TaskList } from './components/TaskList';
 import { Controls } from './components/Controls';
 import { ResetModal } from './components/ResetModal';
@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className="app">
-      <ProgressBar tasks={tasks} />
+
 
       <TaskList
         tasks={tasks}
