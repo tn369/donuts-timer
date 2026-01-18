@@ -1,0 +1,360 @@
+import { useState, useEffect } from 'react';
+import type { Task } from './types';
+import './App.css';
+
+/**
+ * 初期タスクデータ
+ * 固定タスク: トイレ(5分)、おきがえ(10分)、ごはん(20分)
+ * 変動タスク: あそび(15分) ※固定タスクの差分で増減
+ */
+const INITIAL_TASKS: Task[] = [
+  {
+    id: 'toilet',
+    name: 'トイレ',
+    icon: '🚽',
+    plannedSeconds: 5 * 60,
+    kind: 'fixed',
+    status: 'todo',
+    elapsedSeconds: 0,
+    actualSeconds: 0,
+  },
+  {
+    id: 'change',
+    name: 'おきがえ',
+    icon: '👕',
+    plannedSeconds: 10 * 60,
+    kind: 'fixed',
+    status: 'todo',
+    elapsedSeconds: 0,
+    actualSeconds: 0,
+  },
+  {
+    id: 'meal',
+    name: 'ごはん',
+    icon: '🍚',
+    plannedSeconds: 20 * 60,
+    kind: 'fixed',
+    status: 'todo',
+    elapsedSeconds: 0,
+    actualSeconds: 0,
+  },
+  {
+    id: 'play',
+    name: 'あそび',
+    icon: '🧸',
+    plannedSeconds: 15 * 60,
+    kind: 'variable',
+    status: 'todo',
+    elapsedSeconds: 0,
+    actualSeconds: 0,
+  },
+];
+
+const BASE_PLAY_SECONDS = 15 * 60; // あそびの基本時間（15分）
+
+function App() {
+  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(INITIAL_TASKS[0].id);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false); // 全体のタイマー実行状態
+
+  // タイマー処理（1秒ごと）
+  useEffect(() => {
+    // 全体のタイマーが停止中または選択中タスクがない場合は何もしない
+    if (!isTimerRunning || !selectedTaskId) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTasks((prevTasks) => {
+        return prevTasks.map((task) => {
+          // 実行中タスクのみ時間を進める
+          if (task.id === selectedTaskId && task.status === 'running') {
+            const newElapsed = task.elapsedSeconds + 1;
+
+            // 残り時間が0になったら自動完了
+            if (newElapsed >= task.plannedSeconds) {
+              // 固定タスク完了時はあそび時間を再計算
+              if (task.kind === 'fixed') {
+                setTimeout(() => recalculatePlayTime(task.id, newElapsed), 0);
+              }
+              return {
+                ...task,
+                elapsedSeconds: newElapsed,
+                actualSeconds: newElapsed,
+                status: 'done',
+              };
+            }
+
+            return { ...task, elapsedSeconds: newElapsed };
+          }
+          return task;
+        });
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerRunning, selectedTaskId]);
+
+  /**
+   * あそび時間の再計算
+   * 固定タスクが完了したタイミングで実行
+   * delta = Σ(予定固定 - 実績固定)
+   * playPlanned = basePlay + delta
+   */
+  const recalculatePlayTime = (completedTaskId: string, actualSeconds: number) => {
+    setTasks((prevTasks) => {
+      const completedTask = prevTasks.find((t) => t.id === completedTaskId);
+      if (!completedTask || completedTask.kind !== 'fixed') return prevTasks;
+
+      // 固定タスクの差分を累積計算
+      let totalDelta = 0;
+      prevTasks.forEach((task) => {
+        if (task.kind === 'fixed' && task.status === 'done') {
+          const delta = task.plannedSeconds - task.actualSeconds;
+          totalDelta += delta;
+        }
+      });
+
+      // 完了したタスクの差分を追加
+      const currentDelta = completedTask.plannedSeconds - actualSeconds;
+      totalDelta += currentDelta;
+
+      // あそびの予定時間を更新（下限0秒）
+      const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
+
+      return prevTasks.map((task) => {
+        if (task.kind === 'variable') {
+          return { ...task, plannedSeconds: newPlaySeconds };
+        }
+        return task;
+      });
+    });
+  };
+
+  /**
+   * タスクが選択可能かどうかをチェック
+   * タスクは順序を持ち、前のタスクが完了していない場合は選択できない
+   */
+  const isTaskSelectable = (taskId: string): boolean => {
+    const taskIndex = tasks.findIndex((t) => t.id === taskId);
+    if (taskIndex === -1) return false;
+
+    // 最初のタスクは常に選択可能
+    if (taskIndex === 0) return true;
+
+    // 前のタスクが完了していれば選択可能
+    const previousTask = tasks[taskIndex - 1];
+    return previousTask.status === 'done';
+  };
+
+  /**
+   * タスク選択
+   * 次のタスクに進んだら前タスクを完了扱いにし、あそび時間を再計算
+   */
+  const handleSelectTask = (taskId: string) => {
+    // タスクの順序チェック：前のタスクが完了していない場合は選択できない
+    if (!isTaskSelectable(taskId)) {
+      return;
+    }
+
+    // 現在実行中または一時停止中のタスクを完了扱いにする
+    setTasks((prevTasks) => {
+      let completedFixedTask: Task | null = null;
+
+      const updatedTasks = prevTasks.map((task) => {
+        if (task.id === selectedTaskId && (task.status === 'running' || task.status === 'paused')) {
+          // 現在のタスクを完了扱いに
+          const actualSeconds = task.elapsedSeconds;
+          if (task.kind === 'fixed') {
+            completedFixedTask = task;
+          }
+          return {
+            ...task,
+            status: 'done' as const,
+            actualSeconds: actualSeconds,
+          };
+        }
+        if (task.id === taskId && isTimerRunning) {
+          return { ...task, status: 'running' as const };
+        }
+        return task;
+      });
+
+      // 固定タスクが完了した場合、あそび時間を再計算
+      if (completedFixedTask) {
+        // 固定タスクの差分を累積計算
+        let totalDelta = 0;
+        updatedTasks.forEach((task) => {
+          if (task.kind === 'fixed' && task.status === 'done') {
+            const delta = task.plannedSeconds - task.actualSeconds;
+            totalDelta += delta;
+          }
+        });
+
+        // あそびの予定時間を更新（下限0秒）
+        const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
+
+        return updatedTasks.map((task) => {
+          if (task.kind === 'variable') {
+            return { ...task, plannedSeconds: newPlaySeconds };
+          }
+          return task;
+        });
+      }
+
+      return updatedTasks;
+    });
+
+    setSelectedTaskId(taskId);
+  };
+
+  /**
+   * スタートボタン
+   * 選択中タスクを実行状態にする
+   */
+  const handleStart = () => {
+    if (!selectedTaskId) return;
+
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        if (task.id === selectedTaskId && task.status !== 'done') {
+          return { ...task, status: 'running' };
+        }
+        return task;
+      })
+    );
+    setIsTimerRunning(true);
+  };
+
+  /**
+   * ストップボタン
+   * 実行中のタスクを一時停止
+   */
+  const handleStop = () => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.status === 'running' ? { ...task, status: 'paused' } : task
+      )
+    );
+    setIsTimerRunning(false);
+  };
+
+  /**
+   * 全体進捗の計算
+   * 進捗 = 完了時間 / 合計予定時間
+   * 完了時間 = Σ完了タスクの実績 + 進行中タスクの経過
+   */
+  const calculateOverallProgress = (): number => {
+    // 合計予定時間（変動タスク含む現在の予定）
+    const totalPlanned = tasks.reduce((sum, task) => sum + task.plannedSeconds, 0);
+
+    // 完了時間
+    let completedSeconds = 0;
+    tasks.forEach((task) => {
+      if (task.status === 'done') {
+        completedSeconds += task.actualSeconds;
+      } else if (task.status === 'running' || task.status === 'paused') {
+        completedSeconds += task.elapsedSeconds;
+      }
+    });
+
+    return totalPlanned > 0 ? (completedSeconds / totalPlanned) * 100 : 0;
+  };
+
+  /**
+   * 残り時間の表示フォーマット
+   */
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const progress = calculateOverallProgress();
+  const selectedTask = tasks.find((t) => t.id === selectedTaskId);
+  const isRunning = selectedTask?.status === 'running';
+
+  return (
+    <div className="app">
+      {/* 全体プログレスバー */}
+      <div className="progress-bar-container">
+        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+      </div>
+
+      {/* タスク一覧（横並び、時間比率で幅を可変） */}
+      <div className="task-list">
+        {tasks.map((task) => {
+          const remaining = Math.max(0, task.plannedSeconds - task.elapsedSeconds);
+          const isSelected = task.id === selectedTaskId;
+          const isDone = task.status === 'done';
+          const isSelectable = isTaskSelectable(task.id);
+
+          return (
+            <div
+              key={task.id}
+              className={`task-card ${isSelected ? 'selected' : ''} ${isDone ? 'done' : ''} ${!isSelectable ? 'disabled' : ''}`}
+              style={{ flexGrow: task.plannedSeconds / 60 }} // 分単位で比率設定
+              onClick={() => isSelectable && handleSelectTask(task.id)}
+            >
+              <div className="task-icon">{task.icon}</div>
+              <div className="task-name">{task.name}</div>
+              <div className="task-time">
+                {isDone ? '✓' : formatTime(remaining)}
+              </div>
+              {task.status === 'running' && (
+                <div className="task-progress-bar">
+                  <div
+                    className="task-progress-fill"
+                    style={{
+                      width: `${(task.elapsedSeconds / task.plannedSeconds) * 100}%`,
+                    }}
+                  ></div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* コントロールボタン */}
+      <div className="controls">
+        <button
+          className="btn btn-start"
+          onClick={handleStart}
+          disabled={!selectedTaskId || selectedTask?.status === 'done'}
+        >
+          ▶ スタート
+        </button>
+        <button
+          className="btn btn-stop"
+          onClick={handleStop}
+          disabled={!isRunning}
+        >
+          ⏸ ストップ
+        </button>
+      </div>
+
+      {/* デバッグ用：開発中は早送りボタンを表示（本番では非表示） */}
+      {import.meta.env.DEV && selectedTask && selectedTask.status !== 'done' && (
+        <div className="debug-controls">
+          <button
+            className="btn-debug"
+            onClick={() => {
+              setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                  task.id === selectedTaskId
+                    ? { ...task, elapsedSeconds: task.plannedSeconds - 60 }
+                    : task
+                )
+              );
+            }}
+          >
+            ⏩ デバッグ：残り1分まで早送り
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;

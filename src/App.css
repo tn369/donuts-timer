@@ -1,0 +1,248 @@
+/**
+ * タスクタイマーアプリ スタイル
+ * スマホ横画面（ランドスケープ）専用
+ */
+
+:root {
+  --color-bg: #f5f5f5;
+  --color-primary: #4CAF50;
+  --color-danger: #f44336;
+  --color-card-bg: #ffffff;
+  --color-text: #333333;
+  --color-progress: #2196F3;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);
+  overflow: hidden; /* スクロール防止 */
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 12px;
+}
+
+/* ========================================
+   全体プログレスバー
+   ======================================== */
+.progress-bar-container {
+  width: 100%;
+  height: 32px;
+  background: linear-gradient(90deg, #fff3e0 0%, #e8f5e9 50%, #e3f2fd 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9800 0%, var(--color-primary) 50%, var(--color-progress) 100%);
+  transition: width 0.3s ease;
+  border-radius: 16px;
+}
+
+/* ========================================
+   タスク一覧（横並び、幅可変）
+   ======================================== */
+.task-list {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  min-height: 0; /* flexアイテムのオーバーフロー対策 */
+}
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 80px; /* 最小幅を確保 */
+  border: 3px solid transparent;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.task-card.selected {
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+}
+
+.task-card.done {
+  opacity: 0.6;
+  background: #e0e0e0;
+}
+
+.task-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.task-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-text);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.task-time {
+  font-size: 16px;
+  color: #666;
+  font-weight: 600;
+}
+
+/* タスク内プログレスバー */
+.task-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 13px 13px;
+  overflow: hidden;
+}
+
+.task-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+/* ========================================
+   コントロールボタン
+   ======================================== */
+.controls {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn {
+  flex: 1;
+  max-width: 300px;
+  height: 64px;
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  border-radius: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+  color: white;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #66BB6A 100%);
+}
+
+.btn-stop {
+  background: linear-gradient(135deg, var(--color-danger) 0%, #EF5350 100%);
+}
+
+/* ========================================
+   デバッグコントロール
+   ======================================== */
+.debug-controls {
+  position: fixed;
+  bottom: 8px;
+  right: 8px;
+}
+
+.btn-debug {
+  padding: 8px 16px;
+  font-size: 12px;
+  background: #9E9E9E;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.btn-debug:hover {
+  opacity: 1;
+}
+
+/* ========================================
+   レスポンシブ調整（縦画面は非推奨だが最低限の対応）
+   ======================================== */
+@media (orientation: portrait) {
+  .app::before {
+    content: '📱 横画面に回転してください';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: var(--color-danger);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+  }
+  
+  .task-list,
+  .controls {
+    filter: blur(4px);
+    pointer-events: none;
+  }
+}
+
+/* ========================================
+   アニメーション抑制対応
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
