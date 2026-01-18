@@ -29,7 +29,7 @@ export const Controls: React.FC<ControlsProps> = ({
         onClick={onBack}
         disabled={!canGoBack}
       >
-        <ArrowLeft size={24} /> もどる
+        <ArrowLeft size={18} /> もどる
       </motion.button>
 
       <motion.button
@@ -37,9 +37,9 @@ export const Controls: React.FC<ControlsProps> = ({
         whileTap={{ scale: 0.95 }}
         animate={isRunning ? {
           boxShadow: [
-            "0 8px 20px rgba(239, 68, 68, 0.3)",
-            "0 8px 30px rgba(239, 68, 68, 0.5)",
-            "0 8px 20px rgba(239, 68, 68, 0.3)"
+            "0 4px 12px rgba(239, 68, 68, 0.2)",
+            "0 4px 18px rgba(239, 68, 68, 0.4)",
+            "0 4px 12px rgba(239, 68, 68, 0.2)"
           ],
           transition: { repeat: Infinity, duration: 2 }
         } : {}}
@@ -49,11 +49,11 @@ export const Controls: React.FC<ControlsProps> = ({
       >
         {isRunning ? (
           <>
-            <Pause size={28} fill="currentColor" /> おわり
+            <Pause size={20} fill="currentColor" /> おわり
           </>
         ) : (
           <>
-              <Play size={28} fill="currentColor" /> はじめる
+              <Play size={20} fill="currentColor" /> はじめる
           </>
         )}
       </motion.button>
@@ -63,7 +63,7 @@ export const Controls: React.FC<ControlsProps> = ({
         className="btn btn-reset"
         onClick={onReset}
       >
-        <RotateCcw size={24} />
+        <RotateCcw size={18} />
       </motion.button>
     </div>
   );
