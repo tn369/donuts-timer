@@ -56,6 +56,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(INITIAL_TASKS[0].id);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false); // 全体のタイマー実行状態
+  const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false); // リセット確認モーダルの表示状態
 
   // タイマー処理（1秒ごと）
   useEffect(() => {
@@ -324,22 +325,28 @@ function App() {
 
   /**
    * リセットボタン
-   * すべてのタスクを初期状態に戻し、タイマーを停止する
+   * モーダルを表示する
    */
-  const handleReset = () => {
-    if (window.confirm('すべてをリセットしてもいいですか？')) {
-      // 初期状態のコピーを作成してセット
-      const resetTasks = INITIAL_TASKS.map((task) => ({
-        ...task,
-        elapsedSeconds: 0,
-        actualSeconds: 0,
-        status: 'todo' as const,
-        // あそび時間（variable）も初期値に戻る
-      }));
-      setTasks(resetTasks);
-      setSelectedTaskId(INITIAL_TASKS[0].id);
-      setIsTimerRunning(false);
-    }
+  const handleResetClick = () => {
+    setShowResetConfirm(true);
+  };
+
+  /**
+   * リセットの実行
+   */
+  const executeReset = () => {
+    // 初期状態のコピーを作成してセット
+    const resetTasks = INITIAL_TASKS.map((task) => ({
+      ...task,
+      elapsedSeconds: 0,
+      actualSeconds: 0,
+      status: 'todo' as const,
+      // あそび時間（variable）も初期値に戻る
+    }));
+    setTasks(resetTasks);
+    setSelectedTaskId(INITIAL_TASKS[0].id);
+    setIsTimerRunning(false);
+    setShowResetConfirm(false);
   };
 
   /**
@@ -435,10 +442,33 @@ function App() {
         >
           {isRunning ? '⏸ ストップ' : '▶ スタート'}
         </button>
-        <button className="btn btn-reset" onClick={handleReset}>
+        <button className="btn btn-reset" onClick={handleResetClick}>
           🔄 リセット
         </button>
       </div>
+
+      {/* リセット確認モーダル */}
+      {showResetConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-title">すべてをリセットしてもいいですか？</div>
+            <div className="modal-actions">
+              <button
+                className="btn-modal btn-cancel"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                やめる
+              </button>
+              <button
+                className="btn-modal btn-confirm-reset"
+                onClick={executeReset}
+              >
+                リセットする
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* デバッグ用：開発中は早送りボタンを表示（本番では非表示） */}
       {import.meta.env.DEV && selectedTask && selectedTask.status !== 'done' && (
