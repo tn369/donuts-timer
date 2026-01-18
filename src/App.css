@@ -151,12 +151,21 @@ body {
 /* ========================================
    円形タイマー (CircularTimer)
    ======================================== */
+.circular-timer-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
 .circular-timer {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
 }
 
 .circular-timer-svg {
