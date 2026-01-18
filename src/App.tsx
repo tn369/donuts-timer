@@ -230,6 +230,68 @@ function App() {
   };
 
   /**
+   * ひとつ前のタスクに戻る
+   */
+  const handleBack = () => {
+    const currentIndex = tasks.findIndex((t) => t.id === selectedTaskId);
+    if (currentIndex === -1) return;
+
+    const currentTask = tasks[currentIndex];
+
+    setTasks((prevTasks) => {
+      let updatedTasks = [...prevTasks];
+      let newSelectedTaskId = selectedTaskId;
+
+      if (currentTask.status === 'done') {
+        // 現在のタスクが完了している場合は、そのタスクをやり直す
+        updatedTasks[currentIndex] = {
+          ...updatedTasks[currentIndex],
+          status: isTimerRunning ? ('running' as const) : ('paused' as const),
+          actualSeconds: 0,
+        };
+      } else {
+        // 現在のタスクが未完了なら、前のタスクに戻る
+        if (currentIndex <= 0) return prevTasks;
+
+        const prevTaskIndex = currentIndex - 1;
+        newSelectedTaskId = prevTasks[prevTaskIndex].id;
+
+        // 現在のタスク（誤って進んでしまった先）を todo に戻す
+        updatedTasks[currentIndex] = {
+          ...updatedTasks[currentIndex],
+          status: 'todo' as const,
+        };
+
+        // 前のタスクを復元する
+        updatedTasks[prevTaskIndex] = {
+          ...updatedTasks[prevTaskIndex],
+          status: isTimerRunning ? ('running' as const) : ('paused' as const),
+          actualSeconds: 0,
+        };
+      }
+
+      // あそび時間の再計算
+      let totalDelta = 0;
+      updatedTasks.forEach((t) => {
+        if (t.kind === 'fixed' && t.status === 'done') {
+          totalDelta += t.plannedSeconds - t.actualSeconds;
+        }
+      });
+      const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
+      updatedTasks = updatedTasks.map((t) =>
+        t.kind === 'variable' ? { ...t, plannedSeconds: newPlaySeconds } : t
+      );
+
+      // 選択状態の更新
+      if (newSelectedTaskId !== selectedTaskId) {
+        setTimeout(() => setSelectedTaskId(newSelectedTaskId), 0);
+      }
+
+      return updatedTasks;
+    });
+  };
+
+  /**
    * スタートボタン
    * 選択中タスクを実行状態にする
    */
@@ -339,6 +401,13 @@ function App() {
 
       {/* コントロールボタン */}
       <div className="controls">
+        <button
+          className="btn btn-back"
+          onClick={handleBack}
+          disabled={tasks.findIndex((t) => t.id === selectedTaskId) === 0 && selectedTask?.status !== 'done'}
+        >
+          ↩ 戻る
+        </button>
         <button
           className={`btn ${isRunning ? 'btn-stop' : 'btn-start'}`}
           onClick={isRunning ? handleStop : handleStart}

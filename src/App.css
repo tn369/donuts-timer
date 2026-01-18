@@ -184,6 +184,11 @@ body {
   background: linear-gradient(135deg, var(--color-danger) 0%, #EF5350 100%);
 }
 
+.btn-back {
+  background: linear-gradient(135deg, #78909C 0%, #546E7A 100%);
+  max-width: 154px;
+}
+
 /* ========================================
    デバッグコントロール
    ======================================== */
