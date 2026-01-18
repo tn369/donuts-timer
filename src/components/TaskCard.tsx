@@ -60,7 +60,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       <div className="task-name">{task.name}</div>
       <div className="task-time" style={{ color: isOverdue ? 'var(--color-danger)' : '' }}>
         {isDone ? (
-          "完了"
+          "できた！"
         ) : (
           formatTime(remaining)
         )}

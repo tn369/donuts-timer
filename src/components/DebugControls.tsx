@@ -30,7 +30,7 @@ export const DebugControls: React.FC<DebugControlsProps> = ({
           setTasks(newTasks);
         }}
       >
-        ⏩ 残り1分
+        ⏩ のこり 1ぷん
       </button>
       <button
         className="btn-debug"
@@ -43,7 +43,7 @@ export const DebugControls: React.FC<DebugControlsProps> = ({
           setTasks(newTasks);
         }}
       >
-        ⏩ 残り5秒
+        ⏩ のこり 5びょう
       </button>
     </div>
   );

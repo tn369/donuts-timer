@@ -347,7 +347,7 @@ body {
    ======================================== */
 @media (orientation: portrait) {
   .app::before {
-    content: '📱 横画面に回転してください';
+    content: '📱 よこがめん に かいてん してね';
     position: fixed;
     top: 50%;
     left: 50%;

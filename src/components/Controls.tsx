@@ -29,7 +29,7 @@ export const Controls: React.FC<ControlsProps> = ({
         onClick={onBack}
         disabled={!canGoBack}
       >
-        <ArrowLeft size={24} /> 戻る
+        <ArrowLeft size={24} /> もどる
       </motion.button>
 
       <motion.button
@@ -49,11 +49,11 @@ export const Controls: React.FC<ControlsProps> = ({
       >
         {isRunning ? (
           <>
-            <Pause size={28} fill="currentColor" /> ストップ
+            <Pause size={28} fill="currentColor" /> おわり
           </>
         ) : (
           <>
-            <Play size={28} fill="currentColor" /> スタート
+              <Play size={28} fill="currentColor" /> はじめる
           </>
         )}
       </motion.button>

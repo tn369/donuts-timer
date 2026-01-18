@@ -18,7 +18,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 'change',
-    name: 'おきがえ',
+    name: 'きがえ',
     icon: '👕',
     plannedSeconds: 10 * 60,
     kind: 'fixed',
@@ -38,7 +38,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 'play',
-    name: 'あそび',
+    name: 'あそぶ',
     icon: '🧸',
     plannedSeconds: 15 * 60,
     kind: 'variable',

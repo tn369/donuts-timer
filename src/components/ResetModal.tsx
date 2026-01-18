@@ -24,21 +24,21 @@ export const ResetModal: React.FC<ResetModalProps> = ({ onCancel, onConfirm }) =
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--color-warning)' }}>
           <AlertTriangle size={48} />
         </div>
-        <div className="modal-title">最初からやり直しますか？</div>
+        <div className="modal-title">さいしょから やりなおしますか？</div>
         <div className="modal-actions">
           <motion.button
             whileTap={{ scale: 0.95 }}
             className="btn-modal btn-cancel"
             onClick={onCancel}
           >
-            やめる
+            やらない
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
             className="btn-modal btn-confirm-reset"
             onClick={onConfirm}
           >
-            リセット
+            やりなおす
           </motion.button>
         </div>
       </motion.div>
