@@ -147,63 +147,86 @@ function App() {
 
   /**
    * タスク選択
-   * 次のタスクに進んだら前タスクを完了扱いにし、あそび時間を再計算
+   * 進行中のタスクがある状態でタップされた場合、
+   * そのタスクを完了し、次のタスクがある場合は選択・（タイマー稼働中なら）開始する。
    */
   const handleSelectTask = (taskId: string) => {
-    // タスクの順序チェック：前のタスクが完了していない場合は選択できない
+    // 選択不可な場合は何もしない
     if (!isTaskSelectable(taskId)) {
       return;
     }
 
-    // 現在実行中または一時停止中のタスクを完了扱いにする
     setTasks((prevTasks) => {
-      let completedFixedTask: Task | null = null;
+      const currentIndex = prevTasks.findIndex((t) => t.id === selectedTaskId);
+      const isCurrentTapped = taskId === selectedTaskId;
 
-      const updatedTasks = prevTasks.map((task) => {
-        if (task.id === selectedTaskId && (task.status === 'running' || task.status === 'paused')) {
-          // 現在のタスクを完了扱いに
-          const actualSeconds = task.elapsedSeconds;
-          if (task.kind === 'fixed') {
-            completedFixedTask = task;
-          }
-          return {
-            ...task,
+      let updatedTasks = [...prevTasks];
+      let nextTaskIdToSelect: string | null = null;
+
+      // 1. タップされたタスク、または現在のタスクを完了状態にする
+      if (currentIndex !== -1) {
+        const currentTask = updatedTasks[currentIndex];
+        // すでに完了しているタスクをタップした場合は何もしない
+        if (currentTask.status === 'done' && isCurrentTapped) {
+          return prevTasks;
+        }
+
+        if (currentTask.status === 'running' || currentTask.status === 'paused') {
+          updatedTasks[currentIndex] = {
+            ...currentTask,
             status: 'done' as const,
-            actualSeconds: actualSeconds,
+            actualSeconds: currentTask.elapsedSeconds,
           };
+
+          // 現在のタスクが完了した場合、自動的に次のタスクを決定する
+          if (isCurrentTapped) {
+            const nextTask = prevTasks[currentIndex + 1];
+            if (nextTask) {
+              nextTaskIdToSelect = nextTask.id;
+            }
+          } else {
+            // 別のタスクがタップされた場合はそのタスクを選択
+            nextTaskIdToSelect = taskId;
+          }
+        } else {
+          // 現在のタスクが todo 状態で別のタスクがタップされた場合
+          nextTaskIdToSelect = taskId;
         }
-        if (task.id === taskId && isTimerRunning) {
-          return { ...task, status: 'running' as const };
+      } else {
+        nextTaskIdToSelect = taskId;
+      }
+
+      // 2. あそび時間の再計算
+      let totalDelta = 0;
+      updatedTasks.forEach((t) => {
+        if (t.kind === 'fixed' && t.status === 'done') {
+          totalDelta += t.plannedSeconds - t.actualSeconds;
         }
-        return task;
       });
+      const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
+      updatedTasks = updatedTasks.map((t) =>
+        t.kind === 'variable' ? { ...t, plannedSeconds: newPlaySeconds } : t
+      );
 
-      // 固定タスクが完了した場合、あそび時間を再計算
-      if (completedFixedTask) {
-        // 固定タスクの差分を累積計算
-        let totalDelta = 0;
-        updatedTasks.forEach((task) => {
-          if (task.kind === 'fixed' && task.status === 'done') {
-            const delta = task.plannedSeconds - task.actualSeconds;
-            totalDelta += delta;
-          }
-        });
-
-        // あそびの予定時間を更新（下限0秒）
-        const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
-
-        return updatedTasks.map((task) => {
-          if (task.kind === 'variable') {
-            return { ...task, plannedSeconds: newPlaySeconds };
-          }
-          return task;
-        });
+      // 3. 次のタスクを選択状態にし、必要なら開始する
+      if (nextTaskIdToSelect) {
+        if (isTimerRunning) {
+          updatedTasks = updatedTasks.map((t) =>
+            t.id === nextTaskIdToSelect ? { ...t, status: 'running' as const } : t
+          );
+        }
+        // State 更新の中で State 更新（setSelectedTaskId）を呼べないため
+        // この後の setSelectedTaskId 呼び出しのために ID を保持
+        setTimeout(() => {
+          if (nextTaskIdToSelect) setSelectedTaskId(nextTaskIdToSelect);
+        }, 0);
+      } else if (isCurrentTapped) {
+        // 次のタスクがない（全完了）
+        setTimeout(() => setIsTimerRunning(false), 0);
       }
 
       return updatedTasks;
     });
-
-    setSelectedTaskId(taskId);
   };
 
   /**
