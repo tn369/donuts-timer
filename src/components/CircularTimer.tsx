@@ -6,7 +6,6 @@ interface CircularTimerProps {
     elapsedSeconds: number;
     size?: number;
     strokeWidth?: number;
-    icon?: string | React.ReactNode;
     isOverdue?: boolean;
 }
 
@@ -15,7 +14,6 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
     elapsedSeconds,
     size = 100,
     strokeWidth = 10,
-    icon,
     isOverdue = false,
 }) => {
     const CHUNK_MAX = 300; // 5分 = 300秒
@@ -107,33 +105,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                             ))}
                         </svg>
 
-                        {/* アイコンは最初のタイマーにのみ表示 */}
-                        {i === 0 && icon && (
-                            <div className="circular-timer-icon-container">
-                                <motion.div
-                                    className="circular-timer-icon"
-                                    style={{ fontSize: 40 * baseRadiusMultiplier }}
-                                    animate={!isOverdue && progress > 0 ? {
-                                        scale: [1, 1.05, 1],
-                                    } : {}}
-                                    transition={{ repeat: Infinity, duration: 2 }}
-                                >
-                                    {typeof icon === 'string' && (icon.startsWith('http') || icon.startsWith('/')) ? (
-                                        <img
-                                            src={icon}
-                                            alt=""
-                                            style={{
-                                                width: 60 * baseRadiusMultiplier,
-                                                height: 60 * baseRadiusMultiplier,
-                                                objectFit: 'contain'
-                                            }}
-                                        />
-                                    ) : (
-                                        icon
-                                    )}
-                                </motion.div>
-                            </div>
-                        )}
+
                     </div>
                 );
             })}

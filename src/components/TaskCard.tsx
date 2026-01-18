@@ -40,6 +40,21 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       }}
       onClick={() => isSelectable && onSelect(task.id)}
     >
+      {!isDone && (
+        <div className="task-image-container">
+          <motion.img
+            src={typeof task.icon === 'string' ? task.icon : undefined}
+            alt={task.name}
+            className="task-image"
+            animate={isSelected && task.elapsedSeconds < task.plannedSeconds ? {
+              scale: [1, 1.05, 1],
+              rotate: [0, -2, 2, 0]
+            } : {}}
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+          />
+        </div>
+      )}
+
       {isDone ? (
         <div className="task-icon done">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
@@ -49,11 +64,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       ) : (
         <CircularTimer
           totalSeconds={task.plannedSeconds}
-          elapsedSeconds={task.elapsedSeconds}
-          icon={task.icon}
+            elapsedSeconds={task.elapsedSeconds}
           isOverdue={isOverdue}
-          size={120}
-          strokeWidth={24}
+            size={100}
+            strokeWidth={20}
         />
       )}
 
