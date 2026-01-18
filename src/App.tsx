@@ -30,45 +30,31 @@ function App() {
 
         const newElapsed = task.elapsedSeconds + 1;
 
-        if (newElapsed < task.plannedSeconds) {
-          return prevTasks.map((t) =>
-            t.id === selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
-          );
-        }
+        // すべてのタスクについて経過時間を更新
+        let updatedTasks = prevTasks.map((t) =>
+          t.id === selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
+        );
 
-        // タスク完了時の処理
-        const completedTask: Task = {
-          ...task,
-          elapsedSeconds: newElapsed,
-          actualSeconds: newElapsed,
-          status: 'done' as const,
-        };
-
-        let updatedTasks = prevTasks.map((t, idx) => (idx === currentIndex ? completedTask : t));
-
-        if (task.kind === 'fixed') {
+        // 固定タスクが予定時間を超過している場合、あそび時間をリアルタイムで減らす
+        if (task.kind === 'fixed' || task.kind === 'variable') {
           let totalDelta = 0;
           updatedTasks.forEach((t) => {
-            if (t.kind === 'fixed' && t.status === 'done') {
-              totalDelta += t.plannedSeconds - t.actualSeconds;
+            if (t.kind === 'fixed') {
+              if (t.status === 'done') {
+                totalDelta += t.plannedSeconds - t.actualSeconds;
+              } else if (t.status === 'running' || t.status === 'paused') {
+                // 超過分を計算
+                if (t.elapsedSeconds > t.plannedSeconds) {
+                  totalDelta += t.plannedSeconds - t.elapsedSeconds;
+                }
+              }
             }
           });
+
           const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
           updatedTasks = updatedTasks.map((t) =>
             t.kind === 'variable' ? { ...t, plannedSeconds: newPlaySeconds } : t
           );
-        }
-
-        const nextTask = prevTasks[currentIndex + 1];
-        if (nextTask) {
-          updatedTasks = updatedTasks.map((t) =>
-            t.id === nextTask.id ? { ...t, status: 'running' as const } : t
-          );
-          setTimeout(() => setSelectedTaskId(nextTask.id), 0);
-        } else {
-          setTimeout(() => {
-            setIsTimerRunning(false);
-          }, 0);
         }
 
         return updatedTasks;
@@ -126,8 +112,14 @@ function App() {
 
       let totalDelta = 0;
       updatedTasks.forEach((t) => {
-        if (t.kind === 'fixed' && t.status === 'done') {
-          totalDelta += t.plannedSeconds - t.actualSeconds;
+        if (t.kind === 'fixed') {
+          if (t.status === 'done') {
+            totalDelta += t.plannedSeconds - t.actualSeconds;
+          } else if (t.status === 'running' || t.status === 'paused') {
+            if (t.elapsedSeconds > t.plannedSeconds) {
+              totalDelta += t.plannedSeconds - t.elapsedSeconds;
+            }
+          }
         }
       });
       const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);
@@ -188,8 +180,14 @@ function App() {
 
       let totalDelta = 0;
       updatedTasks.forEach((t) => {
-        if (t.kind === 'fixed' && t.status === 'done') {
-          totalDelta += t.plannedSeconds - t.actualSeconds;
+        if (t.kind === 'fixed') {
+          if (t.status === 'done') {
+            totalDelta += t.plannedSeconds - t.actualSeconds;
+          } else if (t.status === 'running' || t.status === 'paused') {
+            if (t.elapsedSeconds > t.plannedSeconds) {
+              totalDelta += t.plannedSeconds - t.elapsedSeconds;
+            }
+          }
         }
       });
       const newPlaySeconds = Math.max(0, BASE_PLAY_SECONDS + totalDelta);

@@ -139,6 +139,27 @@ body {
   transition: width 0.3s ease;
 }
 
+/* 時間超過状態 */
+.task-card.overdue {
+  border-color: var(--color-danger);
+  background: #fff5f5;
+  animation: pulse-overdue 2s infinite;
+}
+
+.task-card.overdue .task-time {
+  color: var(--color-danger);
+}
+
+.task-card.overdue .task-progress-fill {
+  background: var(--color-danger);
+}
+
+@keyframes pulse-overdue {
+  0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+}
+
 /* ========================================
    コントロールボタン
    ======================================== */

@@ -7,7 +7,7 @@ interface ProgressBarProps {
 export const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
   return (
     <div className="progress-bar-container">
-      <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+          <div className="progress-bar" style={{ width: `${Math.min(100, progress)}%` }}></div>
     </div>
   );
 };
