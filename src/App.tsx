@@ -323,6 +323,26 @@ function App() {
   };
 
   /**
+   * リセットボタン
+   * すべてのタスクを初期状態に戻し、タイマーを停止する
+   */
+  const handleReset = () => {
+    if (window.confirm('すべてをリセットしてもいいですか？')) {
+      // 初期状態のコピーを作成してセット
+      const resetTasks = INITIAL_TASKS.map((task) => ({
+        ...task,
+        elapsedSeconds: 0,
+        actualSeconds: 0,
+        status: 'todo' as const,
+        // あそび時間（variable）も初期値に戻る
+      }));
+      setTasks(resetTasks);
+      setSelectedTaskId(INITIAL_TASKS[0].id);
+      setIsTimerRunning(false);
+    }
+  };
+
+  /**
    * 全体進捗の計算
    * 進捗 = 完了時間 / 合計予定時間
    * 完了時間 = Σ完了タスクの実績 + 進行中タスクの経過
@@ -414,6 +434,9 @@ function App() {
           disabled={!isRunning && (!selectedTaskId || selectedTask?.status === 'done')}
         >
           {isRunning ? '⏸ ストップ' : '▶ スタート'}
+        </button>
+        <button className="btn btn-reset" onClick={handleReset}>
+          🔄 リセット
         </button>
       </div>
 
