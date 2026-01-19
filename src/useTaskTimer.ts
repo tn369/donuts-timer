@@ -19,7 +19,8 @@ type Action =
   | { type: 'BACK' }
   | { type: 'RESET' }
   | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
-  | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings };
+  | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
+  | { type: 'REFRESH_VARIABLE_TASK_TIME' };
 
 function updateTasksPlayTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
   let newPlaySeconds: number;
@@ -251,6 +252,13 @@ function timerReducer(state: State, action: Action): State {
       };
     }
 
+    case 'REFRESH_VARIABLE_TASK_TIME': {
+      return {
+        ...state,
+        tasks: updateTasksPlayTime(state.tasks, state.targetTimeSettings),
+      };
+    }
+
     default:
       return state;
   }
@@ -269,14 +277,18 @@ export function useTaskTimer() {
   });
 
   useEffect(() => {
-    if (!state.isTimerRunning || !state.selectedTaskId) return;
-
+    // タイマーが動いている場合は TICK を送る
+    // タイマーが止まっていても、目標時刻モードの場合は時刻経過に合わせて遊び時間を再計算するために REFRESH を送る
     const interval = setInterval(() => {
-      dispatch({ type: 'TICK' });
+      if (state.isTimerRunning && state.selectedTaskId) {
+        dispatch({ type: 'TICK' });
+      } else if (state.targetTimeSettings.mode === 'target-time') {
+        dispatch({ type: 'REFRESH_VARIABLE_TASK_TIME' });
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [state.isTimerRunning, state.selectedTaskId]);
+  }, [state.isTimerRunning, state.selectedTaskId, state.targetTimeSettings.mode]);
 
   const selectTask = useCallback((taskId: string) => {
     dispatch({ type: 'SELECT_TASK', taskId });
