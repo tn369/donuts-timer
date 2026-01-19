@@ -29,3 +29,11 @@ export interface Task {
   elapsedSeconds: number;   // 経過時間（秒）
   actualSeconds: number;    // 実績時間（秒、完了時に確定）
 }
+
+// やることリスト型定義
+export interface TodoList {
+  id: string;
+  title: string;
+  tasks: Task[];
+  targetTimeSettings: TargetTimeSettings;
+}

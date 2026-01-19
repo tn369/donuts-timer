@@ -1,14 +1,14 @@
 import { useReducer, useCallback, useEffect } from 'react';
-import type { Task, TargetTimeSettings } from './types';
-import { INITIAL_TASKS, BASE_REWARD_SECONDS } from './constants';
+import type { Task, TargetTimeSettings, TodoList } from './types';
+import { BASE_REWARD_SECONDS } from './constants';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
-import { loadSettings } from './storage';
 
 type State = {
   tasks: Task[];
   selectedTaskId: string | null;
   isTimerRunning: boolean;
   targetTimeSettings: TargetTimeSettings;
+  activeList: TodoList | null;
 };
 
 type Action =
@@ -20,7 +20,8 @@ type Action =
   | { type: 'RESET' }
   | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
   | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
-  | { type: 'REFRESH_REWARD_TIME' };
+  | { type: 'REFRESH_REWARD_TIME' }
+  | { type: 'INIT_LIST'; list: TodoList };
 
 function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
   let newRewardSeconds: number;
@@ -223,17 +224,35 @@ function timerReducer(state: State, action: Action): State {
     }
 
     case 'RESET': {
-      const resetTasks = INITIAL_TASKS.map((task) => ({
+      if (!state.activeList) return state;
+      const resetTasks = state.activeList.tasks.map((task: Task) => ({
         ...task,
         elapsedSeconds: 0,
         actualSeconds: 0,
         status: 'todo' as const,
       }));
       return {
+        ...state,
         tasks: updateRewardTime(resetTasks, state.targetTimeSettings),
-        selectedTaskId: INITIAL_TASKS[0].id,
+        selectedTaskId: state.activeList.tasks[0]?.id || null,
         isTimerRunning: false,
-        targetTimeSettings: state.targetTimeSettings,
+      };
+    }
+
+    case 'INIT_LIST': {
+      const { list } = action;
+      const initializedTasks = list.tasks.map((t: Task) => ({
+        ...t,
+        status: 'todo' as const,
+        elapsedSeconds: 0,
+        actualSeconds: 0,
+      }));
+      return {
+        activeList: list,
+        tasks: updateRewardTime(initializedTasks, list.targetTimeSettings),
+        selectedTaskId: list.tasks[0]?.id || null,
+        isTimerRunning: false,
+        targetTimeSettings: list.targetTimeSettings,
       };
     }
 
@@ -265,15 +284,12 @@ function timerReducer(state: State, action: Action): State {
 }
 
 export function useTaskTimer() {
-  const initialSettings = loadSettings();
   const [state, dispatch] = useReducer(timerReducer, {
-    tasks: updateRewardTime(
-      INITIAL_TASKS.map((t) => ({ ...t, status: 'todo' as const, elapsedSeconds: 0, actualSeconds: 0 })),
-      initialSettings
-    ),
-    selectedTaskId: INITIAL_TASKS[0].id,
+    tasks: [],
+    selectedTaskId: null,
     isTimerRunning: false,
-    targetTimeSettings: initialSettings,
+    targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
+    activeList: null,
   });
 
   useEffect(() => {
@@ -326,6 +342,10 @@ export function useTaskTimer() {
     dispatch({ type: 'SET_TARGET_TIME_SETTINGS', settings });
   }, []);
 
+  const initList = useCallback((list: TodoList) => {
+    dispatch({ type: 'INIT_LIST', list });
+  }, []);
+
   return {
     ...state,
     isTaskSelectable,
@@ -336,5 +356,6 @@ export function useTaskTimer() {
     reset,
     setTasks,
     setTargetTimeSettings,
+    initList,
   };
 }

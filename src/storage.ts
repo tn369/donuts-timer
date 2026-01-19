@@ -1,52 +1,51 @@
-import type { TargetTimeSettings } from './types';
-import { DEFAULT_TARGET_TIME } from './constants';
+import type { TodoList } from './types';
+import { DEFAULT_TODO_LISTS } from './constants';
 
-const STORAGE_KEY = 'task-timer-settings';
+const LISTS_STORAGE_KEY = 'task-timer-lists';
+const ACTIVE_LIST_ID_KEY = 'task-timer-active-id';
 
 /**
- * localStorageから目標時刻設定を読み込み
+ * localStorageからすべてのやることリストを読み込み
  */
-export const loadSettings = (): TargetTimeSettings => {
+export const loadTodoLists = (): TodoList[] => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(LISTS_STORAGE_KEY);
     if (!stored) {
-      return DEFAULT_TARGET_TIME;
+      return DEFAULT_TODO_LISTS;
     }
     
-    const parsed = JSON.parse(stored) as TargetTimeSettings;
-    
-    // バリデーション
-    if (
-      parsed.mode !== 'duration' && parsed.mode !== 'target-time'
-    ) {
-      return DEFAULT_TARGET_TIME;
-    }
-    
-    if (
-      typeof parsed.targetHour !== 'number' ||
-      parsed.targetHour < 0 ||
-      parsed.targetHour > 23 ||
-      typeof parsed.targetMinute !== 'number' ||
-      parsed.targetMinute < 0 ||
-      parsed.targetMinute > 59
-    ) {
-      return DEFAULT_TARGET_TIME;
-    }
-    
-    return parsed;
+    return JSON.parse(stored) as TodoList[];
   } catch (error) {
-    console.error('Failed to load settings:', error);
-    return DEFAULT_TARGET_TIME;
+    console.error('Failed to load todo lists:', error);
+    return DEFAULT_TODO_LISTS;
   }
 };
 
 /**
- * localStorageに目標時刻設定を保存
+ * localStorageにすべてのやることリストを保存
  */
-export const saveSettings = (settings: TargetTimeSettings): void => {
+export const saveTodoLists = (lists: TodoList[]): void => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    localStorage.setItem(LISTS_STORAGE_KEY, JSON.stringify(lists));
   } catch (error) {
-    console.error('Failed to save settings:', error);
+    console.error('Failed to save todo lists:', error);
+  }
+};
+
+/**
+ * 現在選択されているリストIDを読み込み
+ */
+export const loadActiveListId = (): string | null => {
+  return localStorage.getItem(ACTIVE_LIST_ID_KEY);
+};
+
+/**
+ * 現在選択されているリストIDを保存
+ */
+export const saveActiveListId = (id: string | null): void => {
+  if (id) {
+    localStorage.setItem(ACTIVE_LIST_ID_KEY, id);
+  } else {
+    localStorage.removeItem(ACTIVE_LIST_ID_KEY);
   }
 };

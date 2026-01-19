@@ -755,3 +755,293 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
+
+/* ========================================
+   やることリスト選択画面
+   ======================================== */
+.selection-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  gap: 32px;
+  overflow-y: auto;
+}
+
+.selection-header {
+  text-align: center;
+}
+
+.selection-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 8px;
+}
+
+.list-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--glass-shadow);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.list-card:hover {
+  background: white;
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.list-icon-bg {
+  width: 80px;
+  height: 80px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.list-icon {
+  color: var(--color-primary);
+}
+
+.list-name {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.list-task-count {
+  font-size: 16px;
+  color: var(--color-text-muted);
+}
+
+.list-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f1f5f9;
+  color: var(--color-text-muted);
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn.edit:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.action-btn.delete:hover {
+  background: var(--color-danger);
+  color: white;
+}
+
+.list-card.add-new {
+  border: 2px dashed #cbd5e1;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.add-icon-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: #94a3b8;
+}
+
+/* ========================================
+   やることリスト設定画面 (タスク編集)
+   ======================================== */
+.title-input {
+  width: 100%;
+  font-size: 24px;
+  font-weight: 700;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+.task-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-editor-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  gap: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.task-editor-item.reward {
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.02);
+}
+
+.task-editor-image {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.task-editor-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.change-image-btn {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.task-editor-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.task-name-input {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+}
+
+.task-time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.task-minutes-input {
+  width: 60px;
+  text-align: center;
+  font-size: 18px;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+}
+
+.delete-task-btn {
+  color: #cbd5e1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.delete-task-btn:hover {
+  color: var(--color-danger);
+}
+
+.reward-badge {
+  background: var(--color-primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.add-task-btn {
+  width: 100%;
+  padding: 16px;
+  border: 2px dashed #cbd5e1;
+  background: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-task-btn:hover {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.auto-calc-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.task-minutes-input:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+  border-style: dashed;
+}

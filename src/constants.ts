@@ -1,9 +1,7 @@
-import type { Task, TargetTimeSettings } from './types';
+import type { Task, TargetTimeSettings, TodoList } from './types';
 
 /**
- * 初期やることリスト
- * やること: トイレ(5分)、おきがえ(10分)、ごはん(20分)
- * ごほうび: あそび(15分) ※「やること」の差分で増減
+ * デフォルトのやることリスト定義
  */
 export const INITIAL_TASKS: Task[] = [
   {
@@ -55,3 +53,12 @@ export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
   targetHour: 7,
   targetMinute: 55,
 };
+
+export const DEFAULT_TODO_LISTS: TodoList[] = [
+  {
+    id: 'default-morning',
+    title: 'あさのじゅんび',
+    tasks: INITIAL_TASKS,
+    targetTimeSettings: DEFAULT_TARGET_TIME,
+  }
+];
