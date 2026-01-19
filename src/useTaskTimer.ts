@@ -222,13 +222,14 @@ function timerReducer(state: State, action: Action): State {
     }
 
     case 'RESET': {
+      const resetTasks = INITIAL_TASKS.map((task) => ({
+        ...task,
+        elapsedSeconds: 0,
+        actualSeconds: 0,
+        status: 'todo' as const,
+      }));
       return {
-        tasks: INITIAL_TASKS.map((task) => ({
-          ...task,
-          elapsedSeconds: 0,
-          actualSeconds: 0,
-          status: 'todo' as const,
-        })),
+        tasks: updateTasksPlayTime(resetTasks, state.targetTimeSettings),
         selectedTaskId: INITIAL_TASKS[0].id,
         isTimerRunning: false,
         targetTimeSettings: state.targetTimeSettings,
@@ -256,11 +257,15 @@ function timerReducer(state: State, action: Action): State {
 }
 
 export function useTaskTimer() {
+  const initialSettings = loadSettings();
   const [state, dispatch] = useReducer(timerReducer, {
-    tasks: INITIAL_TASKS,
+    tasks: updateTasksPlayTime(
+      INITIAL_TASKS.map((t) => ({ ...t, status: 'todo' as const, elapsedSeconds: 0, actualSeconds: 0 })),
+      initialSettings
+    ),
     selectedTaskId: INITIAL_TASKS[0].id,
     isTimerRunning: false,
-    targetTimeSettings: loadSettings(),
+    targetTimeSettings: initialSettings,
   });
 
   useEffect(() => {

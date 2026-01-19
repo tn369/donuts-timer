@@ -688,27 +688,70 @@ body {
 .settings-footer {
   display: flex;
   justify-content: center;
+  gap: 16px;
+  padding: 16px 0;
 }
 
-.done-button {
+.cancel-button {
+  padding: 16px 32px;
+  font-size: 18px;
+  font-weight: 600;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 2px solid #e2e8f0;
+  color: var(--color-text-muted);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.cancel-button:hover {
+  background: white;
+  border-color: var(--color-text-muted);
+  color: var(--color-text-main);
+  transform: translateY(-2px);
+}
+
+.confirm-button {
   padding: 16px 48px;
   font-size: 20px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #34d399 100%);
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
   color: white;
   border: none;
   border-radius: 24px;
   cursor: pointer;
   transition: var(--transition-smooth);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.done-button:hover {
+.confirm-button.has-changes {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #34d399 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.confirm-button:hover {
   transform: translateY(-2px);
+}
+
+.confirm-button.has-changes:hover {
   box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
 }
 
-.done-button:active {
+.confirm-button:active {
   transform: translateY(0) scale(0.98);
 }
 
