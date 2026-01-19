@@ -1,12 +1,14 @@
 import { useReducer, useCallback, useEffect } from 'react';
-import type { Task } from './types';
+import type { Task, TargetTimeSettings } from './types';
 import { INITIAL_TASKS, BASE_PLAY_SECONDS } from './constants';
-import { calculatePlaySeconds } from './utils';
+import { calculatePlaySeconds, calculatePlaySecondsFromTargetTime } from './utils';
+import { loadSettings } from './storage';
 
 type State = {
   tasks: Task[];
   selectedTaskId: string | null;
   isTimerRunning: boolean;
+  targetTimeSettings: TargetTimeSettings;
 };
 
 type Action =
@@ -16,10 +18,55 @@ type Action =
   | { type: 'STOP' }
   | { type: 'BACK' }
   | { type: 'RESET' }
-  | { type: 'SET_TASKS'; tasks: Task[] }; // Debug use
+  | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
+  | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings };
 
-function updateTasksPlayTime(tasks: Task[]): Task[] {
-  const newPlaySeconds = calculatePlaySeconds(tasks, BASE_PLAY_SECONDS);
+function updateTasksPlayTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
+  let newPlaySeconds: number;
+  
+  if (targetTimeSettings.mode === 'target-time') {
+    // 目標時刻モード: 目標時刻から逆算
+    const currentTime = new Date();
+    
+    // 固定タスクの合計時間を計算（未完了タスクのみ）
+    let fixedTasksSeconds = 0;
+    let overdueSeconds = 0;
+    
+    tasks.forEach((t) => {
+      if (t.kind === 'fixed') {
+        if (t.status === 'todo') {
+          // 未開始の固定タスク
+          fixedTasksSeconds += t.plannedSeconds;
+        } else if (t.status === 'running' || t.status === 'paused') {
+          // 実行中の固定タスク
+          const remaining = t.plannedSeconds - t.elapsedSeconds;
+          if (remaining > 0) {
+            fixedTasksSeconds += remaining;
+          } else {
+            overdueSeconds += Math.abs(remaining);
+          }
+        } else if (t.status === 'done') {
+          // 完了済みの固定タスク（超過分を考慮）
+          const overdue = t.actualSeconds - t.plannedSeconds;
+          if (overdue > 0) {
+            overdueSeconds += overdue;
+          }
+        }
+      }
+    });
+    
+    newPlaySeconds = calculatePlaySecondsFromTargetTime(
+      targetTimeSettings.targetHour,
+      targetTimeSettings.targetMinute,
+      currentTime,
+      fixedTasksSeconds,
+      overdueSeconds
+    );
+  } else {
+    // 所要時間モード: 従来の計算方法
+    newPlaySeconds = calculatePlaySeconds(tasks, BASE_PLAY_SECONDS);
+  }
+  
   return tasks.map((t) =>
     t.kind === 'variable' ? { ...t, plannedSeconds: newPlaySeconds } : t
   );
@@ -43,7 +90,7 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateTasksPlayTime(updatedTasks),
+        tasks: updateTasksPlayTime(updatedTasks, state.targetTimeSettings),
       };
     }
 
@@ -93,7 +140,7 @@ function timerReducer(state: State, action: Action): State {
         nextTaskIdToSelect = taskId;
       }
 
-      updatedTasks = updateTasksPlayTime(updatedTasks);
+      updatedTasks = updateTasksPlayTime(updatedTasks, state.targetTimeSettings);
 
       if (nextTaskIdToSelect && nextIsTimerRunning) {
         updatedTasks = updatedTasks.map((t) =>
@@ -169,7 +216,7 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateTasksPlayTime(updatedTasks),
+        tasks: updateTasksPlayTime(updatedTasks, state.targetTimeSettings),
         selectedTaskId: newSelectedTaskId,
       };
     }
@@ -184,6 +231,7 @@ function timerReducer(state: State, action: Action): State {
         })),
         selectedTaskId: INITIAL_TASKS[0].id,
         isTimerRunning: false,
+        targetTimeSettings: state.targetTimeSettings,
       };
     }
 
@@ -192,6 +240,14 @@ function timerReducer(state: State, action: Action): State {
             ...state,
             tasks: action.tasks
         };
+    }
+
+    case 'SET_TARGET_TIME_SETTINGS': {
+      return {
+        ...state,
+        targetTimeSettings: action.settings,
+        tasks: updateTasksPlayTime(state.tasks, action.settings),
+      };
     }
 
     default:
@@ -204,6 +260,7 @@ export function useTaskTimer() {
     tasks: INITIAL_TASKS,
     selectedTaskId: INITIAL_TASKS[0].id,
     isTimerRunning: false,
+    targetTimeSettings: loadSettings(),
   });
 
   useEffect(() => {
@@ -248,6 +305,10 @@ export function useTaskTimer() {
     dispatch({ type: 'SET_TASKS', tasks });
   }, []);
 
+  const setTargetTimeSettings = useCallback((settings: TargetTimeSettings) => {
+    dispatch({ type: 'SET_TARGET_TIME_SETTINGS', settings });
+  }, []);
+
   return {
     ...state,
     isTaskSelectable,
@@ -257,5 +318,6 @@ export function useTaskTimer() {
     goBack,
     reset,
     setTasks,
+    setTargetTimeSettings,
   };
 }

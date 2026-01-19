@@ -8,6 +8,16 @@ export type TaskKind = 'fixed' | 'variable';
 // タスクの状態
 export type TaskStatus = 'todo' | 'running' | 'paused' | 'done';
 
+// 可変タスクのモード
+export type VariableTaskMode = 'duration' | 'target-time';
+
+// 目標時刻設定
+export interface TargetTimeSettings {
+  mode: VariableTaskMode;
+  targetHour: number;    // 0-23
+  targetMinute: number;  // 0-59
+}
+
 // タスク型定義
 export interface Task {
   id: string;               // タスクID

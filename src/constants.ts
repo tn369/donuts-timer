@@ -1,4 +1,4 @@
-import type { Task } from './types';
+import type { Task, TargetTimeSettings } from './types';
 
 /**
  * 初期タスクデータ
@@ -49,3 +49,9 @@ export const INITIAL_TASKS: Task[] = [
 ];
 
 export const BASE_PLAY_SECONDS = 15 * 60; // あそびの基本時間（15分）
+
+export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
+  mode: 'duration',  // デフォルトは所要時間モード
+  targetHour: 7,
+  targetMinute: 55,
+};

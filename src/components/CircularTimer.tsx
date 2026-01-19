@@ -17,6 +17,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
     isOverdue = false,
 }) => {
     const CHUNK_MAX = 300; // 5分 = 300秒
+    const MAX_DISPLAY_CHUNKS = 10; // 最大表示チャンク数
 
     // 計画時間を5分ずつのチャンクに分割
     const chunks: number[] = [];
@@ -39,10 +40,15 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
         tempRemaining -= r;
     }
 
+    // 表示するチャンクを決定（最大10個）
+    const hasMore = chunks.length > MAX_DISPLAY_CHUNKS;
+    const displayChunks = hasMore ? chunks.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunks;
+    const displayChunkRemaining = hasMore ? chunkRemaining.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunkRemaining;
+
     return (
         <div className="circular-timer-group">
-            {chunks.map((capacity, i) => {
-                const currentRemaining = chunkRemaining[i];
+            {displayChunks.map((capacity, i) => {
+                const currentRemaining = displayChunkRemaining[i];
                 const progress = capacity > 0 ? currentRemaining / capacity : 0;
 
                 // 面積を時間に比例させる: area = pi * r^2 -> r = R * sqrt(time / 5min)
@@ -109,6 +115,11 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                     </div>
                 );
             })}
+            {hasMore && (
+                <div className="circular-timer-more">
+                    ...
+                </div>
+            )}
         </div>
     );
 };
