@@ -141,9 +141,9 @@ body {
 }
 
 /* ========================================
-   円形タイマー (CircularTimer)
+   どーなつタイマー (DonutTimer)
    ======================================== */
-.circular-timer-group {
+.donut-timer-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -153,30 +153,30 @@ body {
   width: 100%;
 }
 
-.circular-timer {
+.donut-timer {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.circular-timer-svg {
+.donut-timer-svg {
   transform: rotate(-90deg);
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));
 }
 
-.circular-timer-bg {
+.donut-timer-bg {
   fill: none;
   stroke: #f1f5f9; /* Slate 100 - base circle */
 }
 
-.circular-timer-fill {
+.donut-timer-fill {
   fill: none;
   stroke: var(--color-danger); /* 残り時間を赤色で表示 */
   filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.2));
 }
 
-.circular-timer-fill.overdue {
+.donut-timer-fill.overdue {
   stroke: var(--color-danger);
   animation: timer-pulse 2s infinite ease-in-out;
 }
@@ -187,11 +187,11 @@ body {
   100% { opacity: 1; }
 }
 
-.circular-timer-tick {
+.donut-timer-tick {
   stroke-linecap: round;
 }
 
-.circular-timer-icon-container {
+.donut-timer-icon-container {
   position: absolute;
   top: 0;
   left: 0;
@@ -203,7 +203,7 @@ body {
   pointer-events: none;
 }
 
-.circular-timer-icon {
+.donut-timer-icon {
   font-size: 48px;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
   display: flex;
@@ -439,9 +439,9 @@ body {
 }
 
 /* ========================================
-   CircularTimerの省略表記
+   どーなつタイマーの省略表記
    ======================================== */
-.circular-timer-more {
+.donut-timer-more {
   display: flex;
   align-items: center;
   justify-content: center;

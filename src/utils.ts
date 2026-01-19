@@ -10,14 +10,14 @@ export const formatTime = (seconds: number): string => {
 };
 
 /**
- * あそび時間を計算する
+ * 「ごほうび」の時間を計算する
  */
 import type { Task } from './types';
 
-export const calculatePlaySeconds = (tasks: Task[], basePlaySeconds: number): number => {
+export const calculateRewardSeconds = (tasks: Task[], baseRewardSeconds: number): number => {
   let totalDelta = 0;
   tasks.forEach((t) => {
-    if (t.kind === 'fixed') {
+    if (t.kind === 'todo') {
       if (t.status === 'done') {
         totalDelta += t.plannedSeconds - t.actualSeconds;
       } else if (t.status === 'running' || t.status === 'paused') {
@@ -28,7 +28,7 @@ export const calculatePlaySeconds = (tasks: Task[], basePlaySeconds: number): nu
       }
     }
   });
-  return Math.max(0, basePlaySeconds + totalDelta);
+  return Math.max(0, baseRewardSeconds + totalDelta);
 };
 
 /**
@@ -49,19 +49,19 @@ export const calculateOverallProgress = (tasks: Task[]): number => {
 };
 
 /**
- * 目標時刻から必要な遊び時間を逆算する
+ * 目標時刻から必要な「ごほうび」の時間を逆算する
  * @param targetHour 目標時刻（時）
  * @param targetMinute 目標時刻（分）
  * @param currentTime 現在時刻
- * @param fixedTasksSeconds 固定タスクの合計時間（秒）
+ * @param todoTasksSeconds 「やること」の合計時間（秒）
  * @param overdueSeconds 超過時間（秒、マイナス値）
- * @returns 遊び時間（秒）
+ * @returns ごほうびの時間（秒）
  */
-export const calculatePlaySecondsFromTargetTime = (
+export const calculateRewardSecondsFromTargetTime = (
   targetHour: number,
   targetMinute: number,
   currentTime: Date,
-  fixedTasksSeconds: number,
+  todoTasksSeconds: number,
   overdueSeconds: number
 ): number => {
   // 目標時刻のDateオブジェクトを作成
@@ -76,9 +76,9 @@ export const calculatePlaySecondsFromTargetTime = (
   // 利用可能な時間（秒）
   const availableSeconds = Math.floor((target.getTime() - currentTime.getTime()) / 1000);
   
-  // 遊び時間 = 利用可能時間 - 固定タスク時間 - 超過時間
-  const playSeconds = availableSeconds - fixedTasksSeconds - overdueSeconds;
+  // ごほうびの時間 = 利用可能時間 - やることの時間 - 超過時間
+  const rewardSeconds = availableSeconds - todoTasksSeconds - overdueSeconds;
   
-  return Math.max(0, playSeconds);
+  return Math.max(0, rewardSeconds);
 };
 

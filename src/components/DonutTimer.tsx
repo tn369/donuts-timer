@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-interface CircularTimerProps {
+interface DonutTimerProps {
     totalSeconds: number;
     elapsedSeconds: number;
     size?: number;
@@ -9,7 +9,7 @@ interface CircularTimerProps {
     isOverdue?: boolean;
 }
 
-export const CircularTimer: React.FC<CircularTimerProps> = ({
+export const DonutTimer: React.FC<DonutTimerProps> = ({
     totalSeconds,
     elapsedSeconds,
     size = 100,
@@ -46,7 +46,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
     const displayChunkRemaining = hasMore ? chunkRemaining.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunkRemaining;
 
     return (
-        <div className="circular-timer-group">
+        <div className="donut-timer-group">
             {displayChunks.map((capacity, i) => {
                 const currentRemaining = displayChunkRemaining[i];
                 const progress = capacity > 0 ? currentRemaining / capacity : 0;
@@ -61,8 +61,8 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                 const offset = circumference * (1 - progress);
 
                 return (
-                    <div key={i} className="circular-timer" style={{ width: currentSize, height: currentSize }}>
-                        <svg width={currentSize} height={currentSize} viewBox={`0 0 ${currentSize} ${currentSize}`} className="circular-timer-svg">
+                    <div key={i} className="donut-timer" style={{ width: currentSize, height: currentSize }}>
+                        <svg width={currentSize} height={currentSize} viewBox={`0 0 ${currentSize} ${currentSize}`} className="donut-timer-svg">
                             {/* 外枠 */}
                             <circle
                                 cx={currentSize / 2}
@@ -78,7 +78,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                                 cx={currentSize / 2}
                                 cy={currentSize / 2}
                                 r={radius}
-                                className="circular-timer-bg"
+                                className="donut-timer-bg"
                                 strokeWidth={currentStrokeWidth}
                             />
 
@@ -87,7 +87,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                                 cx={currentSize / 2}
                                 cy={currentSize / 2}
                                 r={radius}
-                                className={`circular-timer-fill ${isOverdue ? 'overdue' : ''}`}
+                                className={`donut-timer-fill ${isOverdue ? 'overdue' : ''}`}
                                 strokeWidth={currentStrokeWidth}
                                 strokeDasharray={circumference}
                                 initial={{ strokeDashoffset: 0 }}
@@ -105,7 +105,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                                     x2={currentSize / 2}
                                     y2={currentSize / 2 - radius + currentStrokeWidth / 2}
                                     transform={`rotate(${j * 30} ${currentSize / 2} ${currentSize / 2})`}
-                                    className="circular-timer-tick"
+                                    className="donut-timer-tick"
                                     style={{ stroke: j % 3 === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.1)' }}
                                 />
                             ))}
@@ -116,7 +116,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
                 );
             })}
             {hasMore && (
-                <div className="circular-timer-more">
+                <div className="donut-timer-more">
                     ...
                 </div>
             )}

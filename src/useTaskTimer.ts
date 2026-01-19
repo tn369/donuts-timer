@@ -1,7 +1,7 @@
 import { useReducer, useCallback, useEffect } from 'react';
 import type { Task, TargetTimeSettings } from './types';
-import { INITIAL_TASKS, BASE_PLAY_SECONDS } from './constants';
-import { calculatePlaySeconds, calculatePlaySecondsFromTargetTime } from './utils';
+import { INITIAL_TASKS, BASE_REWARD_SECONDS } from './constants';
+import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
 import { loadSettings } from './storage';
 
 type State = {
@@ -20,34 +20,34 @@ type Action =
   | { type: 'RESET' }
   | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
   | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
-  | { type: 'REFRESH_VARIABLE_TASK_TIME' };
+  | { type: 'REFRESH_REWARD_TIME' };
 
-function updateTasksPlayTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
-  let newPlaySeconds: number;
+function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
+  let newRewardSeconds: number;
   
   if (targetTimeSettings.mode === 'target-time') {
     // 目標時刻モード: 目標時刻から逆算
     const currentTime = new Date();
     
-    // 固定タスクの合計時間を計算（未完了タスクのみ）
-    let fixedTasksSeconds = 0;
+    // 「やること」(固定タスク)の合計時間を計算（未完了タスクのみ）
+    let todoTasksSeconds = 0;
     let overdueSeconds = 0;
     
     tasks.forEach((t) => {
-      if (t.kind === 'fixed') {
+      if (t.kind === 'todo') {
         if (t.status === 'todo') {
-          // 未開始の固定タスク
-          fixedTasksSeconds += t.plannedSeconds;
+          // 未開始の「やること」
+          todoTasksSeconds += t.plannedSeconds;
         } else if (t.status === 'running' || t.status === 'paused') {
-          // 実行中の固定タスク
+          // 実行中の「やること」
           const remaining = t.plannedSeconds - t.elapsedSeconds;
           if (remaining > 0) {
-            fixedTasksSeconds += remaining;
+            todoTasksSeconds += remaining;
           } else {
             overdueSeconds += Math.abs(remaining);
           }
         } else if (t.status === 'done') {
-          // 完了済みの固定タスク（超過分を考慮）
+          // 完了済みの「やること」（超過分を考慮）
           const overdue = t.actualSeconds - t.plannedSeconds;
           if (overdue > 0) {
             overdueSeconds += overdue;
@@ -56,20 +56,20 @@ function updateTasksPlayTime(tasks: Task[], targetTimeSettings: TargetTimeSettin
       }
     });
     
-    newPlaySeconds = calculatePlaySecondsFromTargetTime(
+    newRewardSeconds = calculateRewardSecondsFromTargetTime(
       targetTimeSettings.targetHour,
       targetTimeSettings.targetMinute,
       currentTime,
-      fixedTasksSeconds,
+      todoTasksSeconds,
       overdueSeconds
     );
   } else {
     // 所要時間モード: 従来の計算方法
-    newPlaySeconds = calculatePlaySeconds(tasks, BASE_PLAY_SECONDS);
+    newRewardSeconds = calculateRewardSeconds(tasks, BASE_REWARD_SECONDS);
   }
   
   return tasks.map((t) =>
-    t.kind === 'variable' ? { ...t, plannedSeconds: newPlaySeconds } : t
+    t.kind === 'reward' ? { ...t, plannedSeconds: newRewardSeconds } : t
   );
 }
 
@@ -91,7 +91,7 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateTasksPlayTime(updatedTasks, state.targetTimeSettings),
+        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings),
       };
     }
 
@@ -141,7 +141,7 @@ function timerReducer(state: State, action: Action): State {
         nextTaskIdToSelect = taskId;
       }
 
-      updatedTasks = updateTasksPlayTime(updatedTasks, state.targetTimeSettings);
+      updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings);
 
       if (nextTaskIdToSelect && nextIsTimerRunning) {
         updatedTasks = updatedTasks.map((t) =>
@@ -217,7 +217,7 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateTasksPlayTime(updatedTasks, state.targetTimeSettings),
+        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings),
         selectedTaskId: newSelectedTaskId,
       };
     }
@@ -230,7 +230,7 @@ function timerReducer(state: State, action: Action): State {
         status: 'todo' as const,
       }));
       return {
-        tasks: updateTasksPlayTime(resetTasks, state.targetTimeSettings),
+        tasks: updateRewardTime(resetTasks, state.targetTimeSettings),
         selectedTaskId: INITIAL_TASKS[0].id,
         isTimerRunning: false,
         targetTimeSettings: state.targetTimeSettings,
@@ -248,14 +248,14 @@ function timerReducer(state: State, action: Action): State {
       return {
         ...state,
         targetTimeSettings: action.settings,
-        tasks: updateTasksPlayTime(state.tasks, action.settings),
+        tasks: updateRewardTime(state.tasks, action.settings),
       };
     }
 
-    case 'REFRESH_VARIABLE_TASK_TIME': {
+    case 'REFRESH_REWARD_TIME': {
       return {
         ...state,
-        tasks: updateTasksPlayTime(state.tasks, state.targetTimeSettings),
+        tasks: updateRewardTime(state.tasks, state.targetTimeSettings),
       };
     }
 
@@ -267,7 +267,7 @@ function timerReducer(state: State, action: Action): State {
 export function useTaskTimer() {
   const initialSettings = loadSettings();
   const [state, dispatch] = useReducer(timerReducer, {
-    tasks: updateTasksPlayTime(
+    tasks: updateRewardTime(
       INITIAL_TASKS.map((t) => ({ ...t, status: 'todo' as const, elapsedSeconds: 0, actualSeconds: 0 })),
       initialSettings
     ),
@@ -283,7 +283,7 @@ export function useTaskTimer() {
       if (state.isTimerRunning && state.selectedTaskId) {
         dispatch({ type: 'TICK' });
       } else if (state.targetTimeSettings.mode === 'target-time') {
-        dispatch({ type: 'REFRESH_VARIABLE_TASK_TIME' });
+        dispatch({ type: 'REFRESH_REWARD_TIME' });
       }
     }, 1000);
 

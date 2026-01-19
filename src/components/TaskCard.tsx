@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { CircularTimer } from './CircularTimer';
+import { DonutTimer } from './DonutTimer';
 import type { Task } from '../types';
 import { formatTime } from '../utils';
 
@@ -62,7 +62,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           </motion.div>
         </div>
       ) : (
-        <CircularTimer
+          <DonutTimer
           totalSeconds={task.plannedSeconds}
             elapsedSeconds={task.elapsedSeconds}
           isOverdue={isOverdue}
