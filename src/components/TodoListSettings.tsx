@@ -98,6 +98,28 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 </section>
 
                 <section className="settings-section">
+                    <h2 className="section-title">ごほうび の じかん計算</h2>
+                    <div className="mode-selection">
+                        <button
+                            className={`mode-button ${editedList.targetTimeSettings.mode === 'duration' ? 'active' : ''}`}
+                            onClick={() => handleTargetTimeChange({ mode: 'duration' })}
+                        >
+                            <div className="mode-icon">⏳</div>
+                            <div className="mode-label">きまった時間</div>
+                            <div className="mode-description">のこった時間があそび時間</div>
+                        </button>
+                        <button
+                            className={`mode-button ${editedList.targetTimeSettings.mode === 'target-time' ? 'active' : ''}`}
+                            onClick={() => handleTargetTimeChange({ mode: 'target-time' })}
+                        >
+                            <div className="mode-icon">⏰</div>
+                            <div className="mode-label">おわる時刻</div>
+                            <div className="mode-description">出発にまにあうよう調整</div>
+                        </button>
+                    </div>
+                </section>
+
+                <section className="settings-section">
                     <h2 className="section-title">やること の せってい</h2>
                     <div className="task-editor-list">
                         <AnimatePresence mode="popLayout">
@@ -125,16 +147,43 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                                             onChange={(e) => handleTaskChange(task.id, { name: e.target.value })}
                                         />
                                         <div className="task-time-input-group">
-                                            <input
-                                                type="number"
-                                                className="task-minutes-input"
-                                                value={Math.floor(task.plannedSeconds / 60)}
-                                                onChange={(e) => handleTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
-                                                disabled={task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time'}
-                                            />
-                                            <span>ぷん</span>
-                                            {task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time' && (
-                                                <span className="auto-calc-hint">（じどう計算）</span>
+                                            {task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time' ? (
+                                                <div className="task-target-time-inputs">
+                                                    <select
+                                                        className="time-select-small"
+                                                        value={editedList.targetTimeSettings.targetHour}
+                                                        onChange={(e) => handleTargetTimeChange({ targetHour: parseInt(e.target.value) })}
+                                                    >
+                                                        {Array.from({ length: 24 }).map((_, i) => (
+                                                            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+                                                        ))}
+                                                    </select>
+                                                    <span className="time-separator-small">:</span>
+                                                    <select
+                                                        className="time-select-small"
+                                                        value={editedList.targetTimeSettings.targetMinute}
+                                                        onChange={(e) => handleTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
+                                                    >
+                                                        {Array.from({ length: 60 }).map((_, i) => (
+                                                            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+                                                        ))}
+                                                    </select>
+                                                    <span className="time-label-small">におわる</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                        <input
+                                                            type="number"
+                                                            className="task-minutes-input"
+                                                            value={Math.floor(task.plannedSeconds / 60)}
+                                                            onChange={(e) => handleTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
+                                                            disabled={task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time'}
+                                                        />
+                                                        <span>ぷん</span>
+                                                        {task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time' && (
+                                                            <span className="auto-calc-hint">（じどう計算）</span>
+                                                        )}
+                                                </>
                                             )}
                                         </div>
                                     </div>
@@ -162,59 +211,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                     </div>
                 </section>
 
-                <section className="settings-section">
-                    <h2 className="section-title">ごほうび の じかん計算</h2>
-                    <div className="mode-selection">
-                        <button
-                            className={`mode-button ${editedList.targetTimeSettings.mode === 'duration' ? 'active' : ''}`}
-                            onClick={() => handleTargetTimeChange({ mode: 'duration' })}
-                        >
-                            <div className="mode-icon">⏳</div>
-                            <div className="mode-label">きまった時間</div>
-                            <div className="mode-description">のこった時間があそび時間</div>
-                        </button>
-                        <button
-                            className={`mode-button ${editedList.targetTimeSettings.mode === 'target-time' ? 'active' : ''}`}
-                            onClick={() => handleTargetTimeChange({ mode: 'target-time' })}
-                        >
-                            <div className="mode-icon">⏰</div>
-                            <div className="mode-label">おわる時刻</div>
-                            <div className="mode-description">出発にまにあうよう調整</div>
-                        </button>
-                    </div>
 
-                    {editedList.targetTimeSettings.mode === 'target-time' && (
-                        <div className="target-time-section">
-                            <div className="time-inputs">
-                                <div className="time-input-group">
-                                    <label>時</label>
-                                    <select
-                                        className="time-select"
-                                        value={editedList.targetTimeSettings.targetHour}
-                                        onChange={(e) => handleTargetTimeChange({ targetHour: parseInt(e.target.value) })}
-                                    >
-                                        {Array.from({ length: 24 }).map((_, i) => (
-                                            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="time-separator">:</div>
-                                <div className="time-input-group">
-                                    <label>分</label>
-                                    <select
-                                        className="time-select"
-                                        value={editedList.targetTimeSettings.targetMinute}
-                                        onChange={(e) => handleTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
-                                    >
-                                        {Array.from({ length: 60 }).map((_, i) => (
-                                            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </section>
             </div>
         </div>
     );

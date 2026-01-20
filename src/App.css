@@ -687,6 +687,43 @@ body {
   margin-top: 32px;
 }
 
+.task-target-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-select-small {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  min-width: 50px;
+  text-align: center;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.time-select-small:hover {
+  border-color: var(--color-primary);
+}
+
+.time-separator-small {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.time-label-small {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-left: 4px;
+}
+
 .time-preview {
   text-align: center;
   font-size: 18px;
