@@ -20,6 +20,7 @@ type Action =
   | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
   | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
   | { type: 'REFRESH_REWARD_TIME' }
+  | { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
   | { type: 'INIT_LIST'; list: TodoList };
 
 function getBaseRewardSeconds(list: TodoList | null): number {
@@ -237,6 +238,33 @@ function timerReducer(state: State, action: Action): State {
       };
     }
 
+    case 'UPDATE_ACTIVE_LIST': {
+      const { list } = action;
+      const updatedTasks = list.tasks.map((newTask: Task) => {
+        const existingTask = state.tasks.find(t => t.id === newTask.id);
+        if (existingTask) {
+          return {
+            ...newTask,
+            status: existingTask.status,
+            elapsedSeconds: existingTask.elapsedSeconds,
+            actualSeconds: existingTask.actualSeconds,
+          };
+        }
+        return {
+          ...newTask,
+          status: 'todo' as const,
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+        };
+      });
+      return {
+        ...state,
+        activeList: list,
+        targetTimeSettings: list.targetTimeSettings,
+        tasks: updateRewardTime(updatedTasks, list.targetTimeSettings, getBaseRewardSeconds(list)),
+      };
+    }
+
     case 'INIT_LIST': {
       const { list } = action;
       const initializedTasks = list.tasks.map((t: Task) => ({
@@ -344,6 +372,10 @@ export function useTaskTimer() {
     dispatch({ type: 'INIT_LIST', list });
   }, []);
 
+  const updateActiveList = useCallback((list: TodoList) => {
+    dispatch({ type: 'UPDATE_ACTIVE_LIST', list });
+  }, []);
+
   return {
     ...state,
     isTaskSelectable,
@@ -355,5 +387,6 @@ export function useTaskTimer() {
     setTasks,
     setTargetTimeSettings,
     initList,
+    updateActiveList,
   };
 }

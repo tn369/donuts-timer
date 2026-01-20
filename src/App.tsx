@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Settings } from 'lucide-react';
+import { Settings, ArrowLeft } from 'lucide-react';
 import './App.css';
 
 import { TaskList } from './components/TaskList';
@@ -29,10 +29,12 @@ function App() {
     reset,
     setTasks,
     initList,
+    updateActiveList,
   } = useTaskTimer();
 
   const [todoLists, setTodoLists] = useState<TodoList[]>([]);
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('selection');
+  const [settingsSource, setSettingsSource] = useState<'selection' | 'main'>('selection');
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
@@ -62,6 +64,7 @@ function App() {
 
   const handleEditList = (listId: string) => {
     setEditingListId(listId);
+    setSettingsSource('selection');
     setCurrentScreen('settings');
   };
 
@@ -100,6 +103,7 @@ function App() {
     setTodoLists([...todoLists, newList]);
     saveTodoLists([...todoLists, newList]);
     setEditingListId(newList.id);
+    setSettingsSource('selection');
     setCurrentScreen('settings');
   };
 
@@ -116,10 +120,10 @@ function App() {
 
     // もし現在実行中のリストなら同期する
     if (activeList?.id === updatedList.id) {
-      initList(updatedList);
+      updateActiveList(updatedList);
     }
 
-    setCurrentScreen('selection');
+    setCurrentScreen(settingsSource);
     setEditingListId(null);
   };
 
@@ -164,7 +168,10 @@ function App() {
         <TodoListSettings
           list={listToEdit}
           onSave={handleSaveList}
-          onBack={() => setCurrentScreen('selection')}
+          onBack={() => {
+            setCurrentScreen(settingsSource);
+            setEditingListId(null);
+          }}
         />
       );
     }
@@ -172,11 +179,27 @@ function App() {
 
   return (
     <div className="app">
-      <div className="settings-button-container">
+      <div className="back-button-container">
         <button
           onClick={handleBackToSelection}
+          className="settings-button secondary"
+          title="リストをえらびなおす"
+        >
+          <ArrowLeft size={20} />
+        </button>
+      </div>
+
+      <div className="settings-button-container">
+        <button
+          onClick={() => {
+            if (activeList) {
+              setEditingListId(activeList.id);
+              setSettingsSource('main');
+              setCurrentScreen('settings');
+            }
+          }}
           className="settings-button"
-          title="リストにもどる"
+          title="リストのせってい"
         >
           <Settings size={20} />
         </button>

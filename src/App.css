@@ -462,6 +462,13 @@ body {
   z-index: 100;
 }
 
+.back-button-container {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+}
+
 .settings-button {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
@@ -483,6 +490,11 @@ body {
   color: var(--color-primary);
   transform: rotate(90deg) scale(1.1);
   box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.settings-button.secondary:hover {
+  transform: scale(1.1);
+  color: var(--color-info);
 }
 
 /* ========================================
