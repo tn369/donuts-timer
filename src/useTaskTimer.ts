@@ -24,6 +24,9 @@ type Action =
   | { type: 'INIT_LIST'; list: TodoList };
 
 function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
+  const rewardTask = tasks.find((t) => t.kind === 'reward');
+  const rewardElapsed = rewardTask ? rewardTask.elapsedSeconds : 0;
+
   let newRewardSeconds: number;
   
   if (targetTimeSettings.mode === 'target-time') {
@@ -32,7 +35,6 @@ function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings)
     
     // 「やること」(固定タスク)の合計時間を計算（未完了タスクのみ）
     let todoTasksSeconds = 0;
-    let overdueSeconds = 0;
     
     tasks.forEach((t) => {
       if (t.kind === 'todo') {
@@ -44,26 +46,18 @@ function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings)
           const remaining = t.plannedSeconds - t.elapsedSeconds;
           if (remaining > 0) {
             todoTasksSeconds += remaining;
-          } else {
-            overdueSeconds += Math.abs(remaining);
-          }
-        } else if (t.status === 'done') {
-          // 完了済みの「やること」（超過分を考慮）
-          const overdue = t.actualSeconds - t.plannedSeconds;
-          if (overdue > 0) {
-            overdueSeconds += overdue;
           }
         }
       }
     });
     
+    // 遊び時間は「今から終了時までに残っている時間」＋「すでに遊んだ時間」
     newRewardSeconds = calculateRewardSecondsFromTargetTime(
       targetTimeSettings.targetHour,
       targetTimeSettings.targetMinute,
       currentTime,
-      todoTasksSeconds,
-      overdueSeconds
-    );
+      todoTasksSeconds
+    ) + rewardElapsed;
   } else {
     // 所要時間モード: 従来の計算方法
     newRewardSeconds = calculateRewardSeconds(tasks, BASE_REWARD_SECONDS);
