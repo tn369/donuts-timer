@@ -97,6 +97,35 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                         placeholder="リストのなまえを入力..."
                     />
                 </section>
+                <section className="settings-section">
+                    <h2 className="section-title">どーなつタイマー の みため</h2>
+                    <div className="mode-selection">
+                        <button
+                            className={`mode-button ${(!editedList.timerSettings || editedList.timerSettings.theme === 'modern') ? 'active' : ''}`}
+                            onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'modern' } })}
+                        >
+                            <div className="mode-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <rect x="5" y="5" width="30" height="30" rx="4" ry="4" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" />
+                                </svg>
+                            </div>
+                            <div className="mode-label">しかく</div>
+                            <div className="mode-description">あおいろ</div>
+                        </button>
+                        <button
+                            className={`mode-button ${editedList.timerSettings?.theme === 'classic' ? 'active' : ''}`}
+                            onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'classic' } })}
+                        >
+                            <div className="mode-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" />
+                                </svg>
+                            </div>
+                            <div className="mode-label">まる</div>
+                            <div className="mode-description">あかいろ</div>
+                        </button>
+                    </div>
+                </section>
 
                 <section className="settings-section">
                     <h2 className="section-title">ごほうび の じかん計算</h2>

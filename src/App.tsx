@@ -210,6 +210,7 @@ function App() {
         selectedTaskId={selectedTaskId}
         isTaskSelectable={isTaskSelectable}
         onSelectTask={selectTask}
+        theme={activeList?.timerSettings?.theme}
       />
 
       <Controls

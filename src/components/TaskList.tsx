@@ -1,5 +1,4 @@
-import React from 'react';
-import type { Task } from '../types';
+import type { Task, TimerTheme } from '../types';
 import { TaskCard } from './TaskCard';
 
 interface TaskListProps {
@@ -7,6 +6,7 @@ interface TaskListProps {
   selectedTaskId: string | null;
   isTaskSelectable: (taskId: string) => boolean;
   onSelectTask: (taskId: string) => void;
+  theme?: TimerTheme;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -14,6 +14,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   selectedTaskId,
   isTaskSelectable,
   onSelectTask,
+  theme,
 }) => {
   return (
     <div className="task-list">
@@ -24,6 +25,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           isSelected={task.id === selectedTaskId}
           isSelectable={isTaskSelectable(task.id)}
           onSelect={onSelectTask}
+          theme={theme}
         />
       ))}
     </div>

@@ -161,7 +161,6 @@ body {
 }
 
 .donut-timer-svg {
-  transform: rotate(-90deg);
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));
 }
 
@@ -170,13 +169,22 @@ body {
   stroke: #f1f5f9; /* Slate 100 - base circle */
 }
 
-.donut-timer-fill {
-  fill: none;
-  stroke: var(--color-danger); /* 残り時間を赤色で表示 */
+.donut-timer-fill.theme-modern {
+  stroke: var(--color-info); /* モダン: 青 */
+  filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.2));
+}
+
+.donut-timer-fill.theme-classic {
+  stroke: var(--color-danger); /* クラシック: 赤 */
   filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.2));
 }
 
-.donut-timer-fill.overdue {
+.donut-timer-fill.overdue.theme-modern {
+  stroke: var(--color-info);
+  animation: timer-pulse 2s infinite ease-in-out;
+}
+
+.donut-timer-fill.overdue.theme-classic {
   stroke: var(--color-danger);
   animation: timer-pulse 2s infinite ease-in-out;
 }
