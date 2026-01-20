@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Trash2, Camera, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Camera, Save, Link } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { resizeImage } from '../utils';
 
 interface TodoListSettingsProps {
     list: TodoList;
@@ -185,6 +186,38 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
     onRemoveTask,
     onTargetTimeChange,
 }) => {
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleImageClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // ファイルサイズチェック（目安として1MB以下）
+            if (file.size > 1024 * 1024) {
+                alert('画像サイズが大きすぎます。1MB以下の画像を選んでください。');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64String = reader.result as string;
+                const resizedImage = await resizeImage(base64String, 200, 200);
+                onTaskChange(task.id, { icon: resizedImage });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUrlClick = () => {
+        const url = prompt('画像のURLをいれてください', task.icon);
+        if (url) {
+            onTaskChange(task.id, { icon: url });
+        }
+    };
+
     return (
         <motion.div
             layout
@@ -195,9 +228,29 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
         >
             <div className="task-editor-image">
                 <img src={task.icon} alt={task.name} />
-                <button className="change-image-btn" title="画像をへんこう">
-                    <Camera size={14} />
-                </button>
+                <div className="task-editor-image-buttons">
+                    <button
+                        className="change-image-btn"
+                        title="がぞうをえらぶ"
+                        onClick={handleImageClick}
+                    >
+                        <Camera size={14} />
+                    </button>
+                    <button
+                        className="change-image-btn secondary"
+                        title="URLをいれる"
+                        onClick={handleUrlClick}
+                    >
+                        <Link size={14} />
+                    </button>
+                </div>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                />
             </div>
 
             <div className="task-editor-info">

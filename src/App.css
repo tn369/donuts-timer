@@ -990,11 +990,8 @@ body {
 }
 
 .change-image-btn {
-  position: absolute;
-  bottom: -4px;
-  right: -4px;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--color-primary);
   color: white;
@@ -1003,6 +1000,30 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+
+.change-image-btn:hover {
+  transform: scale(1.1);
+  background: var(--color-primary-dark);
+}
+
+.change-image-btn.secondary {
+  background: var(--color-info);
+}
+
+.change-image-btn.secondary:hover {
+  background: #2563eb;
+}
+
+.task-editor-image-buttons {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .task-editor-info {
