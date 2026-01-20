@@ -68,7 +68,7 @@ function App() {
   const handleAddNewList = () => {
     const newList: TodoList = {
       id: uuid_v4(),
-      title: 'あたらしいじゅんび',
+      title: 'あたらしいやることリスト',
       tasks: [
         {
           id: uuid_v4(),

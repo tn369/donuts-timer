@@ -57,7 +57,7 @@ export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
 export const DEFAULT_TODO_LISTS: TodoList[] = [
   {
     id: 'default-morning',
-    title: 'あさのじゅんび',
+    title: 'あさのやることリスト',
     tasks: INITIAL_TASKS,
     targetTimeSettings: DEFAULT_TARGET_TIME,
   }

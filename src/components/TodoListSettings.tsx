@@ -73,7 +73,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                     <ArrowLeft size={24} />
                 </button>
                 <div className="settings-title">
-                    <span>じゅんび の せってい</span>
+                    <span>やることリスト の せってい</span>
                 </div>
                 <button
                     onClick={() => onSave(editedList)}
