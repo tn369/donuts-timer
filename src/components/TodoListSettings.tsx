@@ -123,96 +123,145 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                     <h2 className="section-title">やること の せってい</h2>
                     <div className="task-editor-list">
                         <AnimatePresence mode="popLayout">
-                            {editedList.tasks.map((task) => (
-                                <motion.div
+                            {editedList.tasks.filter(t => t.kind !== 'reward').map((task) => (
+                                <TaskEditorItem
                                     key={task.id}
-                                    layout
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 20 }}
-                                    className={`task-editor-item ${task.kind}`}
-                                >
-                                    <div className="task-editor-image">
-                                        <img src={task.icon} alt={task.name} />
-                                        <button className="change-image-btn" title="画像をへんこう">
-                                            <Camera size={14} />
-                                        </button>
-                                    </div>
+                                    task={task}
+                                    mode={editedList.targetTimeSettings.mode}
+                                    targetHour={editedList.targetTimeSettings.targetHour}
+                                    targetMinute={editedList.targetTimeSettings.targetMinute}
+                                    onTaskChange={handleTaskChange}
+                                    onRemoveTask={removeTask}
+                                    onTargetTimeChange={handleTargetTimeChange}
+                                />
+                            ))}
 
-                                    <div className="task-editor-info">
-                                        <input
-                                            type="text"
-                                            className="task-name-input"
-                                            value={task.name}
-                                            onChange={(e) => handleTaskChange(task.id, { name: e.target.value })}
-                                        />
-                                        <div className="task-time-input-group">
-                                            {task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time' ? (
-                                                <div className="task-target-time-inputs">
-                                                    <select
-                                                        className="time-select-small"
-                                                        value={editedList.targetTimeSettings.targetHour}
-                                                        onChange={(e) => handleTargetTimeChange({ targetHour: parseInt(e.target.value) })}
-                                                    >
-                                                        {Array.from({ length: 24 }).map((_, i) => (
-                                                            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
-                                                        ))}
-                                                    </select>
-                                                    <span className="time-separator-small">:</span>
-                                                    <select
-                                                        className="time-select-small"
-                                                        value={editedList.targetTimeSettings.targetMinute}
-                                                        onChange={(e) => handleTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
-                                                    >
-                                                        {Array.from({ length: 60 }).map((_, i) => (
-                                                            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
-                                                        ))}
-                                                    </select>
-                                                    <span className="time-label-small">におわる</span>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                        <input
-                                                            type="number"
-                                                            className="task-minutes-input"
-                                                            value={Math.floor(task.plannedSeconds / 60)}
-                                                            onChange={(e) => handleTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
-                                                            disabled={task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time'}
-                                                        />
-                                                        <span>ぷん</span>
-                                                        {task.kind === 'reward' && editedList.targetTimeSettings.mode === 'target-time' && (
-                                                            <span className="auto-calc-hint">（じどう計算）</span>
-                                                        )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
+                            <motion.button
+                                layout
+                                key="add-task-button"
+                                className="add-task-btn"
+                                onClick={addTask}
+                            >
+                                <Plus size={20} />
+                                <span>やること を ついか</span>
+                            </motion.button>
 
-                                    {task.kind === 'todo' && (
-                                        <button
-                                            className="delete-task-btn"
-                                            onClick={() => removeTask(task.id)}
-                                            title="削除"
-                                        >
-                                            <Trash2 size={20} />
-                                        </button>
-                                    )}
-                                    {task.kind === 'reward' && (
-                                        <div className="reward-badge">ごほうび</div>
-                                    )}
-                                </motion.div>
+                            {editedList.tasks.filter(t => t.kind === 'reward').map((task) => (
+                                <TaskEditorItem
+                                    key={task.id}
+                                    task={task}
+                                    mode={editedList.targetTimeSettings.mode}
+                                    targetHour={editedList.targetTimeSettings.targetHour}
+                                    targetMinute={editedList.targetTimeSettings.targetMinute}
+                                    onTaskChange={handleTaskChange}
+                                    onRemoveTask={removeTask}
+                                    onTargetTimeChange={handleTargetTimeChange}
+                                />
                             ))}
                         </AnimatePresence>
-
-                        <button className="add-task-btn" onClick={addTask}>
-                            <Plus size={20} />
-                            <span>やること を ついか</span>
-                        </button>
                     </div>
                 </section>
-
-
             </div>
         </div>
     );
 };
+
+interface TaskEditorItemProps {
+    task: Task;
+    mode: 'duration' | 'target-time';
+    targetHour: number;
+    targetMinute: number;
+    onTaskChange: (taskId: string, updates: Partial<Task>) => void;
+    onRemoveTask: (taskId: string) => void;
+    onTargetTimeChange: (updates: Partial<TargetTimeSettings>) => void;
+}
+
+const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
+    task,
+    mode,
+    targetHour,
+    targetMinute,
+    onTaskChange,
+    onRemoveTask,
+    onTargetTimeChange,
+}) => {
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className={`task-editor-item ${task.kind}`}
+        >
+            <div className="task-editor-image">
+                <img src={task.icon} alt={task.name} />
+                <button className="change-image-btn" title="画像をへんこう">
+                    <Camera size={14} />
+                </button>
+            </div>
+
+            <div className="task-editor-info">
+                <input
+                    type="text"
+                    className="task-name-input"
+                    value={task.name}
+                    onChange={(e) => onTaskChange(task.id, { name: e.target.value })}
+                />
+                <div className="task-time-input-group">
+                    {task.kind === 'reward' && mode === 'target-time' ? (
+                        <div className="task-target-time-inputs">
+                            <select
+                                className="time-select-small"
+                                value={targetHour}
+                                onChange={(e) => onTargetTimeChange({ targetHour: parseInt(e.target.value) })}
+                            >
+                                {Array.from({ length: 24 }).map((_, i) => (
+                                    <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+                                ))}
+                            </select>
+                            <span className="time-separator-small">:</span>
+                            <select
+                                className="time-select-small"
+                                value={targetMinute}
+                                onChange={(e) => onTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
+                            >
+                                {Array.from({ length: 60 }).map((_, i) => (
+                                    <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+                                ))}
+                            </select>
+                            <span className="time-label-small">におわる</span>
+                        </div>
+                    ) : (
+                        <>
+                            <input
+                                type="number"
+                                className="task-minutes-input"
+                                value={Math.floor(task.plannedSeconds / 60)}
+                                    onChange={(e) => onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
+                                    disabled={task.kind === 'reward' && mode === 'target-time'}
+                                />
+                                <span>ぷん</span>
+                            {task.kind === 'reward' && mode === 'target-time' && (
+                                <span className="auto-calc-hint">（じどう計算）</span>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {task.kind === 'todo' && (
+                <button
+                    className="delete-task-btn"
+                    onClick={() => onRemoveTask(task.id)}
+                    title="削除"
+                >
+                    <Trash2 size={20} />
+                </button>
+            )}
+            {task.kind === 'reward' && (
+                <div className="reward-badge">ごほうび</div>
+            )}
+        </motion.div>
+    );
+};
+
