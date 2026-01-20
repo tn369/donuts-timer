@@ -1,6 +1,5 @@
 import { useReducer, useCallback, useEffect } from 'react';
 import type { Task, TargetTimeSettings, TodoList } from './types';
-import { BASE_REWARD_SECONDS } from './constants';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
 
 type State = {
@@ -23,7 +22,12 @@ type Action =
   | { type: 'REFRESH_REWARD_TIME' }
   | { type: 'INIT_LIST'; list: TodoList };
 
-function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings): Task[] {
+function getBaseRewardSeconds(list: TodoList | null): number {
+  const rewardTask = list?.tasks.find(t => t.kind === 'reward');
+  return rewardTask ? rewardTask.plannedSeconds : 15 * 60; // fallback to 15 mins
+}
+
+function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings, baseRewardSeconds: number): Task[] {
   const rewardTask = tasks.find((t) => t.kind === 'reward');
   const rewardElapsed = rewardTask ? rewardTask.elapsedSeconds : 0;
 
@@ -60,7 +64,7 @@ function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings)
     ) + rewardElapsed;
   } else {
     // 所要時間モード: 従来の計算方法
-    newRewardSeconds = calculateRewardSeconds(tasks, BASE_REWARD_SECONDS);
+    newRewardSeconds = calculateRewardSeconds(tasks, baseRewardSeconds);
   }
   
   return tasks.map((t) =>
@@ -86,7 +90,7 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings),
+        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
       };
     }
 
@@ -136,7 +140,7 @@ function timerReducer(state: State, action: Action): State {
         nextTaskIdToSelect = taskId;
       }
 
-      updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings);
+      updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList));
 
       if (nextTaskIdToSelect && nextIsTimerRunning) {
         updatedTasks = updatedTasks.map((t) =>
@@ -212,7 +216,7 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings),
+        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
         selectedTaskId: newSelectedTaskId,
       };
     }
@@ -227,7 +231,7 @@ function timerReducer(state: State, action: Action): State {
       }));
       return {
         ...state,
-        tasks: updateRewardTime(resetTasks, state.targetTimeSettings),
+        tasks: updateRewardTime(resetTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
         selectedTaskId: state.activeList.tasks[0]?.id || null,
         isTimerRunning: false,
       };
@@ -243,7 +247,7 @@ function timerReducer(state: State, action: Action): State {
       }));
       return {
         activeList: list,
-        tasks: updateRewardTime(initializedTasks, list.targetTimeSettings),
+        tasks: updateRewardTime(initializedTasks, list.targetTimeSettings, getBaseRewardSeconds(list)),
         selectedTaskId: list.tasks[0]?.id || null,
         isTimerRunning: false,
         targetTimeSettings: list.targetTimeSettings,
@@ -261,14 +265,14 @@ function timerReducer(state: State, action: Action): State {
       return {
         ...state,
         targetTimeSettings: action.settings,
-        tasks: updateRewardTime(state.tasks, action.settings),
+        tasks: updateRewardTime(state.tasks, action.settings, getBaseRewardSeconds(state.activeList)),
       };
     }
 
     case 'REFRESH_REWARD_TIME': {
       return {
         ...state,
-        tasks: updateRewardTime(state.tasks, state.targetTimeSettings),
+        tasks: updateRewardTime(state.tasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
       };
     }
 
