@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, RotateCcw, ArrowLeft } from 'lucide-react';
+import styles from './Controls.module.css';
 
 interface ControlsProps {
   isRunning: boolean;
@@ -22,10 +23,10 @@ export const Controls: React.FC<ControlsProps> = ({
   canStartOrStop,
 }) => {
   return (
-    <div className="controls">
+    <div className={styles.controls}>
       <motion.button
         whileTap={{ scale: 0.95 }}
-        className="btn btn-back"
+        className={`${styles.btn} ${styles.btnBack}`}
         onClick={onBack}
         disabled={!canGoBack}
       >
@@ -43,7 +44,7 @@ export const Controls: React.FC<ControlsProps> = ({
           ],
           transition: { repeat: Infinity, duration: 2 }
         } : {}}
-        className={`btn ${isRunning ? 'btn-stop' : 'btn-start'}`}
+        className={`${styles.btn} ${isRunning ? styles.btnStop : styles.btnStart}`}
         onClick={isRunning ? onStop : onStart}
         disabled={!canStartOrStop}
       >
@@ -60,7 +61,7 @@ export const Controls: React.FC<ControlsProps> = ({
 
       <motion.button
         whileTap={{ scale: 0.95 }}
-        className="btn btn-reset"
+        className={`${styles.btn} ${styles.btnReset}`}
         onClick={onReset}
       >
         <RotateCcw size={18} />

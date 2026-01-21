@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Plus, Trash2, Camera, Save, Link } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
+import styles from './TodoListSettings.module.css';
 import { v4 as uuidv4 } from 'uuid';
 import { resizeImage } from '../utils';
 
@@ -68,17 +69,17 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
     };
 
     return (
-        <div className="settings-container">
-            <div className="settings-header">
-                <button onClick={onBack} className="back-button">
+        <div className={styles.settingsContainer}>
+            <div className={styles.settingsHeader}>
+                <button onClick={onBack} className={styles.backButton}>
                     <ArrowLeft size={24} />
                 </button>
-                <div className="settings-title">
+                <div className={styles.settingsTitle}>
                     <span>やることリスト の せってい</span>
                 </div>
                 <button
                     onClick={() => onSave(editedList)}
-                    className="confirm-button has-changes"
+                    className={`${styles.confirmButton} ${styles.hasChanges}`}
                     style={{ marginLeft: 'auto' }}
                 >
                     <Save size={20} />
@@ -86,72 +87,72 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 </button>
             </div>
 
-            <div className="settings-content">
-                <section className="settings-section">
-                    <h2 className="section-title">リストのなまえ</h2>
+            <div className={styles.settingsContent}>
+                <section className={styles.settingsSection}>
+                    <h2 className={styles.sectionTitle}>リストのなまえ</h2>
                     <input
                         type="text"
-                        className="title-input"
+                        className={styles.titleInput}
                         value={editedList.title}
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder="リストのなまえを入力..."
                     />
                 </section>
-                <section className="settings-section">
-                    <h2 className="section-title">どーなつタイマー の みため</h2>
-                    <div className="mode-selection">
+                <section className={styles.settingsSection}>
+                    <h2 className={styles.sectionTitle}>どーなつタイマー の みため</h2>
+                    <div className={styles.modeSelection}>
                         <button
-                            className={`mode-button ${(!editedList.timerSettings || editedList.timerSettings.theme === 'modern') ? 'active' : ''}`}
+                            className={`${styles.modeButton} ${(!editedList.timerSettings || editedList.timerSettings.theme === 'modern') ? styles.active : ''}`}
                             onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'modern' } })}
                         >
-                            <div className="mode-icon">
+                            <div className={styles.modeIcon}>
                                 <svg width="40" height="40" viewBox="0 0 40 40">
                                     <rect x="5" y="5" width="30" height="30" rx="4" ry="4" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" />
                                 </svg>
                             </div>
-                            <div className="mode-label">しかく</div>
-                            <div className="mode-description">あおいろ</div>
+                            <div className={styles.modeLabel}>しかく</div>
+                            <div className={styles.modeDescription}>あおいろ</div>
                         </button>
                         <button
-                            className={`mode-button ${editedList.timerSettings?.theme === 'classic' ? 'active' : ''}`}
+                            className={`${styles.modeButton} ${editedList.timerSettings?.theme === 'classic' ? styles.active : ''}`}
                             onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'classic' } })}
                         >
-                            <div className="mode-icon">
+                            <div className={styles.modeIcon}>
                                 <svg width="40" height="40" viewBox="0 0 40 40">
                                     <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" />
                                 </svg>
                             </div>
-                            <div className="mode-label">まる</div>
-                            <div className="mode-description">あかいろ</div>
+                            <div className={styles.modeLabel}>まる</div>
+                            <div className={styles.modeDescription}>あかいろ</div>
                         </button>
                     </div>
                 </section>
 
-                <section className="settings-section">
-                    <h2 className="section-title">ごほうび の じかん計算</h2>
-                    <div className="mode-selection">
+                <section className={styles.settingsSection}>
+                    <h2 className={styles.sectionTitle}>ごほうび の じかん計算</h2>
+                    <div className={styles.modeSelection}>
                         <button
-                            className={`mode-button ${editedList.targetTimeSettings.mode === 'duration' ? 'active' : ''}`}
+                            className={`${styles.modeButton} ${editedList.targetTimeSettings.mode === 'duration' ? styles.active : ''}`}
                             onClick={() => handleTargetTimeChange({ mode: 'duration' })}
                         >
-                            <div className="mode-icon">⏳</div>
-                            <div className="mode-label">きまった時間</div>
-                            <div className="mode-description">のこった時間があそび時間</div>
+                            <div className={styles.modeIcon}>⏳</div>
+                            <div className={styles.modeLabel}>きまった時間</div>
+                            <div className={styles.modeDescription}>のこった時間があそび時間</div>
                         </button>
                         <button
-                            className={`mode-button ${editedList.targetTimeSettings.mode === 'target-time' ? 'active' : ''}`}
+                            className={`${styles.modeButton} ${editedList.targetTimeSettings.mode === 'target-time' ? styles.active : ''}`}
                             onClick={() => handleTargetTimeChange({ mode: 'target-time' })}
                         >
-                            <div className="mode-icon">⏰</div>
-                            <div className="mode-label">おわる時刻</div>
-                            <div className="mode-description">出発にまにあうよう調整</div>
+                            <div className={styles.modeIcon}>⏰</div>
+                            <div className={styles.modeLabel}>おわる時刻</div>
+                            <div className={styles.modeDescription}>出発にまにあうよう調整</div>
                         </button>
                     </div>
                 </section>
 
-                <section className="settings-section">
-                    <h2 className="section-title">やること の せってい</h2>
-                    <div className="task-editor-list">
+                <section className={styles.settingsSection}>
+                    <h2 className={styles.sectionTitle}>やること の せってい</h2>
+                    <div className={styles.taskEditorList}>
                         <AnimatePresence mode="popLayout">
                             {editedList.tasks.filter(t => t.kind !== 'reward').map((task) => (
                                 <TaskEditorItem
@@ -169,7 +170,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                             <motion.button
                                 layout
                                 key="add-task-button"
-                                className="add-task-btn"
+                                className={styles.addTaskBtn}
                                 onClick={addTask}
                             >
                                 <Plus size={20} />
@@ -253,20 +254,20 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className={`task-editor-item ${task.kind}`}
+            className={`${styles.taskEditorItem} ${task.kind === 'reward' ? styles.reward : ''}`}
         >
-            <div className="task-editor-image">
+            <div className={styles.taskEditorImage}>
                 <img src={task.icon} alt={task.name} />
-                <div className="task-editor-image-buttons">
+                <div className={styles.taskEditorImageButtons}>
                     <button
-                        className="change-image-btn"
+                        className={styles.changeImageBtn}
                         title="がぞうをえらぶ"
                         onClick={handleImageClick}
                     >
                         <Camera size={14} />
                     </button>
                     <button
-                        className="change-image-btn secondary"
+                        className={`${styles.changeImageBtn} ${styles.secondary}`}
                         title="URLをいれる"
                         onClick={handleUrlClick}
                     >
@@ -282,18 +283,18 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                 />
             </div>
 
-            <div className="task-editor-info">
+            <div className={styles.taskEditorInfo}>
                 <input
                     type="text"
-                    className="task-name-input"
+                    className={styles.taskNameInput}
                     value={task.name}
                     onChange={(e) => onTaskChange(task.id, { name: e.target.value })}
                 />
-                <div className="task-time-input-group">
+                <div className={styles.taskTimeInputGroup}>
                     {task.kind === 'reward' && mode === 'target-time' ? (
-                        <div className="task-target-time-inputs">
+                        <div className={styles.taskTargetTimeInputs}>
                             <select
-                                className="time-select-small"
+                                className={styles.timeSelectSmall}
                                 value={targetHour}
                                 onChange={(e) => onTargetTimeChange({ targetHour: parseInt(e.target.value) })}
                             >
@@ -301,9 +302,9 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                                     <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
                                 ))}
                             </select>
-                            <span className="time-separator-small">:</span>
+                            <span className={styles.timeSeparatorSmall}>:</span>
                             <select
-                                className="time-select-small"
+                                className={styles.timeSelectSmall}
                                 value={targetMinute}
                                 onChange={(e) => onTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
                             >
@@ -311,20 +312,20 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                                     <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
                                 ))}
                             </select>
-                            <span className="time-label-small">におわる</span>
+                            <span className={styles.timeLabelSmall}>におわる</span>
                         </div>
                     ) : (
                         <>
                             <input
                                 type="number"
-                                className="task-minutes-input"
+                                className={styles.taskMinutesInput}
                                 value={Math.floor(task.plannedSeconds / 60)}
-                                    onChange={(e) => onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
-                                    disabled={task.kind === 'reward' && mode === 'target-time'}
-                                />
-                                <span>ぷん</span>
+                                onChange={(e) => onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
+                                disabled={task.kind === 'reward' && mode === 'target-time'}
+                            />
+                            <span>ぷん</span>
                             {task.kind === 'reward' && mode === 'target-time' && (
-                                <span className="auto-calc-hint">（じどう計算）</span>
+                                <span className={styles.autoCalcHint}>（じどう計算）</span>
                             )}
                         </>
                     )}
@@ -333,7 +334,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
 
             {task.kind === 'todo' && (
                 <button
-                    className="delete-task-btn"
+                    className={styles.deleteTaskBtn}
                     onClick={() => onRemoveTask(task.id)}
                     title="削除"
                 >
@@ -341,7 +342,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                 </button>
             )}
             {task.kind === 'reward' && (
-                <div className="reward-badge">ごほうび</div>
+                <div className={styles.rewardBadge}>ごほうび</div>
             )}
         </motion.div>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Task } from '../types';
+import styles from './DebugControls.module.css';
 
 interface DebugControlsProps {
   selectedTaskId: string | null;
@@ -18,9 +19,9 @@ export const DebugControls: React.FC<DebugControlsProps> = ({
   if (!selectedTask || selectedTask.status === 'done') return null;
 
   return (
-    <div className="debug-controls">
+    <div className={styles.debugControls}>
       <button
-        className="btn-debug"
+        className={styles.btnDebug}
         onClick={() => {
           const newTasks = tasks.map((task) =>
             task.id === selectedTaskId
@@ -33,7 +34,7 @@ export const DebugControls: React.FC<DebugControlsProps> = ({
         ⏩ のこり 1ぷん
       </button>
       <button
-        className="btn-debug"
+        className={styles.btnDebug}
         onClick={() => {
           const newTasks = tasks.map((task) =>
             task.id === selectedTaskId

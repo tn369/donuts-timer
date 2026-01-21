@@ -1,5 +1,7 @@
+import React from 'react';
 import type { Task, TimerTheme } from '../types';
 import { TaskCard } from './TaskCard';
+import styles from './TaskList.module.css';
 
 interface TaskListProps {
   tasks: Task[];
@@ -17,7 +19,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   theme,
 }) => {
   return (
-    <div className="task-list">
+    <div className={styles.taskList}>
       {tasks.map((task) => (
         <TaskCard
           key={task.id}

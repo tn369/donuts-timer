@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
+import styles from './ResetModal.module.css';
 
 interface ResetModalProps {
   onCancel: () => void;
@@ -13,29 +14,29 @@ export const ResetModal: React.FC<ResetModalProps> = ({ onCancel, onConfirm }) =
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="modal-overlay"
+      className={styles.modalOverlay}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="modal-content"
+        className={styles.modalContent}
       >
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--color-warning)' }}>
           <AlertTriangle size={48} />
         </div>
-        <div className="modal-title">さいしょから やりなおしますか？</div>
-        <div className="modal-actions">
+        <div className={styles.modalTitle}>さいしょから やりなおしますか？</div>
+        <div className={styles.modalActions}>
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="btn-modal btn-cancel"
+            className={`${styles.btnModal} ${styles.btnCancel}`}
             onClick={onCancel}
           >
             やらない
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="btn-modal btn-confirm-reset"
+            className={`${styles.btnModal} ${styles.btnConfirmReset}`}
             onClick={onConfirm}
           >
             やりなおす

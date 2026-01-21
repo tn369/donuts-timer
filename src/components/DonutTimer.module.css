@@ -1,0 +1,92 @@
+.donutTimerGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.donutTimer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donutTimerSvg {
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));
+}
+
+.donutTimerBg {
+  fill: none;
+  stroke: #f1f5f9; /* Slate 100 - base circle */
+}
+
+.donutTimerFill {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.themeModern {
+  stroke: var(--color-info); /* モダン: 青 */
+  filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.2));
+}
+
+.themeClassic {
+  stroke: var(--color-danger); /* クラシック: 赤 */
+  filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.2));
+}
+
+.overdue.themeModern {
+  stroke: var(--color-info);
+  animation: timer-pulse 2s infinite ease-in-out;
+}
+
+.overdue.themeClassic {
+  stroke: var(--color-danger);
+  animation: timer-pulse 2s infinite ease-in-out;
+}
+
+@keyframes timer-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.donutTimerTick {
+  stroke-linecap: round;
+}
+
+.donutTimerIconContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.donutTimerIcon {
+  font-size: 48px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donutTimerMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--color-text-muted);
+  min-width: 30px;
+  height: 30px;
+}

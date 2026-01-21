@@ -1,0 +1,73 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+}
+
+.settingsButtonContainer {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+.backButtonContainer {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+}
+
+.settingsButton {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  color: var(--color-text-muted);
+  box-shadow: var(--glass-shadow);
+}
+
+.settingsButton:hover {
+  background: white;
+  color: var(--color-primary);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.settingsButton.secondary:hover {
+  transform: scale(1.1);
+  color: var(--color-info);
+}
+
+@media (orientation: portrait) {
+  .app::before {
+    content: '📱 よこがめん に かいてん してね';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: var(--color-danger);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+  }
+  
+  .taskListPlaceholder,
+  .controlsPlaceholder {
+    filter: blur(4px);
+    pointer-events: none;
+  }
+}

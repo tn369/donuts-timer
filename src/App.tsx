@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Settings, ArrowLeft } from 'lucide-react';
-import './App.css';
+import styles from './App.module.css';
 
 import { TaskList } from './components/TaskList';
 import { Controls } from './components/Controls';
@@ -178,18 +178,18 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <div className="back-button-container">
+    <div className={styles.app}>
+      <div className={styles.backButtonContainer}>
         <button
           onClick={handleBackToSelection}
-          className="settings-button secondary"
+          className={`${styles.settingsButton} ${styles.secondary}`}
           title="リストをえらびなおす"
         >
           <ArrowLeft size={20} />
         </button>
       </div>
 
-      <div className="settings-button-container">
+      <div className={styles.settingsButtonContainer}>
         <button
           onClick={() => {
             if (activeList) {
@@ -198,7 +198,7 @@ function App() {
               setCurrentScreen('settings');
             }
           }}
-          className="settings-button"
+          className={styles.settingsButton}
           title="リストのせってい"
         >
           <Settings size={20} />

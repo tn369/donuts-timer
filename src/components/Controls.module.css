@@ -1,0 +1,62 @@
+.controls {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.btn {
+  flex: 1;
+  max-width: 180px;
+  height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 22px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.btnStart {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #34d399 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btnStop {
+  background: linear-gradient(135deg, var(--color-danger) 0%, #f87171 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.btnBack {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  max-width: 100px;
+}
+
+.btnReset {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  max-width: 50px;
+  color: #475569;
+}

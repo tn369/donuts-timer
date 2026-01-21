@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import styles from './DonutTimer.module.css';
 import type { TimerTheme } from '../types';
 
 interface DonutTimerProps {
@@ -50,7 +51,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
     const isClassic = theme === 'classic';
 
     return (
-        <div className="donut-timer-group">
+        <div className={styles.donutTimerGroup}>
             {displayChunks.map((capacity, i) => {
                 const currentRemaining = displayChunkRemaining[i];
                 const progress = capacity > 0 ? currentRemaining / capacity : 0;
@@ -68,9 +69,15 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                 const perimeter = isClassic ? 2 * Math.PI * radius : 4 * side;
                 const offset = perimeter * (1 - progress);
 
+                const fillClassName = `
+                    ${styles.donutTimerFill} 
+                    ${isOverdue ? styles.overdue : ''} 
+                    ${isClassic ? styles.themeClassic : styles.themeModern}
+                `.trim();
+
                 return (
-                    <div key={i} className="donut-timer" style={{ width: currentSize, height: currentSize }}>
-                        <svg width={currentSize} height={currentSize} viewBox={`0 0 ${currentSize} ${currentSize}`} className="donut-timer-svg">
+                    <div key={i} className={styles.donutTimer} style={{ width: currentSize, height: currentSize }}>
+                        <svg width={currentSize} height={currentSize} viewBox={`0 0 ${currentSize} ${currentSize}`} className={styles.donutTimerSvg}>
                             {/* 外枠 */}
                             {isClassic ? (
                                 <circle
@@ -82,17 +89,17 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     strokeWidth="1"
                                 />
                             ) : (
-                                    <rect
-                                        x={currentStrokeWidth / 2 - 1}
-                                        y={currentStrokeWidth / 2 - 1}
-                                        width={side + 2}
-                                        height={side + 2}
-                                        rx={4}
-                                        ry={4}
-                                        fill="none"
-                                        stroke="rgba(0,0,0,0.03)"
-                                        strokeWidth="1"
-                                    />
+                                <rect
+                                    x={currentStrokeWidth / 2 - 1}
+                                    y={currentStrokeWidth / 2 - 1}
+                                    width={side + 2}
+                                    height={side + 2}
+                                    rx={4}
+                                    ry={4}
+                                    fill="none"
+                                    stroke="rgba(0,0,0,0.03)"
+                                    strokeWidth="1"
+                                />
                             )}
 
                             {/* 背景 */}
@@ -101,22 +108,22 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     cx={center}
                                     cy={center}
                                     r={radius}
-                                    className="donut-timer-bg"
+                                    className={styles.donutTimerBg}
                                     strokeWidth={currentStrokeWidth}
                                     fill="none"
                                 />
                             ) : (
-                                    <rect
-                                        x={currentStrokeWidth / 2}
-                                        y={currentStrokeWidth / 2}
-                                        width={side}
-                                        height={side}
-                                        rx={2}
-                                        ry={2}
-                                        className="donut-timer-bg"
-                                        strokeWidth={currentStrokeWidth}
-                                        fill="none"
-                                    />
+                                <rect
+                                    x={currentStrokeWidth / 2}
+                                    y={currentStrokeWidth / 2}
+                                    width={side}
+                                    height={side}
+                                    rx={2}
+                                    ry={2}
+                                    className={styles.donutTimerBg}
+                                    strokeWidth={currentStrokeWidth}
+                                    fill="none"
+                                />
                             )}
 
                             {/* 残り時間 */}
@@ -125,7 +132,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     cx={center}
                                     cy={center}
                                     r={radius}
-                                    className={`donut-timer-fill ${isOverdue ? 'overdue' : ''} theme-classic`}
+                                    className={fillClassName}
                                     strokeWidth={currentStrokeWidth}
                                     strokeDasharray={perimeter}
                                     initial={{ strokeDashoffset: 0 }}
@@ -136,23 +143,23 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     transform={`rotate(-90 ${center} ${center})`}
                                 />
                             ) : (
-                                    <motion.rect
-                                        x={currentStrokeWidth / 2}
-                                        y={currentStrokeWidth / 2}
-                                        width={side}
-                                        height={side}
-                                        rx={2}
-                                        ry={2}
-                                        className={`donut-timer-fill ${isOverdue ? 'overdue' : ''} theme-modern`}
-                                        strokeWidth={currentStrokeWidth}
-                                        strokeDasharray={perimeter}
-                                        initial={{ strokeDashoffset: 0 }}
-                                        animate={{ strokeDashoffset: offset }}
-                                        transition={{ duration: 0.5, ease: "linear" }}
-                                        strokeLinecap="butt"
-                                        fill="none"
-                                        pathLength={perimeter}
-                                    />
+                                <motion.rect
+                                    x={currentStrokeWidth / 2}
+                                    y={currentStrokeWidth / 2}
+                                    width={side}
+                                    height={side}
+                                    rx={2}
+                                    ry={2}
+                                    className={fillClassName}
+                                    strokeWidth={currentStrokeWidth}
+                                    strokeDasharray={perimeter}
+                                    initial={{ strokeDashoffset: 0 }}
+                                    animate={{ strokeDashoffset: offset }}
+                                    transition={{ duration: 0.5, ease: "linear" }}
+                                    strokeLinecap="butt"
+                                    fill="none"
+                                    pathLength={perimeter}
+                                />
                             )}
 
                             {/* 目盛り */}
@@ -164,7 +171,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     x2={center}
                                     y2={currentStrokeWidth}
                                     transform={`rotate(${j * 90} ${center} ${center})`}
-                                    className="donut-timer-tick"
+                                    className={styles.donutTimerTick}
                                     style={{ stroke: 'rgba(0,0,0,0.2)' }}
                                 />
                             ))}
@@ -173,7 +180,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                 );
             })}
             {hasMore && (
-                <div className="donut-timer-more">
+                <div className={styles.donutTimerMore}>
                     ...
                 </div>
             )}
