@@ -85,7 +85,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       <div className={styles.taskName}>{task.name}</div>
       <div className={styles.taskTime}>
         {isDone ? (
-          "できた！"
+          task.kind === 'reward' ? "おわり" : "できた！"
         ) : (
           formatTime(remaining)
         )}

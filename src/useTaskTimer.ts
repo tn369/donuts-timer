@@ -85,13 +85,30 @@ function timerReducer(state: State, action: Action): State {
       if (task.status !== 'running') return state;
 
       const newElapsed = task.elapsedSeconds + 1;
-      const updatedTasks = state.tasks.map((t) =>
+      let updatedTasks = state.tasks.map((t) =>
         t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
       );
 
+      updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList));
+
+      // ごほうびタスクが時間切れになった場合の自動終了処理
+      const updatedTask = updatedTasks.find(t => t.id === state.selectedTaskId);
+      if (updatedTask && updatedTask.kind === 'reward' && updatedTask.elapsedSeconds >= updatedTask.plannedSeconds) {
+        updatedTasks = updatedTasks.map(t => 
+          t.id === state.selectedTaskId 
+            ? { ...t, status: 'done', actualSeconds: t.elapsedSeconds } 
+            : t
+        );
+        return {
+          ...state,
+          tasks: updatedTasks,
+          isTimerRunning: false,
+        };
+      }
+
       return {
         ...state,
-        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
+        tasks: updatedTasks,
       };
     }
 
