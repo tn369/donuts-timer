@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, Trash2, Camera, Save, Link } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
 import styles from './TodoListSettings.module.css';
 import { v4 as uuidv4 } from 'uuid';
@@ -65,6 +65,16 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         setEditedList({
             ...editedList,
             targetTimeSettings: { ...editedList.targetTimeSettings, ...updates }
+        });
+    };
+
+    const handleReorderTasks = (newOrder: Task[]) => {
+        // ごほうびタスクを取得
+        const rewardTasks = editedList.tasks.filter(t => t.kind === 'reward');
+        // 新しい順序にごほうびタスクを追加
+        setEditedList({
+            ...editedList,
+            tasks: [...newOrder, ...rewardTasks]
         });
     };
 
@@ -153,30 +163,37 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 <section className={styles.settingsSection}>
                     <h2 className={styles.sectionTitle}>やること の せってい</h2>
                     <div className={styles.taskEditorList}>
-                        <AnimatePresence mode="popLayout">
+                        <Reorder.Group
+                            axis="y"
+                            values={editedList.tasks.filter(t => t.kind !== 'reward')}
+                            onReorder={handleReorderTasks}
+                        >
                             {editedList.tasks.filter(t => t.kind !== 'reward').map((task) => (
-                                <TaskEditorItem
-                                    key={task.id}
-                                    task={task}
-                                    mode={editedList.targetTimeSettings.mode}
-                                    targetHour={editedList.targetTimeSettings.targetHour}
-                                    targetMinute={editedList.targetTimeSettings.targetMinute}
-                                    onTaskChange={handleTaskChange}
-                                    onRemoveTask={removeTask}
-                                    onTargetTimeChange={handleTargetTimeChange}
-                                />
+                                <Reorder.Item key={task.id} value={task}>
+                                    <TaskEditorItem
+                                        task={task}
+                                        mode={editedList.targetTimeSettings.mode}
+                                        targetHour={editedList.targetTimeSettings.targetHour}
+                                        targetMinute={editedList.targetTimeSettings.targetMinute}
+                                        onTaskChange={handleTaskChange}
+                                        onRemoveTask={removeTask}
+                                        onTargetTimeChange={handleTargetTimeChange}
+                                    />
+                                </Reorder.Item>
                             ))}
+                        </Reorder.Group>
 
-                            <motion.button
-                                layout
-                                key="add-task-button"
-                                className={styles.addTaskBtn}
-                                onClick={addTask}
-                            >
-                                <Plus size={20} />
-                                <span>やること を ついか</span>
-                            </motion.button>
+                        <motion.button
+                            layout
+                            key="add-task-button"
+                            className={styles.addTaskBtn}
+                            onClick={addTask}
+                        >
+                            <Plus size={20} />
+                            <span>やること を ついか</span>
+                        </motion.button>
 
+                        <AnimatePresence mode="popLayout">
                             {editedList.tasks.filter(t => t.kind === 'reward').map((task) => (
                                 <TaskEditorItem
                                     key={task.id}
