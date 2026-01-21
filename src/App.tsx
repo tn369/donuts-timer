@@ -1,42 +1,22 @@
-import { useState, useMemo, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { Settings, ArrowLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import styles from './App.module.css';
 
-import { TaskList } from './components/TaskList';
-import { Controls } from './components/Controls';
-import { ResetModal } from './components/ResetModal';
-import { DebugControls } from './components/DebugControls';
 import { TodoListSelection } from './components/TodoListSelection';
 import { TodoListSettings } from './components/TodoListSettings';
-import { useTaskTimer } from './useTaskTimer';
-import type { TodoList, Task } from './types';
+import { MainTimerView } from './components/MainTimerView';
+import type { TodoList } from './types';
 import { loadTodoLists, saveTodoLists, loadActiveListId, saveActiveListId } from './storage';
 import { v4 as uuid_v4 } from 'uuid';
 
 type CurrentScreen = 'selection' | 'main' | 'settings';
 
 function App() {
-  const {
-    tasks,
-    activeList,
-    selectedTaskId,
-    isTaskSelectable,
-    selectTask,
-    startTimer,
-    stopTimer,
-    goBack,
-    reset,
-    setTasks,
-    initList,
-    updateActiveList,
-  } = useTaskTimer();
-
   const [todoLists, setTodoLists] = useState<TodoList[]>([]);
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('selection');
   const [settingsSource, setSettingsSource] = useState<'selection' | 'main'>('selection');
   const [editingListId, setEditingListId] = useState<string | null>(null);
-  const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+  const [isSiblingMode, setIsSiblingMode] = useState<boolean>(false);
+  const [activeLists, setActiveLists] = useState<TodoList[]>([]);
 
   // 初回ロード
   useEffect(() => {
@@ -47,7 +27,7 @@ function App() {
     if (activeId) {
       const active = loadedLists.find(l => l.id === activeId);
       if (active) {
-        initList(active);
+        setActiveLists([active]);
         setCurrentScreen('main');
       }
     }
@@ -56,9 +36,20 @@ function App() {
   const handleSelectList = (listId: string) => {
     const list = todoLists.find(l => l.id === listId);
     if (list) {
-      initList(list);
+      setActiveLists([list]);
       saveActiveListId(listId);
       setCurrentScreen('main');
+      setIsSiblingMode(false);
+    }
+  };
+
+  const handleSelectSiblingLists = (id1: string, id2: string) => {
+    const list1 = todoLists.find(l => l.id === id1);
+    const list2 = todoLists.find(l => l.id === id2);
+    if (list1 && list2) {
+      setActiveLists([list1, list2]);
+      setCurrentScreen('main');
+      setIsSiblingMode(true);
     }
   };
 
@@ -100,8 +91,9 @@ function App() {
         targetMinute: 55,
       }
     };
-    setTodoLists([...todoLists, newList]);
-    saveTodoLists([...todoLists, newList]);
+    const updated = [...todoLists, newList];
+    setTodoLists(updated);
+    saveTodoLists(updated);
     setEditingListId(newList.id);
     setSettingsSource('selection');
     setCurrentScreen('settings');
@@ -118,10 +110,8 @@ function App() {
     setTodoLists(updatedLists);
     saveTodoLists(updatedLists);
 
-    // もし現在実行中のリストなら同期する
-    if (activeList?.id === updatedList.id) {
-      updateActiveList(updatedList);
-    }
+    // 更新されたリストを表示中なら反映
+    setActiveLists(prev => prev.map(l => l.id === updatedList.id ? updatedList : l));
 
     setCurrentScreen(settingsSource);
     setEditingListId(null);
@@ -133,42 +123,12 @@ function App() {
     saveActiveListId(null);
   };
 
-  const selectedTask = useMemo(() =>
-    tasks.find((t: Task) => t.id === selectedTaskId),
-    [tasks, selectedTaskId]
-  );
-
-  // アラーム音の再生ロジック
-  // アラーム音の再生ロジック
-  const [lastPlayedStatus, setLastPlayedStatus] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    const rewardTask = tasks.find(t => t.kind === 'reward');
-    const currentStatus = rewardTask?.status;
-
-    if (currentStatus === 'done' && lastPlayedStatus !== 'done') {
-      const audio = new Audio('https://otologic.jp/free/se/bin/alarm-clock01.mp3');
-      audio.play().catch(e => console.log('Audio play failed:', e));
-    }
-    setLastPlayedStatus(currentStatus);
-  }, [tasks]);
-
-  const isRunning = selectedTask?.status === 'running';
-
-  const canGoBack = useMemo(() => {
-    const currentIndex = tasks.findIndex((t) => t.id === selectedTaskId);
-    return currentIndex > 0 || selectedTask?.status === 'done';
-  }, [tasks, selectedTaskId, selectedTask]);
-
-  const canStartOrStop = useMemo(() => {
-    return !(!isRunning && (!selectedTaskId || selectedTask?.status === 'done'));
-  }, [isRunning, selectedTaskId, selectedTask]);
-
   if (currentScreen === 'selection') {
     return (
       <TodoListSelection
         lists={todoLists}
         onSelect={handleSelectList}
+        onSelectSibling={handleSelectSiblingLists}
         onEdit={handleEditList}
         onAdd={handleAddNewList}
         onDelete={handleDeleteList}
@@ -194,67 +154,45 @@ function App() {
 
   return (
     <div className={styles.app}>
-      <div className={styles.backButtonContainer}>
-        <button
-          onClick={handleBackToSelection}
-          className={`${styles.settingsButton} ${styles.secondary}`}
-          title="リストをえらびなおす"
-        >
-          <ArrowLeft size={20} />
-        </button>
-      </div>
-
-      <div className={styles.settingsButtonContainer}>
-        <button
-          onClick={() => {
-            if (activeList) {
-              setEditingListId(activeList.id);
-              setSettingsSource('main');
-              setCurrentScreen('settings');
-            }
+      {isSiblingMode ? (
+        <div className={styles.siblingContainer}>
+          <div className={styles.siblingItem}>
+            <MainTimerView
+              key={`sibling-0-${activeLists[0]?.id}`}
+              initialList={activeLists[0]}
+              onBackToSelection={handleBackToSelection}
+              onEditSettings={(id) => {
+                setEditingListId(id);
+                setSettingsSource('main');
+                setCurrentScreen('settings');
+              }}
+            />
+          </div>
+          <div className={styles.siblingItem}>
+            <MainTimerView
+              key={`sibling-1-${activeLists[1]?.id}`}
+              initialList={activeLists[1]}
+              onBackToSelection={handleBackToSelection}
+              onEditSettings={(id) => {
+                setEditingListId(id);
+                setSettingsSource('main');
+                setCurrentScreen('settings');
+              }}
+              showSelectionButton={false}
+            />
+          </div>
+        </div>
+      ) : (
+        <MainTimerView
+          initialList={activeLists[0]}
+          onBackToSelection={handleBackToSelection}
+          onEditSettings={(id) => {
+            setEditingListId(id);
+            setSettingsSource('main');
+            setCurrentScreen('settings');
           }}
-          className={styles.settingsButton}
-          title="リストのせってい"
-        >
-          <Settings size={20} />
-        </button>
-      </div>
-
-      <TaskList
-        tasks={tasks}
-        selectedTaskId={selectedTaskId}
-        isTaskSelectable={isTaskSelectable}
-        onSelectTask={selectTask}
-        theme={activeList?.timerSettings?.theme}
-      />
-
-      <Controls
-        isRunning={isRunning}
-        onBack={goBack}
-        onStart={startTimer}
-        onStop={stopTimer}
-        onReset={() => setShowResetConfirm(true)}
-        canGoBack={canGoBack}
-        canStartOrStop={canStartOrStop}
-      />
-
-      <AnimatePresence>
-        {showResetConfirm && (
-          <ResetModal
-            onCancel={() => setShowResetConfirm(false)}
-            onConfirm={() => {
-              reset();
-              setShowResetConfirm(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      <DebugControls
-        selectedTaskId={selectedTaskId}
-        tasks={tasks}
-        setTasks={setTasks}
-      />
+        />
+      )}
     </div>
   );
 }

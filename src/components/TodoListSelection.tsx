@@ -1,12 +1,13 @@
-import React from 'react';
-import { Plus, Edit2, Trash2, ListChecks } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { Plus, Edit2, Trash2, ListChecks, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { TodoList } from '../types';
 import styles from './TodoListSelection.module.css';
 
 interface TodoListSelectionProps {
   lists: TodoList[];
   onSelect: (listId: string) => void;
+  onSelectSibling: (id1: string, id2: string) => void;
   onEdit: (listId: string) => void;
   onAdd: () => void;
   onDelete: (listId: string) => void;
@@ -15,10 +16,28 @@ interface TodoListSelectionProps {
 export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   lists,
   onSelect,
+  onSelectSibling,
   onEdit,
   onAdd,
   onDelete,
 }) => {
+  const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const handleCardClick = (listId: string) => {
+    if (isSiblingModeSelect) {
+      if (selectedIds.length < 2) {
+        const newSelected = [...selectedIds, listId];
+        setSelectedIds(newSelected);
+        if (newSelected.length === 2) {
+          onSelectSibling(newSelected[0], newSelected[1]);
+        }
+      }
+    } else {
+      onSelect(listId);
+    }
+  };
+
   return (
     <div className={styles.selectionScreen}>
       <div className={styles.selectionHeader}>
@@ -26,63 +45,109 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           <ListChecks size={32} />
           <span>どれに する？</span>
         </h1>
+
+        <div className={styles.modeToggleContainer}>
+          <button
+            className={`${styles.modeToggleBtn} ${!isSiblingModeSelect ? styles.active : ''}`}
+            onClick={() => {
+              setIsSiblingModeSelect(false);
+              setSelectedIds([]);
+            }}
+          >
+            ひとり
+          </button>
+          <button
+            className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
+            onClick={() => setIsSiblingModeSelect(true)}
+          >
+            <Users size={18} /> きょうだい
+          </button>
+        </div>
       </div>
 
-      <div className={styles.listGrid}>
-        {lists.map((list) => (
+      <AnimatePresence>
+        {isSiblingModeSelect && (
           <motion.div
-            key={list.id}
-            className={styles.listCard}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={styles.selectionInstruction}
+          >
+            <div>{selectedIds.length === 0 ? 'あに／あね の リストを えらんでね' : 'おとうと／いもうと の リストを えらんでね'}</div>
+            <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '4px' }}>※おなじ リストを 2つ えらんでも いいよ</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={styles.listGrid}>
+        {lists.map((list) => {
+          const isSelected = selectedIds.includes(list.id);
+          const selectionIndex = selectedIds.indexOf(list.id);
+
+          return (
+            <motion.div
+              key={list.id}
+              className={`${styles.listCard} ${isSelected ? styles.selected : ''}`}
+              whileHover={{ y: -5, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleCardClick(list.id)}
+            >
+              <div className="list-card-content">
+                <div className={styles.listIconBg}>
+                  <ListChecks size={40} className={styles.listIcon} />
+                  {isSelected && (
+                    <div className={styles.selectionBadge}>
+                      {selectionIndex === 0 ? '1' : '2'}
+                    </div>
+                  )}
+                </div>
+                <h3 className={styles.listName}>{list.title}</h3>
+                <p className={styles.listTaskCount}>{list.tasks.filter(t => t.kind === 'todo').length}この やること</p>
+              </div>
+
+              {!isSiblingModeSelect && (
+                <div className={styles.listCardActions}>
+                  <button
+                    className={`${styles.actionBtn} ${styles.edit}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(list.id);
+                    }}
+                    title="編集"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    className={`${styles.actionBtn} ${styles.delete}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(list.id);
+                    }}
+                    title="削除"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
+
+        {!isSiblingModeSelect && (
+          <motion.div
+            className={`${styles.listCard} ${styles.addNew}`}
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onSelect(list.id)}
+            onClick={onAdd}
           >
             <div className="list-card-content">
-              <div className={styles.listIconBg}>
-                <ListChecks size={40} className={styles.listIcon} />
+              <div className={styles.addIconContainer}>
+                <Plus size={48} />
               </div>
-              <h3 className={styles.listName}>{list.title}</h3>
-              <p className={styles.listTaskCount}>{list.tasks.filter(t => t.kind === 'todo').length}この やること</p>
-            </div>
-            
-            <div className={styles.listCardActions}>
-              <button
-                className={`${styles.actionBtn} ${styles.edit}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(list.id);
-                }}
-                title="編集"
-              >
-                <Edit2 size={18} />
-              </button>
-              <button
-                className={`${styles.actionBtn} ${styles.delete}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(list.id);
-                }}
-                title="削除"
-              >
-                <Trash2 size={18} />
-              </button>
+              <h3 className={styles.listName}>新しくつくる</h3>
             </div>
           </motion.div>
-        ))}
-
-        <motion.div
-          className={`${styles.listCard} ${styles.addNew}`}
-          whileHover={{ y: -5, scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onAdd}
-        >
-          <div className="list-card-content">
-            <div className={styles.addIconContainer}>
-              <Plus size={48} />
-            </div>
-            <h3 className={styles.listName}>新しくつくる</h3>
-          </div>
-        </motion.div>
+        )}
       </div>
     </div>
   );
