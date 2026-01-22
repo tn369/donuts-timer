@@ -31,7 +31,7 @@ export interface Task {
 }
 
 // タイマーの見た目設定
-export type TimerTheme = 'classic' | 'modern';
+export type TimerTheme = 'classic' | 'modern' | 'triangle';
 
 export interface TimerSettings {
   theme: TimerTheme;

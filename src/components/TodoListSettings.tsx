@@ -135,6 +135,18 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                             <div className={styles.modeLabel}>まる</div>
                             <div className={styles.modeDescription}>あかいろ</div>
                         </button>
+                        <button
+                            className={`${styles.modeButton} ${editedList.timerSettings?.theme === 'triangle' ? styles.active : ''}`}
+                            onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'triangle' } })}
+                        >
+                            <div className={styles.modeIcon}>
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <path d="M 20 8 L 34 32 L 6 32 Z" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </div>
+                            <div className={styles.modeLabel}>さんかく</div>
+                            <div className={styles.modeDescription}>きいろ</div>
+                        </button>
                     </div>
                 </section>
 

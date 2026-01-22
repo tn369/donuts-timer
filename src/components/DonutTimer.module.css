@@ -40,6 +40,11 @@
   filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.2));
 }
 
+.themeTriangle {
+  stroke: var(--color-warning); /* 三角: 黄色/橙色 */
+  filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.2));
+}
+
 .overdue.themeModern {
   stroke: var(--color-info);
   animation: timer-pulse 2s infinite ease-in-out;
@@ -47,6 +52,11 @@
 
 .overdue.themeClassic {
   stroke: var(--color-danger);
+  animation: timer-pulse 2s infinite ease-in-out;
+}
+
+.overdue.themeTriangle {
+  stroke: var(--color-warning);
   animation: timer-pulse 2s infinite ease-in-out;
 }
 

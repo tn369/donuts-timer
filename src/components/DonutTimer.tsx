@@ -49,6 +49,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
     const displayChunkRemaining = hasMore ? chunkRemaining.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunkRemaining;
 
     const isClassic = theme === 'classic';
+    const isTriangle = theme === 'triangle';
 
     return (
         <div className={styles.donutTimerGroup}>
@@ -66,14 +67,42 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                 const side = currentSize - currentStrokeWidth;
 
                 // 周囲の長さ
-                const perimeter = isClassic ? 2 * Math.PI * radius : 4 * side;
+                let perimeter = 0;
+                if (isClassic) {
+                    perimeter = 2 * Math.PI * radius;
+                } else if (isTriangle) {
+                    // 正三角形の辺の長さ s = 2 * R * cos(30) = sqrt(3) * R
+                    // Perimeter = 3s = 3 * sqrt(3) * radius
+                    perimeter = 3 * Math.sqrt(3) * radius;
+                } else {
+                    perimeter = 4 * side;
+                }
                 const offset = perimeter * (1 - progress);
+
+                const getThemeClass = () => {
+                    if (isClassic) return styles.themeClassic;
+                    if (isTriangle) return styles.themeTriangle;
+                    return styles.themeModern;
+                };
 
                 const fillClassName = `
                     ${styles.donutTimerFill} 
                     ${isOverdue ? styles.overdue : ''} 
-                    ${isClassic ? styles.themeClassic : styles.themeModern}
+                    ${getThemeClass()}
                 `.trim();
+
+                const getTrianglePoints = (r: number) => {
+                    const cos30 = Math.sqrt(3) / 2;
+                    const v1 = `${center},${center - r}`;
+                    const v2 = `${center + r * cos30},${center + 0.5 * r}`;
+                    const v3 = `${center - r * cos30},${center + 0.5 * r}`;
+                    return `${v1} ${v2} ${v3}`;
+                };
+
+                const getTrianglePath = (r: number) => {
+                    const cos30 = Math.sqrt(3) / 2;
+                    return `M ${center} ${center - r} L ${center + r * cos30} ${center + 0.5 * r} L ${center - r * cos30} ${center + 0.5 * r} Z`;
+                };
 
                 return (
                     <div key={i} className={styles.donutTimer} style={{ width: currentSize, height: currentSize }}>
@@ -87,6 +116,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     fill="none"
                                     stroke="rgba(0,0,0,0.03)"
                                     strokeWidth="1"
+                                />
+                            ) : isTriangle ? (
+                                <polygon
+                                    points={getTrianglePoints(radius + 1)}
+                                    fill="none"
+                                    stroke="rgba(0,0,0,0.03)"
+                                    strokeWidth="1"
+                                    strokeLinejoin="round"
                                 />
                             ) : (
                                 <rect
@@ -111,6 +148,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     className={styles.donutTimerBg}
                                     strokeWidth={currentStrokeWidth}
                                     fill="none"
+                                />
+                            ) : isTriangle ? (
+                                <polygon
+                                    points={getTrianglePoints(radius)}
+                                    className={styles.donutTimerBg}
+                                    strokeWidth={currentStrokeWidth}
+                                    fill="none"
+                                    strokeLinejoin="round"
                                 />
                             ) : (
                                 <rect
@@ -142,6 +187,19 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     fill="none"
                                     transform={`rotate(-90 ${center} ${center})`}
                                 />
+                            ) : isTriangle ? (
+                                <motion.path
+                                    d={getTrianglePath(radius)}
+                                    className={fillClassName}
+                                    strokeWidth={currentStrokeWidth}
+                                    strokeDasharray={perimeter}
+                                    initial={{ strokeDashoffset: 0 }}
+                                    animate={{ strokeDashoffset: offset }}
+                                    transition={{ duration: 0.5, ease: "linear" }}
+                                    strokeLinecap="butt"
+                                    strokeLinejoin="round"
+                                    fill="none"
+                                />
                             ) : (
                                 <motion.rect
                                     x={currentStrokeWidth / 2}
@@ -163,14 +221,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                             )}
 
                             {/* 目盛り */}
-                            {capacity >= 60 && [...Array(4)].map((_, j) => (
+                            {capacity >= 60 && [...Array(isTriangle ? 3 : 4)].map((_, j) => (
                                 <line
                                     key={j}
                                     x1={center}
                                     y1={isClassic ? 0 : currentStrokeWidth / 2}
                                     x2={center}
                                     y2={currentStrokeWidth}
-                                    transform={`rotate(${j * 90} ${center} ${center})`}
+                                    transform={`rotate(${j * (isTriangle ? 120 : 90)} ${center} ${center})`}
                                     className={styles.donutTimerTick}
                                     style={{ stroke: 'rgba(0,0,0,0.2)' }}
                                 />
