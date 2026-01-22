@@ -104,7 +104,8 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
                 selectedTaskId={selectedTaskId}
                 isTaskSelectable={isTaskSelectable}
                 onSelectTask={selectTask}
-                theme={activeList?.timerSettings?.theme}
+                shape={activeList?.timerSettings?.shape}
+                color={activeList?.timerSettings?.color}
             />
 
             <Controls

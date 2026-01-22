@@ -30,33 +30,42 @@
   transition: stroke-dashoffset 0.5s ease;
 }
 
-.themeModern {
-  stroke: var(--color-info); /* モダン: 青 */
-  filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.2));
-}
-
-.themeClassic {
-  stroke: var(--color-danger); /* クラシック: 赤 */
+.colorRed {
+  stroke: var(--color-danger); /* 赤 */
   filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.2));
 }
 
-.themeTriangle {
-  stroke: var(--color-warning); /* 三角: 黄色/橙色 */
+.colorBlue {
+  stroke: var(--color-info); /* 青 */
+  filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.2));
+}
+
+.colorYellow {
+  stroke: var(--color-warning); /* 黄色/橙色 */
   filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.2));
 }
 
-.overdue.themeModern {
-  stroke: var(--color-info);
-  animation: timer-pulse 2s infinite ease-in-out;
+.colorGreen {
+  stroke: #10b981; /* 緑 */
+  filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2));
 }
 
-.overdue.themeClassic {
-  stroke: var(--color-danger);
-  animation: timer-pulse 2s infinite ease-in-out;
+.colorPink {
+  stroke: #ec4899; /* 桃色 */
+  filter: drop-shadow(0 0 2px rgba(236, 72, 153, 0.2));
 }
 
-.overdue.themeTriangle {
-  stroke: var(--color-warning);
+.colorPurple {
+  stroke: #8b5cf6; /* 紫 */
+  filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.2));
+}
+
+.overdue.colorRed,
+.overdue.colorBlue,
+.overdue.colorYellow,
+.overdue.colorGreen,
+.overdue.colorPink,
+.overdue.colorPurple {
   animation: timer-pulse 2s infinite ease-in-out;
 }
 

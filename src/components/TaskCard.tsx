@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { DonutTimer } from './DonutTimer';
-import type { Task, TimerTheme } from '../types';
+import type { Task, TimerShape, TimerColor } from '../types';
 import { formatTime } from '../utils';
 import styles from './TaskCard.module.css';
 
@@ -11,7 +11,8 @@ interface TaskCardProps {
   isSelected: boolean;
   isSelectable: boolean;
   onSelect: (taskId: string) => void;
-  theme?: TimerTheme;
+  shape?: TimerShape;
+  color?: TimerColor;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -19,7 +20,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   isSelected,
   isSelectable,
   onSelect,
-  theme,
+  shape,
+  color,
 }) => {
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
@@ -78,7 +80,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             isOverdue={isOverdue}
             size={100}
             strokeWidth={20}
-            theme={theme}
+            shape={shape}
+            color={color}
           />
       )}
 

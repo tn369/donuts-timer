@@ -31,10 +31,12 @@ export interface Task {
 }
 
 // タイマーの見た目設定
-export type TimerTheme = 'classic' | 'modern' | 'triangle';
+export type TimerShape = 'circle' | 'square' | 'triangle';
+export type TimerColor = 'red' | 'blue' | 'yellow' | 'green' | 'pink' | 'purple';
 
 export interface TimerSettings {
-  theme: TimerTheme;
+  shape: TimerShape;
+  color: TimerColor;
 }
 
 // やることリスト型定義

@@ -78,6 +78,30 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         });
     };
 
+    const getColorValue = (color: string) => {
+        switch (color) {
+            case 'red': return '#ef4444';
+            case 'blue': return '#3b82f6';
+            case 'yellow': return '#f59e0b';
+            case 'green': return '#10b981';
+            case 'pink': return '#ec4899';
+            case 'purple': return '#8b5cf6';
+            default: return '#3b82f6';
+        }
+    };
+
+    const getColorName = (color: string) => {
+        switch (color) {
+            case 'red': return 'あか';
+            case 'blue': return 'あお';
+            case 'yellow': return 'きいろ';
+            case 'green': return 'みどり';
+            case 'pink': return 'ももいろ';
+            case 'purple': return 'むらさき';
+            default: return 'あお';
+        }
+    };
+
     return (
         <div className={styles.settingsContainer}>
             <div className={styles.settingsHeader}>
@@ -109,23 +133,17 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                     />
                 </section>
                 <section className={styles.settingsSection}>
-                    <h2 className={styles.sectionTitle}>どーなつタイマー の みため</h2>
-                    <div className={styles.modeSelection}>
+                    <h2 className={styles.sectionTitle}>どーなつタイマー の かたち</h2>
+                    <div className={styles.shapeSelection}>
                         <button
-                            className={`${styles.modeButton} ${(!editedList.timerSettings || editedList.timerSettings.theme === 'modern') ? styles.active : ''}`}
-                            onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'modern' } })}
-                        >
-                            <div className={styles.modeIcon}>
-                                <svg width="40" height="40" viewBox="0 0 40 40">
-                                    <rect x="5" y="5" width="30" height="30" rx="4" ry="4" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" />
-                                </svg>
-                            </div>
-                            <div className={styles.modeLabel}>しかく</div>
-                            <div className={styles.modeDescription}>あおいろ</div>
-                        </button>
-                        <button
-                            className={`${styles.modeButton} ${editedList.timerSettings?.theme === 'classic' ? styles.active : ''}`}
-                            onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'classic' } })}
+                            className={`${styles.modeButton} ${(editedList.timerSettings?.shape === 'circle' || !editedList.timerSettings?.shape) ? styles.active : ''}`}
+                            onClick={() => setEditedList({
+                                ...editedList,
+                                timerSettings: {
+                                    shape: 'circle',
+                                    color: editedList.timerSettings?.color || 'blue'
+                                }
+                            })}
                         >
                             <div className={styles.modeIcon}>
                                 <svg width="40" height="40" viewBox="0 0 40 40">
@@ -133,11 +151,33 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                                 </svg>
                             </div>
                             <div className={styles.modeLabel}>まる</div>
-                            <div className={styles.modeDescription}>あかいろ</div>
                         </button>
                         <button
-                            className={`${styles.modeButton} ${editedList.timerSettings?.theme === 'triangle' ? styles.active : ''}`}
-                            onClick={() => setEditedList({ ...editedList, timerSettings: { theme: 'triangle' } })}
+                            className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'square' ? styles.active : ''}`}
+                            onClick={() => setEditedList({
+                                ...editedList,
+                                timerSettings: {
+                                    shape: 'square',
+                                    color: editedList.timerSettings?.color || 'blue'
+                                }
+                            })}
+                        >
+                            <div className={styles.modeIcon}>
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <rect x="5" y="5" width="30" height="30" rx="4" ry="4" fill="none" stroke="currentColor" strokeWidth="6" opacity="0.8" />
+                                </svg>
+                            </div>
+                            <div className={styles.modeLabel}>しかく</div>
+                        </button>
+                        <button
+                            className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'triangle' ? styles.active : ''}`}
+                            onClick={() => setEditedList({
+                                ...editedList,
+                                timerSettings: {
+                                    shape: 'triangle',
+                                    color: editedList.timerSettings?.color || 'blue'
+                                }
+                            })}
                         >
                             <div className={styles.modeIcon}>
                                 <svg width="40" height="40" viewBox="0 0 40 40">
@@ -145,8 +185,28 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                                 </svg>
                             </div>
                             <div className={styles.modeLabel}>さんかく</div>
-                            <div className={styles.modeDescription}>きいろ</div>
                         </button>
+                    </div>
+
+                    <h2 className={styles.sectionTitle}>どーなつタイマー の いろ</h2>
+                    <div className={styles.colorSelection}>
+                        {(['red', 'blue', 'yellow', 'green', 'pink', 'purple'] as const).map((c) => (
+                            <button
+                                key={c}
+                                className={`${styles.colorButton} ${(editedList.timerSettings?.color === c || (!editedList.timerSettings?.color && c === 'blue')) ? styles.active : ''}`}
+                                onClick={() => setEditedList({
+                                    ...editedList,
+                                    timerSettings: {
+                                        shape: editedList.timerSettings?.shape || 'circle',
+                                        color: c
+                                    }
+                                })}
+                                style={{ color: getColorValue(c) }}
+                            >
+                                <div className={styles.colorCircle} style={{ background: getColorValue(c) }} />
+                                <div className={styles.colorLabel}>{getColorName(c)}</div>
+                            </button>
+                        ))}
                     </div>
                 </section>
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import type { Task, TimerTheme } from '../types';
+import type { Task, TimerShape, TimerColor } from '../types';
 import { TaskCard } from './TaskCard';
 import styles from './TaskList.module.css';
 
@@ -8,7 +7,8 @@ interface TaskListProps {
   selectedTaskId: string | null;
   isTaskSelectable: (taskId: string) => boolean;
   onSelectTask: (taskId: string) => void;
-  theme?: TimerTheme;
+  shape?: TimerShape;
+  color?: TimerColor;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -16,7 +16,8 @@ export const TaskList: React.FC<TaskListProps> = ({
   selectedTaskId,
   isTaskSelectable,
   onSelectTask,
-  theme,
+  shape,
+  color,
 }) => {
   return (
     <div className={styles.taskList}>
@@ -27,7 +28,8 @@ export const TaskList: React.FC<TaskListProps> = ({
           isSelected={task.id === selectedTaskId}
           isSelectable={isTaskSelectable(task.id)}
           onSelect={onSelectTask}
-          theme={theme}
+          shape={shape}
+          color={color}
         />
       ))}
     </div>

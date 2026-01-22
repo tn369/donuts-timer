@@ -117,6 +117,59 @@
   opacity: 0.8;
 }
 
+.shapeSelection {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.colorSelection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px;
+}
+
+.colorButton {
+  flex: 1;
+  min-width: 80px;
+  height: 80px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.colorButton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.colorButton.active {
+  border-color: currentColor;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+}
+
+.colorCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.colorLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
 .targetTimeSection {
   animation: fadeIn 0.3s ease-out;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import styles from './DonutTimer.module.css';
-import type { TimerTheme } from '../types';
+import type { TimerShape, TimerColor } from '../types';
 
 interface DonutTimerProps {
     totalSeconds: number;
@@ -9,7 +9,8 @@ interface DonutTimerProps {
     size?: number;
     strokeWidth?: number;
     isOverdue?: boolean;
-    theme?: TimerTheme;
+    shape?: TimerShape;
+    color?: TimerColor;
 }
 
 export const DonutTimer: React.FC<DonutTimerProps> = ({
@@ -18,7 +19,8 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
     size = 100,
     strokeWidth = 10,
     isOverdue = false,
-    theme = 'modern',
+    shape = 'circle',
+    color = 'blue',
 }) => {
     const CHUNK_MAX = 300; // 5分 = 300秒
     const MAX_DISPLAY_CHUNKS = 10; // 最大表示チャンク数
@@ -48,8 +50,8 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
     const displayChunks = hasMore ? chunks.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunks;
     const displayChunkRemaining = hasMore ? chunkRemaining.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunkRemaining;
 
-    const isClassic = theme === 'classic';
-    const isTriangle = theme === 'triangle';
+    const isCircle = shape === 'circle';
+    const isTriangle = shape === 'triangle';
 
     return (
         <div className={styles.donutTimerGroup}>
@@ -68,7 +70,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
 
                 // 周囲の長さ
                 let perimeter = 0;
-                if (isClassic) {
+                if (isCircle) {
                     perimeter = 2 * Math.PI * radius;
                 } else if (isTriangle) {
                     // 正三角形の辺の長さ s = 2 * R * cos(30) = sqrt(3) * R
@@ -79,16 +81,22 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                 }
                 const offset = perimeter * (1 - progress);
 
-                const getThemeClass = () => {
-                    if (isClassic) return styles.themeClassic;
-                    if (isTriangle) return styles.themeTriangle;
-                    return styles.themeModern;
+                const getColorClass = () => {
+                    switch (color) {
+                        case 'red': return styles.colorRed;
+                        case 'blue': return styles.colorBlue;
+                        case 'yellow': return styles.colorYellow;
+                        case 'green': return styles.colorGreen;
+                        case 'pink': return styles.colorPink;
+                        case 'purple': return styles.colorPurple;
+                        default: return styles.colorBlue;
+                    }
                 };
 
                 const fillClassName = `
                     ${styles.donutTimerFill} 
                     ${isOverdue ? styles.overdue : ''} 
-                    ${getThemeClass()}
+                    ${getColorClass()}
                 `.trim();
 
                 const getTrianglePoints = (r: number) => {
@@ -108,7 +116,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                     <div key={i} className={styles.donutTimer} style={{ width: currentSize, height: currentSize }}>
                         <svg width={currentSize} height={currentSize} viewBox={`0 0 ${currentSize} ${currentSize}`} className={styles.donutTimerSvg}>
                             {/* 外枠 */}
-                            {isClassic ? (
+                            {isCircle ? (
                                 <circle
                                     cx={center}
                                     cy={center}
@@ -140,7 +148,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                             )}
 
                             {/* 背景 */}
-                            {isClassic ? (
+                            {isCircle ? (
                                 <circle
                                     cx={center}
                                     cy={center}
@@ -172,7 +180,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                             )}
 
                             {/* 残り時間 */}
-                            {isClassic ? (
+                            {isCircle ? (
                                 <motion.circle
                                     cx={center}
                                     cy={center}
@@ -225,7 +233,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                 <line
                                     key={j}
                                     x1={center}
-                                    y1={isClassic ? 0 : currentStrokeWidth / 2}
+                                    y1={isCircle ? 0 : currentStrokeWidth / 2}
                                     x2={center}
                                     y2={currentStrokeWidth}
                                     transform={`rotate(${j * (isTriangle ? 120 : 90)} ${center} ${center})`}

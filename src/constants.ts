@@ -60,6 +60,6 @@ export const DEFAULT_TODO_LISTS: TodoList[] = [
     title: 'あさのやることリスト',
     tasks: INITIAL_TASKS,
     targetTimeSettings: DEFAULT_TARGET_TIME,
-    timerSettings: { theme: 'modern' },
+    timerSettings: { shape: 'square', color: 'blue' },
   }
 ];
