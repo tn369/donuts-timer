@@ -31,7 +31,7 @@ export interface Task {
 }
 
 // タイマーの見た目設定
-export type TimerShape = 'circle' | 'square' | 'triangle';
+export type TimerShape = 'circle' | 'square' | 'triangle' | 'diamond' | 'pentagon' | 'hexagon' | 'star';
 export type TimerColor = 'red' | 'blue' | 'yellow' | 'green' | 'pink' | 'purple';
 
 export interface TimerSettings {

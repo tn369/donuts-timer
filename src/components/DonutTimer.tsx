@@ -51,7 +51,12 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
     const displayChunkRemaining = hasMore ? chunkRemaining.slice(0, MAX_DISPLAY_CHUNKS - 1) : chunkRemaining;
 
     const isCircle = shape === 'circle';
+    const isSquare = shape === 'square';
     const isTriangle = shape === 'triangle';
+    const isDiamond = shape === 'diamond';
+    const isPentagon = shape === 'pentagon';
+    const isHexagon = shape === 'hexagon';
+    const isStar = shape === 'star';
 
     return (
         <div className={styles.donutTimerGroup}>
@@ -68,17 +73,69 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                 const radius = (currentSize - currentStrokeWidth) / 2;
                 const side = currentSize - currentStrokeWidth;
 
-                // 周囲の長さ
+                // 汎用ポリゴン・スター生成
+                const getShapePoints = (r: number, sides: number, rotation: number = -Math.PI / 2, isStarShape: boolean = false) => {
+                    const pts: { x: number, y: number }[] = [];
+                    const totalPoints = isStarShape ? sides * 2 : sides;
+                    const innerR = r * 0.45;
+
+                    for (let j = 0; j < totalPoints; j++) {
+                        const currentR = isStarShape ? (j % 2 === 0 ? r : innerR) : r;
+                        const angle = rotation + (j * 2 * Math.PI) / totalPoints;
+                        pts.push({
+                            x: center + currentR * Math.cos(angle),
+                            y: center + currentR * Math.sin(angle)
+                        });
+                    }
+                    return pts;
+                };
+
+                const pointsToPath = (pts: { x: number, y: number }[]) => {
+                    return pts.map((p, j) => `${j === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+                };
+
+                const calculatePerimeter = (pts: { x: number, y: number }[]) => {
+                    let p = 0;
+                    for (let j = 0; j < pts.length; j++) {
+                        const next = pts[(j + 1) % pts.length];
+                        p += Math.sqrt(Math.pow(next.x - pts[j].x, 2) + Math.pow(next.y - pts[j].y, 2));
+                    }
+                    return p;
+                };
+
+                // 形状ごとの設定
+                let points: { x: number, y: number }[] = [];
                 let perimeter = 0;
+                let path = '';
+
                 if (isCircle) {
                     perimeter = 2 * Math.PI * radius;
-                } else if (isTriangle) {
-                    // 正三角形の辺の長さ s = 2 * R * cos(30) = sqrt(3) * R
-                    // Perimeter = 3s = 3 * sqrt(3) * radius
-                    perimeter = 3 * Math.sqrt(3) * radius;
-                } else {
+                } else if (isSquare) {
                     perimeter = 4 * side;
+                } else if (isTriangle) {
+                    points = getShapePoints(radius, 3);
+                    perimeter = calculatePerimeter(points);
+                    path = pointsToPath(points);
+                } else if (isDiamond) {
+                    points = getShapePoints(radius, 4, -Math.PI / 2); // 45度回転させなくても-90度から始めれば頂点の一つが上に来る
+                    perimeter = calculatePerimeter(points);
+                    path = pointsToPath(points);
+                } else if (isPentagon) {
+                    points = getShapePoints(radius, 5);
+                    perimeter = calculatePerimeter(points);
+                    path = pointsToPath(points);
+                } else if (isHexagon) {
+                    points = getShapePoints(radius, 6, 0); // 0度から始めると平らな面が上に来るが、-PI/2で頂点が上に。でも六角形は通常フラット上がいいかも？
+                    // -PI/2 で頂点が上にくるようにする
+                    points = getShapePoints(radius, 6, -Math.PI / 2);
+                    perimeter = calculatePerimeter(points);
+                    path = pointsToPath(points);
+                } else if (isStar) {
+                    points = getShapePoints(radius, 5, -Math.PI / 2, true);
+                    perimeter = calculatePerimeter(points);
+                    path = pointsToPath(points);
                 }
+
                 const offset = perimeter * (1 - progress);
 
                 const getColorClass = () => {
@@ -99,19 +156,6 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                     ${getColorClass()}
                 `.trim();
 
-                const getTrianglePoints = (r: number) => {
-                    const cos30 = Math.sqrt(3) / 2;
-                    const v1 = `${center},${center - r}`;
-                    const v2 = `${center + r * cos30},${center + 0.5 * r}`;
-                    const v3 = `${center - r * cos30},${center + 0.5 * r}`;
-                    return `${v1} ${v2} ${v3}`;
-                };
-
-                const getTrianglePath = (r: number) => {
-                    const cos30 = Math.sqrt(3) / 2;
-                    return `M ${center} ${center - r} L ${center + r * cos30} ${center + 0.5 * r} L ${center - r * cos30} ${center + 0.5 * r} Z`;
-                };
-
                 return (
                     <div key={i} className={styles.donutTimer} style={{ width: currentSize, height: currentSize }}>
                         <svg width={currentSize} height={currentSize} viewBox={`0 0 ${currentSize} ${currentSize}`} className={styles.donutTimerSvg}>
@@ -125,15 +169,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     stroke="rgba(0,0,0,0.03)"
                                     strokeWidth="1"
                                 />
-                            ) : isTriangle ? (
-                                <polygon
-                                    points={getTrianglePoints(radius + 1)}
-                                    fill="none"
-                                    stroke="rgba(0,0,0,0.03)"
-                                    strokeWidth="1"
-                                    strokeLinejoin="round"
-                                />
-                            ) : (
+                            ) : isSquare ? (
                                 <rect
                                     x={currentStrokeWidth / 2 - 1}
                                     y={currentStrokeWidth / 2 - 1}
@@ -145,6 +181,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     stroke="rgba(0,0,0,0.03)"
                                     strokeWidth="1"
                                 />
+                                ) : (
+                                    <path
+                                        d={pointsToPath(getShapePoints(radius + 1, isStar ? 5 : (isTriangle ? 3 : (isDiamond ? 4 : (isPentagon ? 5 : 6))), isHexagon ? -Math.PI / 2 : (isDiamond ? -Math.PI / 2 : -Math.PI / 2), isStar))}
+                                        fill="none"
+                                        stroke="rgba(0,0,0,0.03)"
+                                        strokeWidth="1"
+                                        strokeLinejoin="round"
+                                    />
                             )}
 
                             {/* 背景 */}
@@ -157,15 +201,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     strokeWidth={currentStrokeWidth}
                                     fill="none"
                                 />
-                            ) : isTriangle ? (
-                                <polygon
-                                    points={getTrianglePoints(radius)}
-                                    className={styles.donutTimerBg}
-                                    strokeWidth={currentStrokeWidth}
-                                    fill="none"
-                                    strokeLinejoin="round"
-                                />
-                            ) : (
+                            ) : isSquare ? (
                                 <rect
                                     x={currentStrokeWidth / 2}
                                     y={currentStrokeWidth / 2}
@@ -177,6 +213,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     strokeWidth={currentStrokeWidth}
                                     fill="none"
                                 />
+                                ) : (
+                                    <path
+                                        d={path}
+                                        className={styles.donutTimerBg}
+                                        strokeWidth={currentStrokeWidth}
+                                        fill="none"
+                                        strokeLinejoin="round"
+                                    />
                             )}
 
                             {/* 残り時間 */}
@@ -195,20 +239,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     fill="none"
                                     transform={`rotate(-90 ${center} ${center})`}
                                 />
-                            ) : isTriangle ? (
-                                <motion.path
-                                    d={getTrianglePath(radius)}
-                                    className={fillClassName}
-                                    strokeWidth={currentStrokeWidth}
-                                    strokeDasharray={perimeter}
-                                    initial={{ strokeDashoffset: 0 }}
-                                    animate={{ strokeDashoffset: offset }}
-                                    transition={{ duration: 0.5, ease: "linear" }}
-                                    strokeLinecap="butt"
-                                    strokeLinejoin="round"
-                                    fill="none"
-                                />
-                            ) : (
+                            ) : isSquare ? (
                                 <motion.rect
                                     x={currentStrokeWidth / 2}
                                     y={currentStrokeWidth / 2}
@@ -222,21 +253,34 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                                     initial={{ strokeDashoffset: 0 }}
                                     animate={{ strokeDashoffset: offset }}
                                     transition={{ duration: 0.5, ease: "linear" }}
-                                    strokeLinecap="butt"
+                                        strokeLinecap="butt"
                                     fill="none"
-                                    pathLength={perimeter}
+                                        pathLength={perimeter}
+                                />
+                            ) : (
+                                        <motion.path
+                                            d={path}
+                                    className={fillClassName}
+                                    strokeWidth={currentStrokeWidth}
+                                    strokeDasharray={perimeter}
+                                    initial={{ strokeDashoffset: 0 }}
+                                    animate={{ strokeDashoffset: offset }}
+                                    transition={{ duration: 0.5, ease: "linear" }}
+                                    strokeLinecap="butt"
+                                            strokeLinejoin="round"
+                                            fill="none"
                                 />
                             )}
 
                             {/* 目盛り */}
-                            {capacity >= 60 && [...Array(isTriangle ? 3 : 4)].map((_, j) => (
+                            {capacity >= 60 && [...Array(isCircle ? 4 : (isSquare ? 4 : (isTriangle ? 3 : (isDiamond ? 4 : (isPentagon ? 5 : (isHexagon ? 6 : 5))))))].map((_, j) => (
                                 <line
                                     key={j}
                                     x1={center}
                                     y1={isCircle ? 0 : currentStrokeWidth / 2}
                                     x2={center}
                                     y2={currentStrokeWidth}
-                                    transform={`rotate(${j * (isTriangle ? 120 : 90)} ${center} ${center})`}
+                                    transform={`rotate(${j * (isCircle ? 90 : (isSquare ? 90 : (isTriangle ? 120 : (isDiamond ? 90 : (isPentagon ? 72 : (isHexagon ? 60 : 72))))))} ${center} ${center})`}
                                     className={styles.donutTimerTick}
                                     style={{ stroke: 'rgba(0,0,0,0.2)' }}
                                 />
