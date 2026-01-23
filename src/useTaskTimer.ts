@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useEffect } from 'react';
-import type { Task, TargetTimeSettings, TodoList } from './types';
+import type { Task, TargetTimeSettings, TodoList, TimerSettings } from './types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
 
 interface State {
@@ -8,6 +8,7 @@ interface State {
   isTimerRunning: boolean;
   targetTimeSettings: TargetTimeSettings;
   activeList: TodoList | null;
+  timerSettings: TimerSettings;
 }
 
 type Action =
@@ -21,7 +22,8 @@ type Action =
   | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
   | { type: 'REFRESH_REWARD_TIME' }
   | { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
-  | { type: 'INIT_LIST'; list: TodoList };
+  | { type: 'INIT_LIST'; list: TodoList }
+  | { type: 'SET_TIMER_SETTINGS'; settings: TimerSettings };
 
 function getBaseRewardSeconds(list: TodoList | null): number {
   const rewardTask = list?.tasks.find((t) => t.kind === 'reward');
@@ -323,6 +325,14 @@ function timerReducer(state: State, action: Action): State {
         selectedTaskId: list.tasks[0]?.id || null,
         isTimerRunning: false,
         targetTimeSettings: list.targetTimeSettings,
+        timerSettings: list.timerSettings || { shape: 'circle', color: 'blue' },
+      };
+    }
+
+    case 'SET_TIMER_SETTINGS': {
+      return {
+        ...state,
+        timerSettings: action.settings,
       };
     }
 
@@ -368,6 +378,7 @@ export function useTaskTimer() {
     isTimerRunning: false,
     targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
     activeList: null,
+    timerSettings: { shape: 'circle', color: 'blue' },
   });
 
   useEffect(() => {
@@ -431,6 +442,10 @@ export function useTaskTimer() {
     dispatch({ type: 'UPDATE_ACTIVE_LIST', list });
   }, []);
 
+  const setTimerSettings = useCallback((settings: TimerSettings) => {
+    dispatch({ type: 'SET_TIMER_SETTINGS', settings });
+  }, []);
+
   return {
     ...state,
     isTaskSelectable,
@@ -443,5 +458,6 @@ export function useTaskTimer() {
     setTargetTimeSettings,
     initList,
     updateActiveList,
+    setTimerSettings,
   };
 }

@@ -77,13 +77,23 @@
 .settingsButton:hover {
   background: white;
   color: var(--color-primary);
-  transform: rotate(90deg) scale(1.1);
+  transform: scale(1.1);
   box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.settingsButton.rotate:hover {
+  transform: rotate(90deg) scale(1.1);
 }
 
 .settingsButton.secondary:hover {
   transform: scale(1.1);
   color: var(--color-info);
+}
+
+.topControlsGroup {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
 @media (orientation: portrait) {

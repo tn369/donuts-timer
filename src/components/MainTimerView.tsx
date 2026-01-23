@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Settings } from 'lucide-react';
+import { Settings, Palette } from 'lucide-react';
 import styles from '../App.module.css';
 
 import { TaskList } from './TaskList';
@@ -35,6 +35,8 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     reset,
     setTasks,
     initList,
+    timerSettings,
+    setTimerSettings,
   } = useTaskTimer();
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
@@ -86,17 +88,66 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             もどる
           </button>
         )}
-        <button
-          onClick={() => {
-            if (activeList) {
-              onEditSettings(activeList.id);
-            }
-          }}
-          className={styles.settingsButton}
-          title="リストのせってい"
-        >
-          <Settings size={20} />
-        </button>
+        <div className={styles.topControlsGroup}>
+          <button
+            onClick={() => {
+              const shapes: Array<typeof timerSettings.shape> = [
+                'circle',
+                'square',
+                'triangle',
+                'diamond',
+                'pentagon',
+                'hexagon',
+                'star',
+              ];
+              const currentShapeIndex = shapes.indexOf(timerSettings.shape);
+              const nextShape = shapes[(currentShapeIndex + 1) % shapes.length];
+              setTimerSettings({ ...timerSettings, shape: nextShape });
+            }}
+            className={styles.settingsButton}
+            title="タイマーのかたちをかえる"
+          >
+            <div style={{ fontWeight: 'bold', fontSize: '18px' }}>
+              {timerSettings.shape === 'circle' && '●'}
+              {timerSettings.shape === 'square' && '■'}
+              {timerSettings.shape === 'triangle' && '▲'}
+              {timerSettings.shape === 'diamond' && '◆'}
+              {timerSettings.shape === 'pentagon' && '⬠'}
+              {timerSettings.shape === 'hexagon' && '⬢'}
+              {timerSettings.shape === 'star' && '★'}
+            </div>
+          </button>
+          <button
+            onClick={() => {
+              const colors: Array<typeof timerSettings.color> = [
+                'red',
+                'blue',
+                'yellow',
+                'green',
+                'pink',
+                'purple',
+              ];
+              const currentColorIndex = colors.indexOf(timerSettings.color);
+              const nextColor = colors[(currentColorIndex + 1) % colors.length];
+              setTimerSettings({ ...timerSettings, color: nextColor });
+            }}
+            className={styles.settingsButton}
+            title="タイマーのいろをかえる"
+          >
+            <Palette size={20} />
+          </button>
+          <button
+            onClick={() => {
+              if (activeList) {
+                onEditSettings(activeList.id);
+              }
+            }}
+            className={`${styles.settingsButton} ${styles.rotate}`}
+            title="リストのせってい"
+          >
+            <Settings size={20} />
+          </button>
+        </div>
       </div>
 
       <TaskList
@@ -104,8 +155,8 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         selectedTaskId={selectedTaskId}
         isTaskSelectable={isTaskSelectable}
         onSelectTask={selectTask}
-        shape={activeList?.timerSettings?.shape}
-        color={activeList?.timerSettings?.color}
+        shape={timerSettings.shape}
+        color={timerSettings.color}
       />
 
       <Controls
