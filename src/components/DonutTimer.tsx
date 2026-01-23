@@ -80,7 +80,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
           r: number,
           sides: number,
           rotation: number = -Math.PI / 2,
-          isStarShape: boolean = false
+          isStarShape = false
         ) => {
           const pts: { x: number; y: number }[] = [];
           const totalPoints = isStarShape ? sides * 2 : sides;

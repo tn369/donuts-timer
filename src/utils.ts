@@ -94,8 +94,8 @@ export const calculateRewardSecondsFromTargetTime = (
  */
 export const resizeImage = (
   dataUrl: string,
-  maxWidth: number = 200,
-  maxHeight: number = 200
+  maxWidth = 200,
+  maxHeight = 200
 ): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();

@@ -2,13 +2,13 @@ import { useReducer, useCallback, useEffect } from 'react';
 import type { Task, TargetTimeSettings, TodoList } from './types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
 
-type State = {
+interface State {
   tasks: Task[];
   selectedTaskId: string | null;
   isTimerRunning: boolean;
   targetTimeSettings: TargetTimeSettings;
   activeList: TodoList | null;
-};
+}
 
 type Action =
   | { type: 'TICK' }
