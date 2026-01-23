@@ -13,7 +13,7 @@ export const loadTodoLists = (): TodoList[] => {
     if (!stored) {
       return DEFAULT_TODO_LISTS;
     }
-    
+
     return JSON.parse(stored) as TodoList[];
   } catch (error) {
     console.error('Failed to load todo lists:', error);

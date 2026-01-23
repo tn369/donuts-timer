@@ -24,23 +24,27 @@ type Action =
   | { type: 'INIT_LIST'; list: TodoList };
 
 function getBaseRewardSeconds(list: TodoList | null): number {
-  const rewardTask = list?.tasks.find(t => t.kind === 'reward');
+  const rewardTask = list?.tasks.find((t) => t.kind === 'reward');
   return rewardTask ? rewardTask.plannedSeconds : 15 * 60; // fallback to 15 mins
 }
 
-function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings, baseRewardSeconds: number): Task[] {
+function updateRewardTime(
+  tasks: Task[],
+  targetTimeSettings: TargetTimeSettings,
+  baseRewardSeconds: number
+): Task[] {
   const rewardTask = tasks.find((t) => t.kind === 'reward');
   const rewardElapsed = rewardTask ? rewardTask.elapsedSeconds : 0;
 
   let newRewardSeconds: number;
-  
+
   if (targetTimeSettings.mode === 'target-time') {
     // 目標時刻モード: 目標時刻から逆算
     const currentTime = new Date();
-    
+
     // 「やること」(固定タスク)の合計時間を計算（未完了タスクのみ）
     let todoTasksSeconds = 0;
-    
+
     tasks.forEach((t) => {
       if (t.kind === 'todo') {
         if (t.status === 'todo') {
@@ -55,22 +59,21 @@ function updateRewardTime(tasks: Task[], targetTimeSettings: TargetTimeSettings,
         }
       }
     });
-    
+
     // 遊び時間は「今から終了時までに残っている時間」＋「すでに遊んだ時間」
-    newRewardSeconds = calculateRewardSecondsFromTargetTime(
-      targetTimeSettings.targetHour,
-      targetTimeSettings.targetMinute,
-      currentTime,
-      todoTasksSeconds
-    ) + rewardElapsed;
+    newRewardSeconds =
+      calculateRewardSecondsFromTargetTime(
+        targetTimeSettings.targetHour,
+        targetTimeSettings.targetMinute,
+        currentTime,
+        todoTasksSeconds
+      ) + rewardElapsed;
   } else {
     // 所要時間モード: 従来の計算方法
     newRewardSeconds = calculateRewardSeconds(tasks, baseRewardSeconds);
   }
-  
-  return tasks.map((t) =>
-    t.kind === 'reward' ? { ...t, plannedSeconds: newRewardSeconds } : t
-  );
+
+  return tasks.map((t) => (t.kind === 'reward' ? { ...t, plannedSeconds: newRewardSeconds } : t));
 }
 
 function timerReducer(state: State, action: Action): State {
@@ -89,14 +92,22 @@ function timerReducer(state: State, action: Action): State {
         t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
       );
 
-      updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList));
+      updatedTasks = updateRewardTime(
+        updatedTasks,
+        state.targetTimeSettings,
+        getBaseRewardSeconds(state.activeList)
+      );
 
       // ごほうびタスクが時間切れになった場合の自動終了処理
-      const updatedTask = updatedTasks.find(t => t.id === state.selectedTaskId);
-      if (updatedTask && updatedTask.kind === 'reward' && updatedTask.elapsedSeconds >= updatedTask.plannedSeconds) {
-        updatedTasks = updatedTasks.map(t => 
-          t.id === state.selectedTaskId 
-            ? { ...t, status: 'done', actualSeconds: t.elapsedSeconds } 
+      const updatedTask = updatedTasks.find((t) => t.id === state.selectedTaskId);
+      if (
+        updatedTask &&
+        updatedTask.kind === 'reward' &&
+        updatedTask.elapsedSeconds >= updatedTask.plannedSeconds
+      ) {
+        updatedTasks = updatedTasks.map((t) =>
+          t.id === state.selectedTaskId
+            ? { ...t, status: 'done', actualSeconds: t.elapsedSeconds }
             : t
         );
         return {
@@ -115,7 +126,7 @@ function timerReducer(state: State, action: Action): State {
     case 'SELECT_TASK': {
       const { taskId } = action;
       const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
-      
+
       // Selectable check
       if (taskIndex === -1) return state;
       if (taskIndex > 0 && state.tasks[taskIndex - 1].status !== 'done') return state;
@@ -129,9 +140,9 @@ function timerReducer(state: State, action: Action): State {
 
       if (currentIndex !== -1) {
         const currentTask = updatedTasks[currentIndex];
-        
+
         if (currentTask.status === 'done' && isCurrentTapped) {
-            return state;
+          return state;
         }
 
         if (currentTask.status === 'running' || currentTask.status === 'paused') {
@@ -158,7 +169,11 @@ function timerReducer(state: State, action: Action): State {
         nextTaskIdToSelect = taskId;
       }
 
-      updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList));
+      updatedTasks = updateRewardTime(
+        updatedTasks,
+        state.targetTimeSettings,
+        getBaseRewardSeconds(state.activeList)
+      );
 
       if (nextTaskIdToSelect && nextIsTimerRunning) {
         updatedTasks = updatedTasks.map((t) =>
@@ -205,7 +220,7 @@ function timerReducer(state: State, action: Action): State {
       if (currentIndex === -1) return state;
 
       const currentTask = state.tasks[currentIndex];
-      let updatedTasks = [...state.tasks];
+      const updatedTasks = [...state.tasks];
       let newSelectedTaskId = state.selectedTaskId;
 
       if (currentTask.status === 'done') {
@@ -234,7 +249,11 @@ function timerReducer(state: State, action: Action): State {
 
       return {
         ...state,
-        tasks: updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
+        tasks: updateRewardTime(
+          updatedTasks,
+          state.targetTimeSettings,
+          getBaseRewardSeconds(state.activeList)
+        ),
         selectedTaskId: newSelectedTaskId,
       };
     }
@@ -249,7 +268,11 @@ function timerReducer(state: State, action: Action): State {
       }));
       return {
         ...state,
-        tasks: updateRewardTime(resetTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
+        tasks: updateRewardTime(
+          resetTasks,
+          state.targetTimeSettings,
+          getBaseRewardSeconds(state.activeList)
+        ),
         selectedTaskId: state.activeList.tasks[0]?.id || null,
         isTimerRunning: false,
       };
@@ -258,7 +281,7 @@ function timerReducer(state: State, action: Action): State {
     case 'UPDATE_ACTIVE_LIST': {
       const { list } = action;
       const updatedTasks = list.tasks.map((newTask: Task) => {
-        const existingTask = state.tasks.find(t => t.id === newTask.id);
+        const existingTask = state.tasks.find((t) => t.id === newTask.id);
         if (existingTask) {
           return {
             ...newTask,
@@ -292,7 +315,11 @@ function timerReducer(state: State, action: Action): State {
       }));
       return {
         activeList: list,
-        tasks: updateRewardTime(initializedTasks, list.targetTimeSettings, getBaseRewardSeconds(list)),
+        tasks: updateRewardTime(
+          initializedTasks,
+          list.targetTimeSettings,
+          getBaseRewardSeconds(list)
+        ),
         selectedTaskId: list.tasks[0]?.id || null,
         isTimerRunning: false,
         targetTimeSettings: list.targetTimeSettings,
@@ -300,24 +327,32 @@ function timerReducer(state: State, action: Action): State {
     }
 
     case 'SET_TASKS': {
-        return {
-            ...state,
-            tasks: action.tasks
-        };
+      return {
+        ...state,
+        tasks: action.tasks,
+      };
     }
 
     case 'SET_TARGET_TIME_SETTINGS': {
       return {
         ...state,
         targetTimeSettings: action.settings,
-        tasks: updateRewardTime(state.tasks, action.settings, getBaseRewardSeconds(state.activeList)),
+        tasks: updateRewardTime(
+          state.tasks,
+          action.settings,
+          getBaseRewardSeconds(state.activeList)
+        ),
       };
     }
 
     case 'REFRESH_REWARD_TIME': {
       return {
         ...state,
-        tasks: updateRewardTime(state.tasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
+        tasks: updateRewardTime(
+          state.tasks,
+          state.targetTimeSettings,
+          getBaseRewardSeconds(state.activeList)
+        ),
       };
     }
 
@@ -369,13 +404,16 @@ export function useTaskTimer() {
     dispatch({ type: 'RESET' });
   }, []);
 
-  const isTaskSelectable = useCallback((taskId: string): boolean => {
-    const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex === -1) return false;
-    if (taskIndex === 0) return true;
-    const previousTask = state.tasks[taskIndex - 1];
-    return previousTask.status === 'done';
-  }, [state.tasks]);
+  const isTaskSelectable = useCallback(
+    (taskId: string): boolean => {
+      const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
+      if (taskIndex === -1) return false;
+      if (taskIndex === 0) return true;
+      const previousTask = state.tasks[taskIndex - 1];
+      return previousTask.status === 'done';
+    },
+    [state.tasks]
+  );
 
   const setTasks = useCallback((tasks: Task[]) => {
     dispatch({ type: 'SET_TASKS', tasks });

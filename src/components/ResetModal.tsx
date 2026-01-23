@@ -22,7 +22,14 @@ export const ResetModal: React.FC<ResetModalProps> = ({ onCancel, onConfirm }) =
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
         className={styles.modalContent}
       >
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--color-warning)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '16px',
+            color: 'var(--color-warning)',
+          }}
+        >
           <AlertTriangle size={48} />
         </div>
         <div className={styles.modalTitle}>さいしょから やりなおしますか？</div>

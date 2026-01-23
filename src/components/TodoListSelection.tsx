@@ -75,8 +75,14 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
             exit={{ opacity: 0, y: -10 }}
             className={styles.selectionInstruction}
           >
-            <div>{selectedIds.length === 0 ? 'あに／あね の リストを えらんでね' : 'おとうと／いもうと の リストを えらんでね'}</div>
-            <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '4px' }}>※おなじ リストを 2つ えらんでも いいよ</div>
+            <div>
+              {selectedIds.length === 0
+                ? 'あに／あね の リストを えらんでね'
+                : 'おとうと／いもうと の リストを えらんでね'}
+            </div>
+            <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '4px' }}>
+              ※おなじ リストを 2つ えらんでも いいよ
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -98,13 +104,13 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                 <div className={styles.listIconBg}>
                   <ListChecks size={40} className={styles.listIcon} />
                   {isSelected && (
-                    <div className={styles.selectionBadge}>
-                      {selectionIndex === 0 ? '1' : '2'}
-                    </div>
+                    <div className={styles.selectionBadge}>{selectionIndex === 0 ? '1' : '2'}</div>
                   )}
                 </div>
                 <h3 className={styles.listName}>{list.title}</h3>
-                <p className={styles.listTaskCount}>{list.tasks.filter(t => t.kind === 'todo').length}この やること</p>
+                <p className={styles.listTaskCount}>
+                  {list.tasks.filter((t) => t.kind === 'todo').length}この やること
+                </p>
               </div>
 
               {!isSiblingModeSelect && (

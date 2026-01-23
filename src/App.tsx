@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './App.module.css';
 
 import { TodoListSelection } from './components/TodoListSelection';
@@ -11,30 +11,31 @@ import { v4 as uuid_v4 } from 'uuid';
 type CurrentScreen = 'selection' | 'main' | 'settings';
 
 function App() {
-  const [todoLists, setTodoLists] = useState<TodoList[]>([]);
-  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('selection');
+  const [todoLists, setTodoLists] = useState<TodoList[]>(() => loadTodoLists());
+  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>(() => {
+    const loadedLists = loadTodoLists();
+    const activeId = loadActiveListId();
+    if (activeId) {
+      const active = loadedLists.find((l) => l.id === activeId);
+      if (active) return 'main';
+    }
+    return 'selection';
+  });
   const [settingsSource, setSettingsSource] = useState<'selection' | 'main'>('selection');
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [isSiblingMode, setIsSiblingMode] = useState<boolean>(false);
-  const [activeLists, setActiveLists] = useState<TodoList[]>([]);
-
-  // 初回ロード
-  useEffect(() => {
+  const [activeLists, setActiveLists] = useState<TodoList[]>(() => {
     const loadedLists = loadTodoLists();
-    setTodoLists(loadedLists);
-
     const activeId = loadActiveListId();
     if (activeId) {
-      const active = loadedLists.find(l => l.id === activeId);
-      if (active) {
-        setActiveLists([active]);
-        setCurrentScreen('main');
-      }
+      const active = loadedLists.find((l) => l.id === activeId);
+      if (active) return [active];
     }
-  }, []);
+    return [];
+  });
 
   const handleSelectList = (listId: string) => {
-    const list = todoLists.find(l => l.id === listId);
+    const list = todoLists.find((l) => l.id === listId);
     if (list) {
       setActiveLists([list]);
       saveActiveListId(listId);
@@ -44,8 +45,8 @@ function App() {
   };
 
   const handleSelectSiblingLists = (id1: string, id2: string) => {
-    const list1 = todoLists.find(l => l.id === id1);
-    const list2 = todoLists.find(l => l.id === id2);
+    const list1 = todoLists.find((l) => l.id === id1);
+    const list2 = todoLists.find((l) => l.id === id2);
     if (list1 && list2) {
       setActiveLists([list1, list2]);
       setCurrentScreen('main');
@@ -83,13 +84,13 @@ function App() {
           status: 'todo',
           elapsedSeconds: 0,
           actualSeconds: 0,
-        }
+        },
       ],
       targetTimeSettings: {
         mode: 'duration',
         targetHour: 7,
         targetMinute: 55,
-      }
+      },
     };
     const updated = [...todoLists, newList];
     setTodoLists(updated);
@@ -100,18 +101,20 @@ function App() {
   };
 
   const handleDeleteList = (listId: string) => {
-    const updated = todoLists.filter(l => l.id !== listId);
+    const updated = todoLists.filter((l) => l.id !== listId);
     setTodoLists(updated);
     saveTodoLists(updated);
   };
 
   const handleSaveList = (updatedList: TodoList) => {
-    const updatedLists = todoLists.map((l: TodoList) => l.id === updatedList.id ? updatedList : l);
+    const updatedLists = todoLists.map((l: TodoList) =>
+      l.id === updatedList.id ? updatedList : l
+    );
     setTodoLists(updatedLists);
     saveTodoLists(updatedLists);
 
     // 更新されたリストを表示中なら反映
-    setActiveLists(prev => prev.map(l => l.id === updatedList.id ? updatedList : l));
+    setActiveLists((prev) => prev.map((l) => (l.id === updatedList.id ? updatedList : l)));
 
     setCurrentScreen(settingsSource);
     setEditingListId(null);
@@ -124,19 +127,19 @@ function App() {
   };
 
   const handleCopyList = (listId: string) => {
-    const original = todoLists.find(l => l.id === listId);
+    const original = todoLists.find((l) => l.id === listId);
     if (original) {
       const copy: TodoList = {
         ...original,
         id: uuid_v4(),
         title: `${original.title} (コピー)`,
-        tasks: original.tasks.map(task => ({
+        tasks: original.tasks.map((task) => ({
           ...task,
           id: task.kind === 'reward' ? 'reward-task' : uuid_v4(),
           status: 'todo',
           elapsedSeconds: 0,
           actualSeconds: 0,
-        }))
+        })),
       };
       const updated = [...todoLists, copy];
       setTodoLists(updated);
@@ -159,7 +162,7 @@ function App() {
   }
 
   if (currentScreen === 'settings' && editingListId) {
-    const listToEdit = todoLists.find(l => l.id === editingListId);
+    const listToEdit = todoLists.find((l) => l.id === editingListId);
     if (listToEdit) {
       return (
         <TodoListSettings

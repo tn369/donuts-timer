@@ -14,24 +14,31 @@ export type VariableTaskMode = 'duration' | 'target-time';
 // 目標時刻設定
 export interface TargetTimeSettings {
   mode: VariableTaskMode;
-  targetHour: number;    // 0-23
-  targetMinute: number;  // 0-59
+  targetHour: number; // 0-23
+  targetMinute: number; // 0-59
 }
 
 // タスク型定義（やること / ごほうび）
 export interface Task {
-  id: string;               // タスクID
-  name: string;             // タスク名（トイレ、おきがえ等）
-  icon: string;             // アイコン（画像URL）
-  plannedSeconds: number;   // 予定時間（秒）
-  kind: TaskKind;           // やること(todo) or ごほうび(reward)
-  status: TaskStatus;       // 現在の状態
-  elapsedSeconds: number;   // 経過時間（秒）
-  actualSeconds: number;    // 実績時間（秒、完了時に確定）
+  id: string; // タスクID
+  name: string; // タスク名（トイレ、おきがえ等）
+  icon: string; // アイコン（画像URL）
+  plannedSeconds: number; // 予定時間（秒）
+  kind: TaskKind; // やること(todo) or ごほうび(reward)
+  status: TaskStatus; // 現在の状態
+  elapsedSeconds: number; // 経過時間（秒）
+  actualSeconds: number; // 実績時間（秒、完了時に確定）
 }
 
 // タイマーの見た目設定
-export type TimerShape = 'circle' | 'square' | 'triangle' | 'diamond' | 'pentagon' | 'hexagon' | 'star';
+export type TimerShape =
+  | 'circle'
+  | 'square'
+  | 'triangle'
+  | 'diamond'
+  | 'pentagon'
+  | 'hexagon'
+  | 'star';
 export type TimerColor = 'red' | 'blue' | 'yellow' | 'green' | 'pink' | 'purple';
 
 export interface TimerSettings {

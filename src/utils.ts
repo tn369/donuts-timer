@@ -1,3 +1,5 @@
+import type { Task } from './types';
+
 /**
  * 時間を MM:SS 形式にフォーマットする
  */
@@ -12,7 +14,6 @@ export const formatTime = (seconds: number): string => {
 /**
  * 「ごほうび」の時間を計算する
  */
-import type { Task } from './types';
 
 export const calculateRewardSeconds = (tasks: Task[], baseRewardSeconds: number): number => {
   let totalDelta = 0;
@@ -65,7 +66,7 @@ export const calculateRewardSecondsFromTargetTime = (
   // 目標時刻のDateオブジェクトを作成
   const target = new Date(currentTime);
   target.setHours(targetHour, targetMinute, 0, 0);
-  
+
   // 目標時刻が現在時刻より前の場合は翌日とみなす
   if (target <= currentTime) {
     target.setDate(target.getDate() + 1);
@@ -76,22 +77,26 @@ export const calculateRewardSecondsFromTargetTime = (
     // 「今から12時間以上前」なら翌日、「12時間以内」なら当日（＝負の値）とする。
     const diff = target.getTime() - currentTime.getTime();
     if (diff < -12 * 60 * 60 * 1000) {
-        target.setDate(target.getDate() + 1);
+      target.setDate(target.getDate() + 1);
     } else {
-        // 当日の目標時刻を過ぎた状態（負の値になる）
+      // 当日の目標時刻を過ぎた状態（負の値になる）
     }
   }
-  
+
   // 利用可能な時間（秒）
   const availableSeconds = (target.getTime() - currentTime.getTime()) / 1000;
-  
+
   // ごほうびの時間 = 利用可能時間 - やることの時間
   return Math.floor(availableSeconds - todoTasksSeconds);
 };
 /**
  * 画像をリサイズする
  */
-export const resizeImage = (dataUrl: string, maxWidth: number = 200, maxHeight: number = 200): Promise<string> => {
+export const resizeImage = (
+  dataUrl: string,
+  maxWidth: number = 200,
+  maxHeight: number = 200
+): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {

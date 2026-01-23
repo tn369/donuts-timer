@@ -101,7 +101,7 @@
     box-shadow: var(--shadow);
     z-index: 1000;
   }
-  
+
   .taskListPlaceholder,
   .controlsPlaceholder {
     filter: blur(4px);

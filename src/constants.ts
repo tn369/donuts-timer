@@ -49,7 +49,7 @@ export const INITIAL_TASKS: Task[] = [
 export const BASE_REWARD_SECONDS = 15 * 60; // ごほうびの基本時間（15分）
 
 export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
-  mode: 'duration',  // デフォルトは所要時間モード
+  mode: 'duration', // デフォルトは所要時間モード
   targetHour: 7,
   targetMinute: 55,
 };
@@ -61,5 +61,5 @@ export const DEFAULT_TODO_LISTS: TodoList[] = [
     tasks: INITIAL_TASKS,
     targetTimeSettings: DEFAULT_TARGET_TIME,
     timerSettings: { shape: 'square', color: 'blue' },
-  }
+  },
 ];

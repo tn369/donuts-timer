@@ -36,14 +36,18 @@ export const Controls: React.FC<ControlsProps> = ({
       <motion.button
         layout
         whileTap={{ scale: 0.95 }}
-        animate={isRunning ? {
-          boxShadow: [
-            "0 4px 12px rgba(239, 68, 68, 0.2)",
-            "0 4px 18px rgba(239, 68, 68, 0.4)",
-            "0 4px 12px rgba(239, 68, 68, 0.2)"
-          ],
-          transition: { repeat: Infinity, duration: 2 }
-        } : {}}
+        animate={
+          isRunning
+            ? {
+                boxShadow: [
+                  '0 4px 12px rgba(239, 68, 68, 0.2)',
+                  '0 4px 18px rgba(239, 68, 68, 0.4)',
+                  '0 4px 12px rgba(239, 68, 68, 0.2)',
+                ],
+                transition: { repeat: Infinity, duration: 2 },
+              }
+            : {}
+        }
         className={`${styles.btn} ${isRunning ? styles.btnStop : styles.btnStart}`}
         onClick={isRunning ? onStop : onStart}
         disabled={!canStartOrStop}
@@ -54,7 +58,7 @@ export const Controls: React.FC<ControlsProps> = ({
           </>
         ) : (
           <>
-              <Play size={20} fill="currentColor" /> はじめる
+            <Play size={20} fill="currentColor" /> はじめる
           </>
         )}
       </motion.button>
