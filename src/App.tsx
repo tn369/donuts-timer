@@ -6,6 +6,7 @@ import { TodoListSettings } from './components/TodoListSettings';
 import { MainTimerView } from './components/MainTimerView';
 import type { TodoList } from './types';
 import { loadTodoLists, saveTodoLists, loadActiveListId, saveActiveListId } from './storage';
+import { IRASUTOYA_ICONS } from './constants';
 import { v4 as uuid_v4 } from 'uuid';
 
 type CurrentScreen = 'selection' | 'main' | 'settings';
@@ -68,7 +69,7 @@ function App() {
         {
           id: uuid_v4(),
           name: 'トイレ',
-          icon: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhx0t57NmexW6-RnpAFgwUpiBvrYZPjfX62AoLFuIpHpNtpD17HbGXoL5wYatAlk8kzhiLHfTAmehav2tpdYXtCaXuHl_XYWPNeja-p01TKberrUZFkkC18zLAOJwS0mrRDfhFOgjcMqHU/s400/toilet_boy.png',
+          icon: IRASUTOYA_ICONS.TOILET,
           plannedSeconds: 5 * 60,
           kind: 'todo',
           status: 'todo',
@@ -78,7 +79,7 @@ function App() {
         {
           id: 'reward-task',
           name: 'あそぶ',
-          icon: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU3bT8Om8wpYNBSphXDy0LAIrNKFvn6ONxElTN90ekuHals49c0dDv8jcCse07zwHauLyKM8hV-DVak1mzOixULI0egb3ZshzoytLn2BLcc1Xk6NRRKITJJbxRS6ZO-SRUKmDSbOC2CYrA/s400/omochabako.png',
+          icon: IRASUTOYA_ICONS.PLAY,
           plannedSeconds: 15 * 60,
           kind: 'reward',
           status: 'todo',

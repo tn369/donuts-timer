@@ -4,6 +4,7 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
 import styles from './TodoListSettings.module.css';
 import { v4 as uuidv4 } from 'uuid';
+import { IRASUTOYA_ICONS } from '../constants';
 import { resizeImage } from '../utils';
 
 interface TodoListSettingsProps {
@@ -36,7 +37,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
     const newTask: Task = {
       id: uuidv4(),
       name: '新しいやること',
-      icon: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7b3g9p9JvE8Q9XW_r2k3B6jF-eW9mK1bQv3r6m0jLwS4y8T8x6R6r_e6m8w/s400/kid_jujunbi_boy.png',
+      icon: IRASUTOYA_ICONS.JUNBI,
       plannedSeconds: 5 * 60,
       kind: 'todo',
       status: 'todo',
