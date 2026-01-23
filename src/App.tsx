@@ -164,9 +164,15 @@ function App() {
   if (currentScreen === 'settings' && editingListId) {
     const listToEdit = todoLists.find((l) => l.id === editingListId);
     if (listToEdit) {
+      // すべてのリストからユニークなアイコンURLを抽出
+      const allUniqueIcons = Array.from(
+        new Set(todoLists.flatMap((l) => l.tasks.map((t) => t.icon)))
+      );
+
       return (
         <TodoListSettings
           list={listToEdit}
+          allExistingIcons={allUniqueIcons}
           onSave={handleSaveList}
           onBack={() => {
             setCurrentScreen(settingsSource);

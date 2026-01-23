@@ -8,11 +8,17 @@ import { resizeImage } from '../utils';
 
 interface TodoListSettingsProps {
   list: TodoList;
+  allExistingIcons?: string[];
   onSave: (list: TodoList) => void;
   onBack: () => void;
 }
 
-export const TodoListSettings: React.FC<TodoListSettingsProps> = ({ list, onSave, onBack }) => {
+export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
+  list,
+  allExistingIcons = [],
+  onSave,
+  onBack,
+}) => {
   const [editedList, setEditedList] = useState<TodoList>({ ...list });
 
   const handleTitleChange = (title: string) => {
@@ -405,6 +411,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({ list, onSave
                       onTaskChange={handleTaskChange}
                       onRemoveTask={removeTask}
                       onTargetTimeChange={handleTargetTimeChange}
+                      allExistingIcons={allExistingIcons}
                     />
                   </Reorder.Item>
                 ))}
@@ -433,6 +440,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({ list, onSave
                     onTaskChange={handleTaskChange}
                     onRemoveTask={removeTask}
                     onTargetTimeChange={handleTargetTimeChange}
+                    allExistingIcons={allExistingIcons}
                   />
                 ))}
             </AnimatePresence>
@@ -451,6 +459,7 @@ interface TaskEditorItemProps {
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
   onRemoveTask: (taskId: string) => void;
   onTargetTimeChange: (updates: Partial<TargetTimeSettings>) => void;
+  allExistingIcons: string[];
 }
 
 const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
@@ -461,7 +470,9 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   onTaskChange,
   onRemoveTask,
   onTargetTimeChange,
+  allExistingIcons,
 }) => {
+  const [showIconSelector, setShowIconSelector] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleImageClick = () => {
@@ -508,7 +519,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           <button
             className={styles.changeImageBtn}
             title="がぞうをえらぶ"
-            onClick={handleImageClick}
+            onClick={() => setShowIconSelector(!showIconSelector)}
           >
             <Camera size={14} />
           </button>
@@ -527,6 +538,56 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           accept="image/*"
           style={{ display: 'none' }}
         />
+
+        <AnimatePresence>
+          {showIconSelector && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.popupBackdrop}
+                onClick={() => setShowIconSelector(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                className={styles.iconSelectorPopup}
+              >
+                <div className={styles.iconSelectorHeader}>
+                  <span>がぞうをえらぶ</span>
+                  <button
+                    className={styles.closeSelectorBtn}
+                    onClick={() => setShowIconSelector(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className={styles.iconSelectorContent}>
+                  <button className={styles.uploadNewBtn} onClick={handleImageClick}>
+                    <Plus size={20} />
+                    <span>新しくアップロード</span>
+                  </button>
+                  <div className={styles.existingIconsGrid}>
+                    {allExistingIcons.map((icon, index) => (
+                      <button
+                        key={index}
+                        className={`${styles.iconOption} ${task.icon === icon ? styles.active : ''}`}
+                        onClick={() => {
+                          onTaskChange(task.id, { icon });
+                          setShowIconSelector(false);
+                        }}
+                      >
+                        <img src={icon} alt={`Icon ${index}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className={styles.taskEditorInfo}>
