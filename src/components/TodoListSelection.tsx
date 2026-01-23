@@ -56,13 +56,13 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               setSelectedIds([]);
             }}
           >
-            ひとり
+            ひとりで
           </button>
           <button
             className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
             onClick={() => setIsSiblingModeSelect(true)}
           >
-            <Users size={18} /> きょうだい
+            <Users size={18} /> ふたりで
           </button>
         </div>
       </div>
@@ -77,8 +77,8 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           >
             <div>
               {selectedIds.length === 0
-                ? 'あに／あね の リストを えらんでね'
-                : 'おとうと／いもうと の リストを えらんでね'}
+                ? 'ひとりめ の リストを えらんでね'
+                : 'ふたりめ の リストを えらんでね'}
             </div>
             <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '4px' }}>
               ※おなじ リストを 2つ えらんでも いいよ
