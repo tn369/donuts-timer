@@ -123,6 +123,27 @@ function App() {
     saveActiveListId(null);
   };
 
+  const handleCopyList = (listId: string) => {
+    const original = todoLists.find(l => l.id === listId);
+    if (original) {
+      const copy: TodoList = {
+        ...original,
+        id: uuid_v4(),
+        title: `${original.title} (コピー)`,
+        tasks: original.tasks.map(task => ({
+          ...task,
+          id: task.kind === 'reward' ? 'reward-task' : uuid_v4(),
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+        }))
+      };
+      const updated = [...todoLists, copy];
+      setTodoLists(updated);
+      saveTodoLists(updated);
+    }
+  };
+
   if (currentScreen === 'selection') {
     return (
       <TodoListSelection
@@ -130,6 +151,7 @@ function App() {
         onSelect={handleSelectList}
         onSelectSibling={handleSelectSiblingLists}
         onEdit={handleEditList}
+        onCopy={handleCopyList}
         onAdd={handleAddNewList}
         onDelete={handleDeleteList}
       />

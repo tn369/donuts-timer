@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, ListChecks, Users } from 'lucide-react';
+import { Plus, Edit2, Trash2, ListChecks, Users, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TodoList } from '../types';
 import styles from './TodoListSelection.module.css';
@@ -9,6 +9,7 @@ interface TodoListSelectionProps {
   onSelect: (listId: string) => void;
   onSelectSibling: (id1: string, id2: string) => void;
   onEdit: (listId: string) => void;
+  onCopy: (listId: string) => void;
   onAdd: () => void;
   onDelete: (listId: string) => void;
 }
@@ -18,6 +19,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   onSelect,
   onSelectSibling,
   onEdit,
+  onCopy,
   onAdd,
   onDelete,
 }) => {
@@ -107,6 +109,16 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
 
               {!isSiblingModeSelect && (
                 <div className={styles.listCardActions}>
+                  <button
+                    className={`${styles.actionBtn} ${styles.copy}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCopy(list.id);
+                    }}
+                    title="コピー"
+                  >
+                    <Copy size={18} />
+                  </button>
                   <button
                     className={`${styles.actionBtn} ${styles.edit}`}
                     onClick={(e) => {
