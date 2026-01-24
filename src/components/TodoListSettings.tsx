@@ -398,6 +398,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               axis="y"
               values={editedList.tasks.filter((t) => t.kind !== 'reward')}
               onReorder={handleReorderTasks}
+              className={styles.reorderGroup}
             >
               {editedList.tasks
                 .filter((t) => t.kind !== 'reward')
