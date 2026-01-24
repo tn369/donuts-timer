@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, Camera } from 'lucide-react';
 import { DonutTimer } from './DonutTimer';
 import type { Task, TimerShape, TimerColor } from '../types';
 import { formatTime } from '../utils';
@@ -57,20 +57,26 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     >
       {!isDone && (
         <div className={styles.taskImageContainer}>
-          <motion.img
-            src={typeof task.icon === 'string' ? task.icon : undefined}
-            alt={task.name}
-            className={styles.taskImage}
-            animate={
-              isSelected && task.elapsedSeconds < task.plannedSeconds
-                ? {
+          {task.icon ? (
+            <motion.img
+              src={task.icon}
+              alt={task.name}
+              className={styles.taskImage}
+              animate={
+                isSelected && task.elapsedSeconds < task.plannedSeconds
+                  ? {
                     scale: [1, 1.05, 1],
                     rotate: [0, -2, 2, 0],
                   }
-                : {}
-            }
-            transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-          />
+                  : {}
+              }
+              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+            />
+          ) : (
+            <div className={styles.placeholderIcon}>
+              <Camera size={48} color="var(--color-primary)" opacity={0.3} />
+            </div>
+          )}
         </div>
       )}
 

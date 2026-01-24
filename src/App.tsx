@@ -6,7 +6,6 @@ import { TodoListSettings } from './components/TodoListSettings';
 import { MainTimerView } from './components/MainTimerView';
 import type { TodoList } from './types';
 import { loadTodoLists, saveTodoLists, loadActiveListId, saveActiveListId } from './storage';
-import { IRASUTOYA_ICONS } from './constants';
 import { v4 as uuid_v4 } from 'uuid';
 
 type CurrentScreen = 'selection' | 'main' | 'settings';
@@ -69,7 +68,7 @@ function App() {
         {
           id: uuid_v4(),
           name: 'トイレ',
-          icon: IRASUTOYA_ICONS.TOILET,
+          icon: '',
           plannedSeconds: 5 * 60,
           kind: 'todo',
           status: 'todo',
@@ -79,7 +78,7 @@ function App() {
         {
           id: 'reward-task',
           name: 'あそぶ',
-          icon: IRASUTOYA_ICONS.PLAY,
+          icon: '',
           plannedSeconds: 15 * 60,
           kind: 'reward',
           status: 'todo',

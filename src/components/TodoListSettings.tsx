@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Trash2, Camera, Save, Link } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Camera, Save } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
 import styles from './TodoListSettings.module.css';
 import { v4 as uuidv4 } from 'uuid';
-import { IRASUTOYA_ICONS } from '../constants';
 import { resizeImage } from '../utils';
 
 interface TodoListSettingsProps {
@@ -37,7 +36,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
     const newTask: Task = {
       id: uuidv4(),
       name: '新しいやること',
-      icon: IRASUTOYA_ICONS.JUNBI,
+      icon: '',
       plannedSeconds: 5 * 60,
       kind: 'todo',
       status: 'todo',
@@ -499,12 +498,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
     }
   };
 
-  const handleUrlClick = () => {
-    const url = prompt('画像のURLをいれてください', task.icon);
-    if (url) {
-      onTaskChange(task.id, { icon: url });
-    }
-  };
+
 
   return (
     <motion.div
@@ -515,7 +509,13 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       className={`${styles.taskEditorItem} ${task.kind === 'reward' ? styles.reward : ''}`}
     >
       <div className={styles.taskEditorImage}>
-        <img src={task.icon} alt={task.name} />
+        {task.icon ? (
+          <img src={task.icon} alt={task.name} />
+        ) : (
+          <div className={styles.placeholderIconSmall}>
+            <Camera size={24} opacity={0.3} />
+          </div>
+        )}
         <div className={styles.taskEditorImageButtons}>
           <button
             className={styles.changeImageBtn}
@@ -523,13 +523,6 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             onClick={() => setShowIconSelector(!showIconSelector)}
           >
             <Camera size={14} />
-          </button>
-          <button
-            className={`${styles.changeImageBtn} ${styles.secondary}`}
-            title="URLをいれる"
-            onClick={handleUrlClick}
-          >
-            <Link size={14} />
           </button>
         </div>
         <input

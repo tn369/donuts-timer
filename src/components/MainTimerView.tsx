@@ -59,7 +59,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     const currentStatus = rewardTask?.status;
 
     if (currentStatus === 'done' && lastPlayedStatusRef.current !== 'done') {
-      const audio = new Audio('https://otologic.jp/free/se/bin/alarm-clock01.mp3');
+      const audio = new Audio('/alarm.mp3');
       audio.play().catch((e) => console.log('Audio play failed:', e));
     }
     lastPlayedStatusRef.current = currentStatus;
