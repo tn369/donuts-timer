@@ -41,10 +41,13 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
   const getBaseMetrics = () => {
     const count = chunks.length;
     if (count === 1) return { size: size, stroke: strokeWidth };
-    if (count === 2) return { size: 85, stroke: 18 };
-    if (count <= 4) return { size: 70, stroke: 16 };
-    if (count <= 9) return { size: 54, stroke: 14 };
-    return { size: 48, stroke: 12 };
+
+    // 複数チャンクの場合は基本サイズ（sizeプロップ）を基準に縮小
+    // 線の太さ（strokeWidth）も、つぶれないように段階的に細く調整する
+    if (count === 2) return { size: size * 0.85, stroke: strokeWidth * 0.9 };
+    if (count <= 4) return { size: size * 0.7, stroke: strokeWidth * 0.8 };
+    if (count <= 9) return { size: size * 0.54, stroke: strokeWidth * 0.7 };
+    return { size: size * 0.48, stroke: strokeWidth * 0.6 };
   };
 
   const { size: baseSize, stroke: baseStrokeWidth } = getBaseMetrics();
@@ -240,7 +243,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                   cy={center}
                   r={radius}
                   className={styles.donutTimerBg}
-                  strokeWidth={currentStrokeWidth}
+                  strokeWidth={currentStrokeWidth * 1.1}
                   fill="none"
                 />
               ) : isSquare ? (
@@ -252,14 +255,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                   rx={2}
                   ry={2}
                   className={styles.donutTimerBg}
-                  strokeWidth={currentStrokeWidth}
+                    strokeWidth={currentStrokeWidth * 1.1}
                   fill="none"
                 />
               ) : (
                 <path
                   d={path}
                   className={styles.donutTimerBg}
-                  strokeWidth={currentStrokeWidth}
+                      strokeWidth={currentStrokeWidth * 1.1}
                   fill="none"
                   strokeLinejoin="round"
                 />
