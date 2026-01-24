@@ -55,12 +55,14 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               setIsSiblingModeSelect(false);
               setSelectedIds([]);
             }}
+            aria-label="ひとりで つかう"
           >
             ひとりで
           </button>
           <button
             className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
             onClick={() => setIsSiblingModeSelect(true)}
+            aria-label="ふたりで つかう"
           >
             <Users size={18} /> ふたりで
           </button>
@@ -99,6 +101,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               whileHover={{ y: -5, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleCardClick(list.id)}
+              aria-label={`${list.title} リストをえらぶ`}
             >
               <div className="list-card-content">
                 <div className={styles.listIconBg}>
@@ -121,7 +124,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                       e.stopPropagation();
                       onCopy(list.id);
                     }}
-                    title="コピー"
+                    aria-label="リストをコピーする"
                   >
                     <Copy size={18} />
                   </button>
@@ -131,7 +134,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                       e.stopPropagation();
                       onEdit(list.id);
                     }}
-                    title="編集"
+                    aria-label="リストを編集する"
                   >
                     <Edit2 size={18} />
                   </button>
@@ -141,7 +144,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                       e.stopPropagation();
                       onDelete(list.id);
                     }}
-                    title="削除"
+                    aria-label="リストを削除する"
                   >
                     <Trash2 size={18} />
                   </button>

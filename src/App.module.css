@@ -53,32 +53,48 @@
 .settingsButton {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 4px solid white;
   border-radius: var(--radius-md);
   padding: 0 24px;
-  height: 64px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--color-text-main);
-  box-shadow: var(--glass-shadow);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   font-family: 'Gaegu', cursive;
   font-weight: 700;
   font-size: 24px;
   gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.settingsButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0.1;
+  pointer-events: none;
 }
 
 .settingsButton:hover {
   background: white;
   color: var(--color-primary);
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .settingsButton:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .settingsButton.secondary {

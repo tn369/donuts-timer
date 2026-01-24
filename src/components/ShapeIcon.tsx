@@ -1,0 +1,68 @@
+import React from 'react';
+import type { TimerShape } from '../types';
+
+interface ShapeIconProps {
+  shape: TimerShape;
+  size?: number;
+  color?: string;
+  className?: string;
+}
+
+export const ShapeIcon: React.FC<ShapeIconProps> = ({
+  shape,
+  size = 24,
+  color = 'currentColor',
+  className = '',
+}) => {
+  const center = 12;
+  const radius = 9;
+  
+  const getPoints = (sides: number, rotation: number = -Math.PI / 2, isStar = false) => {
+    const pts: string[] = [];
+    const totalPoints = isStar ? sides * 2 : sides;
+    const r = radius;
+    const innerR = r * 0.45;
+
+    for (let i = 0; i < totalPoints; i++) {
+        const currentR = isStar ? (i % 2 === 0 ? r : innerR) : r;
+        const angle = rotation + (i * 2 * Math.PI) / totalPoints;
+        const x = center + currentR * Math.cos(angle);
+        const y = center + currentR * Math.sin(angle);
+        pts.push(`${x},${y}`);
+    }
+    return pts.join(' ');
+  };
+
+  const renderShape = () => {
+    switch (shape) {
+      case 'circle':
+        return <circle cx={center} cy={center} r={radius} fill="none" stroke={color} strokeWidth="2" />;
+      case 'square':
+        return <rect x={center - radius} y={center - radius} width={radius * 2} height={radius * 2} rx="2" fill="none" stroke={color} strokeWidth="2" />;
+      case 'triangle':
+        return <polygon points={getPoints(3)} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />;
+      case 'diamond':
+        return <polygon points={getPoints(4)} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />;
+      case 'pentagon':
+        return <polygon points={getPoints(5)} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />;
+      case 'hexagon':
+        return <polygon points={getPoints(6)} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />;
+      case 'star':
+        return <polygon points={getPoints(5, -Math.PI / 2, true)} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />;
+      default:
+        return <circle cx={center} cy={center} r={radius} fill="none" stroke={color} strokeWidth="2" />;
+    }
+  };
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={className}
+      style={{ display: 'block' }}
+    >
+      {renderShape()}
+    </svg>
+  );
+};

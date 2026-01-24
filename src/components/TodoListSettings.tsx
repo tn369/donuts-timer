@@ -3,6 +3,7 @@ import { ArrowLeft, Plus, Trash2, Camera, Save } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
 import styles from './TodoListSettings.module.css';
+import { ShapeIcon } from './ShapeIcon';
 import { v4 as uuidv4 } from 'uuid';
 import { resizeImage } from '../utils';
 
@@ -151,198 +152,35 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>どーなつタイマー の かたち</h2>
           <div className={styles.shapeSelection}>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'circle' || !editedList.timerSettings?.shape ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'circle',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <circle
-                    cx="20"
-                    cy="20"
-                    r="15"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>まる</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'square' ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'square',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <rect
-                    x="5"
-                    y="5"
-                    width="30"
-                    height="30"
-                    rx="4"
-                    ry="4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>しかく</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'triangle' ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'triangle',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M 20 8 L 34 32 L 6 32 Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>さんかく</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'diamond' ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'diamond',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M 20 6 L 34 20 L 20 34 L 6 20 Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>だいや</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'pentagon' ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'pentagon',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M 20 6 L 35 17 L 30 34 L 10 34 L 5 17 Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>ごかく</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'hexagon' ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'hexagon',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M 20 5 L 34 12.5 L 34 27.5 L 20 35 L 6 27.5 L 6 12.5 Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>ろっかく</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.timerSettings?.shape === 'star' ? styles.active : ''}`}
-              onClick={() =>
-                setEditedList({
-                  ...editedList,
-                  timerSettings: {
-                    shape: 'star',
-                    color: editedList.timerSettings?.color || 'blue',
-                  },
-                })
-              }
-            >
-              <div className={styles.modeIcon}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M 20 5 L 24.5 16.5 L 36.5 16.5 L 27 24 L 30.5 35 L 20 28 L 9.5 35 L 13 24 L 3.5 16.5 L 15.5 16.5 Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    opacity="0.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.modeLabel}>ほし</div>
-            </button>
+            {(['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon', 'star'] as const).map((s) => (
+              <button
+                key={s}
+                className={`${styles.modeButton} ${editedList.timerSettings?.shape === s || (!editedList.timerSettings?.shape && s === 'circle') ? styles.active : ''}`}
+                onClick={() =>
+                  setEditedList({
+                    ...editedList,
+                    timerSettings: {
+                      shape: s,
+                      color: editedList.timerSettings?.color || 'blue',
+                    },
+                  })
+                }
+                aria-label={`${s}のかたち`}
+              >
+                <div className={styles.modeIcon}>
+                  <ShapeIcon shape={s} size={40} color="currentColor" />
+                </div>
+                <div className={styles.modeLabel}>
+                  {s === 'circle' && 'まる'}
+                  {s === 'square' && 'しかく'}
+                  {s === 'triangle' && 'さんかく'}
+                  {s === 'diamond' && 'だいや'}
+                  {s === 'pentagon' && 'ごかく'}
+                  {s === 'hexagon' && 'ろっかく'}
+                  {s === 'star' && 'ほし'}
+                </div>
+              </button>
+            ))}
           </div>
 
           <h2 className={styles.sectionTitle}>どーなつタイマー の いろ</h2>

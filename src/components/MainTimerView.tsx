@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Settings, Palette, ChevronLeft } from 'lucide-react';
 import styles from '../App.module.css';
+import { ShapeIcon } from './ShapeIcon';
 
 import { TaskList } from './TaskList';
 import { Controls } from './Controls';
@@ -80,16 +81,20 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     <div className={styles.timerView}>
       <div className={styles.topControls}>
         {showSelectionButton && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, translateY: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={onBackToSelection}
             className={`${styles.settingsButton} ${styles.secondary}`}
-            title="リストをえらびなおす"
+            aria-label="リストをえらびなおす"
           >
             <ChevronLeft size={24} /> もどる
-          </button>
+          </motion.button>
         )}
         <div className={styles.topControlsGroup}>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, translateY: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               const shapes: Array<typeof timerSettings.shape> = [
                 'circle',
@@ -105,19 +110,13 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
               setTimerSettings({ ...timerSettings, shape: nextShape });
             }}
             className={styles.settingsButton}
-            title="タイマーのかたちをかえる"
+            aria-label="タイマーのかたちをかえる"
           >
-            <div style={{ fontWeight: 'bold', fontSize: '18px' }}>
-              {timerSettings.shape === 'circle' && '●'}
-              {timerSettings.shape === 'square' && '■'}
-              {timerSettings.shape === 'triangle' && '▲'}
-              {timerSettings.shape === 'diamond' && '◆'}
-              {timerSettings.shape === 'pentagon' && '⬠'}
-              {timerSettings.shape === 'hexagon' && '⬢'}
-              {timerSettings.shape === 'star' && '★'}
-            </div>
-          </button>
-          <button
+            <ShapeIcon shape={timerSettings.shape} size={28} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05, translateY: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               const colors: Array<typeof timerSettings.color> = [
                 'red',
@@ -132,21 +131,30 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
               setTimerSettings({ ...timerSettings, color: nextColor });
             }}
             className={styles.settingsButton}
-            title="タイマーのいろをかえる"
+            aria-label="タイマーのいろをかえる"
           >
-            <Palette size={20} />
-          </button>
-          <button
+            <Palette size={24} color={
+              timerSettings.color === 'red' ? '#ff6b6b' :
+                timerSettings.color === 'blue' ? '#4facfe' :
+                  timerSettings.color === 'yellow' ? '#fabe66' :
+                    timerSettings.color === 'green' ? '#00f2fe' :
+                      timerSettings.color === 'pink' ? '#ff6a95' :
+                        timerSettings.color === 'purple' ? '#7b61ff' : undefined
+            } />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05, rotate: 15 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               if (activeList) {
                 onEditSettings(activeList.id);
               }
             }}
-            className={`${styles.settingsButton} ${styles.rotate}`}
-            title="リストのせってい"
+            className={`${styles.settingsButton}`}
+            aria-label="リストのせってい"
           >
-            <Settings size={20} />
-          </button>
+            <Settings size={24} />
+          </motion.button>
         </div>
       </div>
 
