@@ -64,9 +64,20 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       onClick={() => isSelectable && onSelect(task.id)}
     >
       {isCompact ? (
-        // コンパクトモード：横型レイアウト
-        <div className={styles.compactRow}>
-          <div className={styles.compactLeft}>
+        // コンパクトモード：画像とテキストを上に、ドーナツを下に
+        <div className={styles.compactLayout}>
+          <div className={styles.compactTop}>
+            {task.icon && (
+              <img src={task.icon} alt={task.name} className={styles.taskImageCompact} />
+            )}
+            <div className={styles.compactText}>
+              <div className={styles.taskName}>{task.name}</div>
+              <div className={styles.taskTime}>
+                {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
+              </div>
+            </div>
+          </div>
+          <div className={styles.compactBottom}>
             {isDone ? (
               <div className={`${styles.taskIcon} ${styles.done} ${styles.compactDone}`}>
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
@@ -78,22 +89,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 totalSeconds={task.plannedSeconds}
                 elapsedSeconds={task.elapsedSeconds}
                 isOverdue={isOverdue}
-                size={90}
-                strokeWidth={16}
+                  size={80}
+                  strokeWidth={14}
                 shape={shape}
                 color={color}
-              >
-                {task.icon && (
-                  <img src={task.icon} alt={task.name} className={styles.taskImageCompact} />
-                )}
-              </DonutTimer>
+                />
             )}
-          </div>
-          <div className={styles.compactRight}>
-            <div className={styles.taskName}>{task.name}</div>
-            <div className={styles.taskTime}>
-              {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
-            </div>
           </div>
         </div>
       ) : (

@@ -13,9 +13,10 @@
 }
 
 .taskList.compact {
-  min-height: 120px;
+  min-height: 160px;
   padding: 8px 4px;
   gap: 12px;
+  overflow-y: visible;
 }
 
 .taskList::-webkit-scrollbar {
