@@ -3,46 +3,47 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  gap: 24px;
+  padding: 32px;
+  gap: 32px;
   background: var(--color-bg);
+  overflow: hidden;
 }
 
 .settingsHeader {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .backButton {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
+  background: var(--clay-bg);
+  border: none;
+  border-radius: 16px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-smooth);
   color: var(--color-text-muted);
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--clay-shadow);
 }
 
 .backButton:hover {
   background: white;
-  color: var(--color-primary);
+  color: var(--color-accent);
   transform: scale(1.1);
 }
 
 .settingsTitle {
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 40px;
+  font-weight: 800;
   color: var(--color-text-main);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  letter-spacing: -0.02em;
 }
 
 .settingsContent {
@@ -50,74 +51,73 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
+  padding-right: 8px;
 }
 
 .settingsSection {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--glass-shadow);
+  background: var(--clay-bg);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--clay-shadow);
 }
 
 .sectionTitle {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 800;
   color: var(--color-text-main);
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .modeSelection {
   display: flex;
-  gap: 16px;
+  gap: 20px;
 }
 
 .modeButton {
   flex: 1;
-  min-width: 100px;
   background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: var(--radius-md);
-  padding: 16px;
+  border: 4px solid #f1f5f9;
+  border-radius: var(--radius-lg);
+  padding: 24px;
   cursor: pointer;
   transition: var(--transition-smooth);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   text-align: center;
 }
 
 .modeButton:hover {
-  border-color: var(--color-primary);
+  border-color: #e2e8f0;
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
 }
 
 .modeButton.active {
-  background: var(--color-primary);
   border-color: var(--color-primary);
-  color: white;
-  box-shadow:
-    0 0 0 4px rgba(16, 185, 129, 0.15),
-    var(--glass-shadow);
+  background: rgba(16, 185, 129, 0.02);
+  color: var(--color-primary);
 }
 
 .modeIcon {
-  font-size: 48px;
-  margin-bottom: 8px;
+  font-size: 56px;
 }
 
 .modeLabel {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 800;
 }
 
 .modeDescription {
   font-size: 14px;
-  opacity: 0.8;
+  color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .shapeSelection {

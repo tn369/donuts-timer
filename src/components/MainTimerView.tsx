@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Settings, Palette } from 'lucide-react';
+import { Settings, Palette, ChevronLeft } from 'lucide-react';
 import styles from '../App.module.css';
 
 import { TaskList } from './TaskList';
@@ -85,7 +85,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             className={`${styles.settingsButton} ${styles.secondary}`}
             title="リストをえらびなおす"
           >
-            もどる
+            <ChevronLeft size={24} /> もどる
           </button>
         )}
         <div className={styles.topControlsGroup}>

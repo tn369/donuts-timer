@@ -48,10 +48,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       whileTap={isSelectable && !isDone ? { scale: 0.95 } : {}}
       className={cardClassName}
       style={{
-        flexGrow:
-          (task.status === 'done'
-            ? task.actualSeconds
-            : Math.max(task.plannedSeconds, task.elapsedSeconds)) / 60,
+        flexGrow: Math.min(
+          2.5,
+          Math.pow(
+            (task.status === 'done'
+              ? task.actualSeconds
+              : Math.max(task.plannedSeconds, task.elapsedSeconds)) / 60,
+            0.3
+          )
+        ),
       }}
       onClick={() => isSelectable && onSelect(task.id)}
     >
@@ -82,8 +87,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
       {isDone ? (
         <div className={`${styles.taskIcon} ${styles.done}`}>
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-            <Check size={48} color="var(--color-primary)" strokeWidth={3} />
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 10 }}>
+            <Check size={48} strokeWidth={4} />
           </motion.div>
         </div>
       ) : (

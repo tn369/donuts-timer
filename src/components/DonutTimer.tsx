@@ -35,6 +35,18 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
   }
   if (chunks.length === 0) chunks.push(0);
 
+  // チャンク数に応じてサイズを調整（均等でバランスの良い配置のため）
+  const getBaseMetrics = () => {
+    const count = chunks.length;
+    if (count === 1) return { size: size, stroke: strokeWidth };
+    if (count === 2) return { size: 85, stroke: 18 };
+    if (count <= 4) return { size: 70, stroke: 16 };
+    if (count <= 9) return { size: 54, stroke: 14 };
+    return { size: 48, stroke: 12 };
+  };
+
+  const { size: baseSize, stroke: baseStrokeWidth } = getBaseMetrics();
+
   // 残り時間を各チャンクに分配
   const totalRemaining = Math.max(0, totalSeconds - elapsedSeconds);
   const chunkRemaining: number[] = [];
@@ -68,8 +80,8 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
 
         // 面積を時間に比例させる
         const baseRadiusMultiplier = Math.sqrt(capacity / CHUNK_MAX);
-        const currentSize = size * baseRadiusMultiplier;
-        const currentStrokeWidth = strokeWidth * baseRadiusMultiplier;
+        const currentSize = baseSize * baseRadiusMultiplier;
+        const currentStrokeWidth = baseStrokeWidth * baseRadiusMultiplier;
 
         const center = currentSize / 2;
         const radius = (currentSize - currentStrokeWidth) / 2;

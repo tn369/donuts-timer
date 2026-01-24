@@ -5,13 +5,15 @@
   flex-direction: column;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative;
 }
 
 .timerView {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 24px;
+  gap: 16px;
   position: relative;
   height: 100%;
   box-sizing: border-box;
@@ -21,79 +23,75 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  min-height: 44px;
+  min-height: 56px;
   position: relative;
+  z-index: 50;
 }
 
 .siblingContainer {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 8px;
+  padding: 12px;
+  gap: 12px;
   box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .siblingItem {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  margin: 4px;
+  background: var(--clay-bg);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  border: 4px dashed rgba(255, 255, 255, 0.4);
-}
-
-.settingsButtonContainer {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 100;
-}
-
-.backButtonContainer {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 100;
+  box-shadow: var(--clay-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  position: relative;
 }
 
 .settingsButton {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
+  backdrop-filter: var(--glass-blur);
+  border: 4px solid white;
+  border-radius: var(--radius-md);
+  padding: 0 24px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-smooth);
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   box-shadow: var(--glass-shadow);
+  font-family: 'Gaegu', cursive;
+  font-weight: 700;
+  font-size: 24px;
+  gap: 12px;
 }
 
 .settingsButton:hover {
   background: white;
   color: var(--color-primary);
-  transform: scale(1.1);
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
-.settingsButton.rotate:hover {
-  transform: rotate(90deg) scale(1.1);
+.settingsButton:active {
+  transform: translateY(1px);
+}
+
+.settingsButton.secondary {
+  color: var(--color-text-muted);
 }
 
 .settingsButton.secondary:hover {
-  transform: scale(1.1);
-  color: var(--color-info);
+  color: var(--color-accent);
 }
 
 .topControlsGroup {
   display: flex;
-  gap: 8px;
+  gap: 16px;
   margin-left: auto;
 }
 
@@ -101,21 +99,18 @@
   .app::before {
     content: '📱 よこがめん に かいてん してね';
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 24px;
+    font-weight: 800;
     color: var(--color-danger);
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    z-index: 1000;
-  }
-
-  .taskListPlaceholder,
-  .controlsPlaceholder {
-    filter: blur(4px);
-    pointer-events: none;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
   }
 }
