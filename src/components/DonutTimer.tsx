@@ -86,7 +86,9 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
         // 面積を時間に比例させる
         const baseRadiusMultiplier = Math.sqrt(capacity / CHUNK_MAX);
         const currentSize = baseSize * baseRadiusMultiplier;
-        const currentStrokeWidth = baseStrokeWidth * baseRadiusMultiplier;
+        // 形状が星型の場合は、線が密集して見えるため少し細く調整する
+        const shapeStrokeMultiplier = isStar ? 0.8 : 1.0;
+        const currentStrokeWidth = baseStrokeWidth * baseRadiusMultiplier * shapeStrokeMultiplier;
 
         const center = currentSize / 2;
         const radius = (currentSize - currentStrokeWidth) / 2;
