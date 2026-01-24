@@ -16,6 +16,7 @@ interface MainTimerViewProps {
   onBackToSelection: () => void;
   onEditSettings: (listId: string) => void;
   showSelectionButton?: boolean;
+  isSiblingMode?: boolean;
 }
 
 export const MainTimerView: React.FC<MainTimerViewProps> = ({
@@ -23,6 +24,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   onBackToSelection,
   onEditSettings,
   showSelectionButton = true,
+  isSiblingMode = false,
 }) => {
   const {
     tasks,
@@ -78,7 +80,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   }, [isRunning, selectedTaskId, selectedTask]);
 
   return (
-    <div className={styles.timerView}>
+    <div className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''}`}>
       <div className={styles.topControls}>
         {showSelectionButton && (
           <motion.button
@@ -88,7 +90,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             className={`${styles.settingsButton} ${styles.secondary}`}
             aria-label="リストをえらびなおす"
           >
-            <ChevronLeft size={24} /> もどる
+            <ChevronLeft size={isSiblingMode ? 20 : 24} /> もどる
           </motion.button>
         )}
         <div className={styles.topControlsGroup}>
@@ -112,7 +114,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             className={styles.settingsButton}
             aria-label="タイマーのかたちをかえる"
           >
-            <ShapeIcon shape={timerSettings.shape} size={28} />
+            <ShapeIcon shape={timerSettings.shape} size={isSiblingMode ? 20 : 28} />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05, translateY: -2 }}
@@ -133,7 +135,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             className={styles.settingsButton}
             aria-label="タイマーのいろをかえる"
           >
-            <Palette size={24} color={
+            <Palette size={isSiblingMode ? 20 : 24} color={
               timerSettings.color === 'red' ? '#ff6b6b' :
                 timerSettings.color === 'blue' ? '#4facfe' :
                   timerSettings.color === 'yellow' ? '#fabe66' :
@@ -153,29 +155,50 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             className={`${styles.settingsButton}`}
             aria-label="リストのせってい"
           >
-            <Settings size={24} />
+            <Settings size={isSiblingMode ? 20 : 24} />
           </motion.button>
         </div>
       </div>
 
-      <TaskList
-        tasks={tasks}
-        selectedTaskId={selectedTaskId}
-        isTaskSelectable={isTaskSelectable}
-        onSelectTask={selectTask}
-        shape={timerSettings.shape}
-        color={timerSettings.color}
-      />
+      <div className={isSiblingMode ? styles.mainRowSibling : ''}>
+        <TaskList
+          tasks={tasks}
+          selectedTaskId={selectedTaskId}
+          isTaskSelectable={isTaskSelectable}
+          onSelectTask={selectTask}
+          shape={timerSettings.shape}
+          color={timerSettings.color}
+          isCompact={isSiblingMode}
+        />
 
-      <Controls
-        isRunning={isRunning}
-        onBack={goBack}
-        onStart={startTimer}
-        onStop={stopTimer}
-        onReset={() => setShowResetConfirm(true)}
-        canGoBack={canGoBack}
-        canStartOrStop={canStartOrStop}
-      />
+        {isSiblingMode && (
+          <div className={styles.sideControls}>
+            <Controls
+              isRunning={isRunning}
+              onBack={goBack}
+              onStart={startTimer}
+              onStop={stopTimer}
+              onReset={() => setShowResetConfirm(true)}
+              canGoBack={canGoBack}
+              canStartOrStop={canStartOrStop}
+              isCompact={true}
+            />
+          </div>
+        )}
+      </div>
+
+      {!isSiblingMode && (
+        <Controls
+          isRunning={isRunning}
+          onBack={goBack}
+          onStart={startTimer}
+          onStop={stopTimer}
+          onReset={() => setShowResetConfirm(true)}
+          canGoBack={canGoBack}
+          canStartOrStop={canStartOrStop}
+          isCompact={false}
+        />
+      )}
 
       <AnimatePresence>
         {showResetConfirm && (

@@ -11,6 +11,7 @@ interface DonutTimerProps {
   isOverdue?: boolean;
   shape?: TimerShape;
   color?: TimerColor;
+  children?: React.ReactNode;
 }
 
 export const DonutTimer: React.FC<DonutTimerProps> = ({
@@ -21,6 +22,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
   isOverdue = false,
   shape = 'circle',
   color = 'blue',
+  children,
 }) => {
   const CHUNK_MAX = 300; // 5分 = 300秒
   const MAX_DISPLAY_CHUNKS = 10; // 最大表示チャンク数
@@ -144,8 +146,6 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
           perimeter = calculatePerimeter(points);
           path = pointsToPath(points);
         } else if (isHexagon) {
-          points = getShapePoints(radius, 6, 0); // 0度から始めると平らな面が上に来るが、-PI/2で頂点が上に。でも六角形は通常フラット上がいいかも？
-          // -PI/2 で頂点が上にくるようにする
           points = getShapePoints(radius, 6, -Math.PI / 2);
           perimeter = calculatePerimeter(points);
           path = pointsToPath(points);
@@ -345,6 +345,8 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                   />
                 ))}
             </svg>
+            {/* 最初のチャンクの中央に子供（画像など）を配置 */}
+            {i === 0 && children && <div className={styles.donutTimerHole}>{children}</div>}
           </div>
         );
       })}

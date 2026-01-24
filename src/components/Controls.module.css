@@ -5,6 +5,15 @@
   padding: 24px 0;
   position: relative;
   width: 100%;
+  transition: padding 0.3s ease, gap 0.3s ease;
+}
+
+.controls.compact {
+  padding: 8px;
+  gap: 12px;
+  flex-direction: column;
+  height: 100%;
+  width: auto;
 }
 
 .btn {
@@ -25,6 +34,16 @@
   color: white;
   box-shadow: var(--clay-shadow);
   text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.compact .btn {
+  height: 48px;
+  font-size: 18px;
+  gap: 4px;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 100px;
+  padding: 0 8px;
 }
 
 .btn:hover:not(:disabled) {
@@ -59,10 +78,19 @@
   max-width: 180px;
 }
 
+.compact .btnBack {
+  max-width: 120px;
+}
+
 .btnReset {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   border: 4px solid white;
   color: var(--color-text-muted);
   max-width: 80px;
+}
+
+.compact .btnReset {
+  max-width: 48px;
+  border-width: 3px;
 }

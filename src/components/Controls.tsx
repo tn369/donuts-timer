@@ -11,6 +11,7 @@ interface ControlsProps {
   onReset: () => void;
   canGoBack: boolean;
   canStartOrStop: boolean;
+  isCompact?: boolean;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
@@ -21,9 +22,10 @@ export const Controls: React.FC<ControlsProps> = ({
   onReset,
   canGoBack,
   canStartOrStop,
+  isCompact = false,
 }) => {
   return (
-    <div className={styles.controls}>
+    <div className={`${styles.controls} ${isCompact ? styles.compact : ''}`}>
       <motion.button
         whileTap={{ scale: 0.95 }}
         className={`${styles.btn} ${styles.btnBack}`}

@@ -9,6 +9,13 @@
   overflow-y: hidden;
   mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+  transition: all 0.3s ease;
+}
+
+.taskList.compact {
+  min-height: 120px;
+  padding: 8px 4px;
+  gap: 12px;
 }
 
 .taskList::-webkit-scrollbar {

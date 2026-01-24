@@ -13,6 +13,7 @@ interface TaskCardProps {
   onSelect: (taskId: string) => void;
   shape?: TimerShape;
   color?: TimerColor;
+  isCompact?: boolean;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -22,6 +23,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onSelect,
   shape,
   color,
+  isCompact = false,
 }) => {
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
@@ -32,6 +34,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     ${isSelected ? styles.selected : ''} 
     ${isDone ? styles.done : ''} 
     ${isOverdue ? styles.overdue : ''}
+    ${isCompact ? styles.compact : ''}
   `.trim();
 
   return (
@@ -60,53 +63,91 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       }}
       onClick={() => isSelectable && onSelect(task.id)}
     >
-      {!isDone && (
-        <div className={styles.taskImageContainer}>
-          {task.icon ? (
-            <motion.img
-              src={task.icon}
-              alt={task.name}
-              className={styles.taskImage}
-              animate={
-                isSelected && task.elapsedSeconds < task.plannedSeconds
-                  ? {
-                    scale: [1, 1.05, 1],
-                    rotate: [0, -2, 2, 0],
-                  }
-                  : {}
-              }
-              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-            />
-          ) : (
-            <div className={styles.placeholderIcon}>
-              <Camera size={48} color="var(--color-primary)" opacity={0.3} />
+      {isCompact ? (
+        // コンパクトモード：横型レイアウト
+        <div className={styles.compactRow}>
+          <div className={styles.compactLeft}>
+            {isDone ? (
+              <div className={`${styles.taskIcon} ${styles.done} ${styles.compactDone}`}>
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                  <Check size={32} strokeWidth={4} />
+                </motion.div>
+              </div>
+            ) : (
+              <DonutTimer
+                totalSeconds={task.plannedSeconds}
+                elapsedSeconds={task.elapsedSeconds}
+                isOverdue={isOverdue}
+                size={90}
+                strokeWidth={16}
+                shape={shape}
+                color={color}
+              >
+                {task.icon && (
+                  <img src={task.icon} alt={task.name} className={styles.taskImageCompact} />
+                )}
+              </DonutTimer>
+            )}
+          </div>
+          <div className={styles.compactRight}>
+            <div className={styles.taskName}>{task.name}</div>
+            <div className={styles.taskTime}>
+              {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
             </div>
-          )}
-        </div>
-      )}
-
-      {isDone ? (
-        <div className={`${styles.taskIcon} ${styles.done}`}>
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 10 }}>
-            <Check size={48} strokeWidth={4} />
-          </motion.div>
+          </div>
         </div>
       ) : (
-        <DonutTimer
-          totalSeconds={task.plannedSeconds}
-          elapsedSeconds={task.elapsedSeconds}
-          isOverdue={isOverdue}
-          size={100}
-          strokeWidth={20}
-          shape={shape}
-          color={color}
-        />
-      )}
+        // 通常モード：縦型レイアウト
+        <>
+            {!isDone && (
+              <div className={styles.taskImageContainer}>
+                {task.icon ? (
+                  <motion.img
+                    src={task.icon}
+                    alt={task.name}
+                    className={styles.taskImage}
+                    animate={
+                      isSelected && task.elapsedSeconds < task.plannedSeconds
+                        ? {
+                          scale: [1, 1.05, 1],
+                          rotate: [0, -2, 2, 0],
+                        }
+                        : {}
+                    }
+                    transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+                  />
+                ) : (
+                  <div className={styles.placeholderIcon}>
+                    <Camera size={48} color="var(--color-primary)" opacity={0.3} />
+                  </div>
+                )}
+              </div>
+            )}
 
-      <div className={styles.taskName}>{task.name}</div>
-      <div className={styles.taskTime}>
-        {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
-      </div>
+            {isDone ? (
+              <div className={`${styles.taskIcon} ${styles.done}`}>
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 10 }}>
+                  <Check size={48} strokeWidth={4} />
+                </motion.div>
+              </div>
+            ) : (
+              <DonutTimer
+                totalSeconds={task.plannedSeconds}
+                elapsedSeconds={task.elapsedSeconds}
+                isOverdue={isOverdue}
+                size={100}
+                strokeWidth={20}
+                shape={shape}
+                color={color}
+              />
+            )}
+
+            <div className={styles.taskName}>{task.name}</div>
+            <div className={styles.taskTime}>
+              {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
+            </div>
+        </>
+      )}
     </motion.div>
   );
 };

@@ -197,6 +197,7 @@ function App() {
                 setSettingsSource('main');
                 setCurrentScreen('settings');
               }}
+              isSiblingMode={true}
             />
           </div>
           <div className={styles.siblingItem}>
@@ -210,6 +211,7 @@ function App() {
                 setCurrentScreen('settings');
               }}
               showSelectionButton={false}
+              isSiblingMode={true}
             />
           </div>
         </div>

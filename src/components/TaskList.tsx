@@ -9,6 +9,7 @@ interface TaskListProps {
   onSelectTask: (taskId: string) => void;
   shape?: TimerShape;
   color?: TimerColor;
+  isCompact?: boolean;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -18,9 +19,10 @@ export const TaskList: React.FC<TaskListProps> = ({
   onSelectTask,
   shape,
   color,
+  isCompact = false,
 }) => {
   return (
-    <div className={styles.taskList}>
+    <div className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}>
       {tasks.map((task) => (
         <TaskCard
           key={task.id}
@@ -30,6 +32,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           onSelect={onSelectTask}
           shape={shape}
           color={color}
+          isCompact={isCompact}
         />
       ))}
     </div>

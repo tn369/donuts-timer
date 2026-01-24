@@ -25,6 +25,20 @@
   justify-content: center;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
   flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.donutTimerHole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .donutTimerSvg {
