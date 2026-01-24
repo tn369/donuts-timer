@@ -23,6 +23,7 @@
   align-items: center;
   margin-bottom: 8px;
   min-height: 44px;
+  position: relative;
 }
 
 .siblingContainer {
