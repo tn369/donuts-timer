@@ -26,6 +26,7 @@ export interface SVGRenderProps {
   stroke?: string;
   strokeWidth?: number | string;
   fill?: string;
+  className?: string;
 }
 
 export abstract class ShapeRenderer {

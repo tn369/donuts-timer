@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import styles from './DonutTimer.module.css';
 import type { TimerShape, TimerColor } from '../types';
-import { createRenderer, type SVGRenderProps } from '../utils/shapeUtils';
+import { createRenderer, ShapeRenderer } from '../utils/shapeUtils';
+import type { SVGRenderProps } from '../utils/shapeUtils';
 
 interface TimerChunkProps {
   capacity: number;
@@ -32,6 +33,81 @@ const getColorClass = (color: TimerColor) => {
   return colorMap[color] || styles.colorBlue;
 };
 
+const ProgressShape: React.FC<{
+  renderer: ShapeRenderer;
+  commonProps: SVGRenderProps;
+  perimeter: number;
+  offset: number;
+  size: number;
+  strokeWidth: number;
+}> = ({ renderer, commonProps, perimeter, offset, size, strokeWidth }) => {
+  const motionProps = {
+    strokeDasharray: perimeter,
+    initial: { strokeDashoffset: 0 },
+    animate: { strokeDashoffset: offset },
+    transition: { duration: 0.5, ease: 'linear' as const },
+    strokeLinecap: 'butt' as const,
+    ...(renderer.type === 'circle'
+      ? { transform: `rotate(-90 ${size / 2} ${size / 2})` }
+      : { pathLength: perimeter }),
+  };
+
+  switch (renderer.type) {
+    case 'circle':
+      return <motion.circle {...commonProps} {...motionProps} strokeWidth={strokeWidth} />;
+    case 'rect':
+      return <motion.rect {...commonProps} {...motionProps} strokeWidth={strokeWidth} />;
+    case 'path':
+      return (
+        <motion.path
+          {...commonProps}
+          {...motionProps}
+          strokeLinejoin="round"
+          strokeWidth={strokeWidth}
+        />
+      );
+    default:
+      return null;
+  }
+};
+
+const BgShape: React.FC<{
+  renderer: ShapeRenderer;
+  commonProps: SVGRenderProps;
+  strokeWidth: number;
+}> = ({ renderer, commonProps, strokeWidth }) => {
+  const props = { ...commonProps, strokeWidth: strokeWidth * 1.1 };
+  switch (renderer.type) {
+    case 'circle':
+      return <circle {...props} />;
+    case 'rect':
+      return <rect {...props} />;
+    case 'path':
+      return <path {...props} strokeLinejoin="round" />;
+    default:
+      return null;
+  }
+};
+
+const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
+  const common = {
+    fill: 'none',
+    stroke: 'rgba(0,0,0,0.03)',
+    strokeWidth: '1',
+  } as SVGRenderProps;
+  const props = renderer.getOuterProps();
+  switch (renderer.type) {
+    case 'circle':
+      return <circle {...props} {...common} />;
+    case 'rect':
+      return <rect {...props} {...common} />;
+    case 'path':
+      return <path {...props} {...common} strokeLinejoin="round" />;
+    default:
+      return null;
+  }
+};
+
 export const TimerChunk: React.FC<TimerChunkProps> = ({
   capacity,
   currentRemaining,
@@ -58,46 +134,6 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
     ${getColorClass(color)}
   `.trim();
 
-  const renderShape = (componentProps: SVGRenderProps, isProgress = false) => {
-    const commonProps = {
-      className: isProgress ? fillClassName : styles.donutTimerBg,
-      strokeWidth: isProgress ? strokeWidth : strokeWidth * 1.1,
-      fill: 'none',
-      ...componentProps,
-    };
-
-    if (isProgress) {
-      const motionProps = {
-        strokeDasharray: perimeter,
-        initial: { strokeDashoffset: 0 },
-        animate: { strokeDashoffset: offset },
-        transition: { duration: 0.5, ease: 'linear' as const },
-        strokeLinecap: 'butt' as const,
-        ...(renderer.type === 'circle'
-          ? { transform: `rotate(-90 ${size / 2} ${size / 2})` }
-          : { pathLength: perimeter }),
-      };
-
-      switch (renderer.type) {
-        case 'circle':
-          return <motion.circle {...commonProps} {...motionProps} />;
-        case 'rect':
-          return <motion.rect {...commonProps} {...motionProps} />;
-        case 'path':
-          return <motion.path {...commonProps} {...motionProps} strokeLinejoin="round" />;
-      }
-    } else {
-      switch (renderer.type) {
-        case 'circle':
-          return <circle {...commonProps} />;
-        case 'rect':
-          return <rect {...commonProps} />;
-        case 'path':
-          return <path {...commonProps} strokeLinejoin="round" />;
-      }
-    }
-  };
-
   return (
     <div className={styles.donutTimer} style={{ width: size, height: size }}>
       <svg
@@ -106,38 +142,26 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
         viewBox={`0 0 ${size} ${size}`}
         className={styles.donutTimerSvg}
       >
-        {/* 外枠 */}
-        {renderer.type === 'circle' ? (
-          <circle
-            {...renderer.getOuterProps()}
-            fill="none"
-            stroke="rgba(0,0,0,0.03)"
-            strokeWidth="1"
-          />
-        ) : renderer.type === 'rect' ? (
-          <rect
-            {...renderer.getOuterProps()}
-            fill="none"
-            stroke="rgba(0,0,0,0.03)"
-            strokeWidth="1"
-          />
-        ) : (
-          <path
-            {...renderer.getOuterProps()}
-            fill="none"
-            stroke="rgba(0,0,0,0.03)"
-            strokeWidth="1"
-            strokeLinejoin="round"
+        <OuterBorder renderer={renderer} />
+        <BgShape
+          renderer={renderer}
+          commonProps={{
+            className: styles.donutTimerBg,
+            fill: 'none',
+            ...renderer.getBackgroundProps(),
+          }}
+          strokeWidth={strokeWidth}
+        />
+        {progress > 0 && (
+          <ProgressShape
+            renderer={renderer}
+            commonProps={{ className: fillClassName, fill: 'none', ...renderer.getProgressProps() }}
+            perimeter={perimeter}
+            offset={offset}
+            size={size}
+            strokeWidth={strokeWidth}
           />
         )}
-
-        {/* 背景 */}
-        {renderShape(renderer.getBackgroundProps())}
-
-        {/* 進捗 */}
-        {progress > 0 && renderShape(renderer.getProgressProps(), true)}
-
-        {/* 目盛り */}
         {capacity >= 60 &&
           [...Array(ticksCount)].map((_, j) => (
             <line

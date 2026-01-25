@@ -14,6 +14,71 @@ interface TodoListSettingsProps {
   onBack: () => void;
 }
 
+const COLOR_VALUES: Record<string, string> = {
+  red: '#ef4444',
+  blue: '#3b82f6',
+  yellow: '#f59e0b',
+  green: '#10b981',
+  pink: '#ec4899',
+  purple: '#8b5cf6',
+  orange: '#f97316',
+  teal: '#14b8a6',
+  indigo: '#6366f1',
+  cyan: '#06b6d4',
+  lime: '#84cc16',
+};
+
+const COLOR_NAMES: Record<string, string> = {
+  red: 'あか',
+  blue: 'あお',
+  yellow: 'きいろ',
+  green: 'みどり',
+  pink: 'ももいろ',
+  purple: 'むらさき',
+  orange: 'だいだい',
+  teal: 'てぃーる',
+  indigo: 'あい',
+  cyan: 'しあん',
+  lime: 'らいむ',
+};
+
+const SHAPE_NAMES: Record<string, string> = {
+  circle: 'まる',
+  square: 'しかく',
+  triangle: 'さんかく',
+  diamond: 'だいや',
+  pentagon: 'ごかく',
+  hexagon: 'ろっかく',
+  octagon: 'はっかく',
+  star: 'ほし',
+  heart: 'はーと',
+};
+
+const SHAPES = [
+  'circle',
+  'square',
+  'triangle',
+  'diamond',
+  'pentagon',
+  'hexagon',
+  'octagon',
+  'star',
+  'heart',
+] as const;
+const COLORS = [
+  'red',
+  'blue',
+  'yellow',
+  'green',
+  'pink',
+  'purple',
+  'orange',
+  'teal',
+  'indigo',
+  'cyan',
+  'lime',
+] as const;
+
 export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   list,
   allExistingIcons = [],
@@ -45,7 +110,6 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
       actualSeconds: 0,
     };
 
-    // ごほうび(reward)の前に挿入
     const rewardIndex = editedList.tasks.findIndex((t) => t.kind === 'reward');
     const newTasks = [...editedList.tasks];
     if (rewardIndex !== -1) {
@@ -72,71 +136,11 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   };
 
   const handleReorderTasks = (newOrder: Task[]) => {
-    // ごほうびタスクを取得
     const rewardTasks = editedList.tasks.filter((t) => t.kind === 'reward');
-    // 新しい順序にごほうびタスクを追加
     setEditedList({
       ...editedList,
       tasks: [...newOrder, ...rewardTasks],
     });
-  };
-
-  const getColorValue = (color: string) => {
-    switch (color) {
-      case 'red':
-        return '#ef4444';
-      case 'blue':
-        return '#3b82f6';
-      case 'yellow':
-        return '#f59e0b';
-      case 'green':
-        return '#10b981';
-      case 'pink':
-        return '#ec4899';
-      case 'purple':
-        return '#8b5cf6';
-      case 'orange':
-        return '#f97316';
-      case 'teal':
-        return '#14b8a6';
-      case 'indigo':
-        return '#6366f1';
-      case 'cyan':
-        return '#06b6d4';
-      case 'lime':
-        return '#84cc16';
-      default:
-        return '#3b82f6';
-    }
-  };
-
-  const getColorName = (color: string) => {
-    switch (color) {
-      case 'red':
-        return 'あか';
-      case 'blue':
-        return 'あお';
-      case 'yellow':
-        return 'きいろ';
-      case 'green':
-        return 'みどり';
-      case 'pink':
-        return 'ももいろ';
-      case 'purple':
-        return 'むらさき';
-      case 'orange':
-        return 'だいだい';
-      case 'teal':
-        return 'てぃーる';
-      case 'indigo':
-        return 'あい';
-      case 'cyan':
-        return 'しあん';
-      case 'lime':
-        return 'らいむ';
-      default:
-        return 'あお';
-    }
   };
 
   return (
@@ -172,19 +176,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>どーなつタイマー の かたち</h2>
           <div className={styles.shapeSelection}>
-            {(
-              [
-                'circle',
-                'square',
-                'triangle',
-                'diamond',
-                'pentagon',
-                'hexagon',
-                'octagon',
-                'star',
-                'heart',
-              ] as const
-            ).map((s) => (
+            {SHAPES.map((s) => (
               <button
                 key={s}
                 className={`${styles.modeButton} ${editedList.timerSettings?.shape === s || (!editedList.timerSettings?.shape && s === 'circle') ? styles.active : ''}`}
@@ -202,38 +194,14 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 <div className={styles.modeIcon}>
                   <ShapeIcon shape={s} size={40} color="currentColor" />
                 </div>
-                <div className={styles.modeLabel}>
-                  {s === 'circle' && 'まる'}
-                  {s === 'square' && 'しかく'}
-                  {s === 'triangle' && 'さんかく'}
-                  {s === 'diamond' && 'だいや'}
-                  {s === 'pentagon' && 'ごかく'}
-                  {s === 'hexagon' && 'ろっかく'}
-                  {s === 'octagon' && 'はっかく'}
-                  {s === 'star' && 'ほし'}
-                  {s === 'heart' && 'はーと'}
-                </div>
+                <div className={styles.modeLabel}>{SHAPE_NAMES[s]}</div>
               </button>
             ))}
           </div>
 
           <h2 className={styles.sectionTitle}>どーなつタイマー の いろ</h2>
           <div className={styles.colorSelection}>
-            {(
-              [
-                'red',
-                'blue',
-                'yellow',
-                'green',
-                'pink',
-                'purple',
-                'orange',
-                'teal',
-                'indigo',
-                'cyan',
-                'lime',
-              ] as const
-            ).map((c) => (
+            {COLORS.map((c) => (
               <button
                 key={c}
                 className={`${styles.colorButton} ${editedList.timerSettings?.color === c || (!editedList.timerSettings?.color && c === 'blue') ? styles.active : ''}`}
@@ -246,10 +214,10 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                     },
                   })
                 }
-                style={{ color: getColorValue(c) }}
+                style={{ color: COLOR_VALUES[c] }}
               >
-                <div className={styles.colorCircle} style={{ background: getColorValue(c) }} />
-                <div className={styles.colorLabel}>{getColorName(c)}</div>
+                <div className={styles.colorCircle} style={{ background: COLOR_VALUES[c] }} />
+                <div className={styles.colorLabel}>{COLOR_NAMES[c]}</div>
               </button>
             ))}
           </div>
@@ -349,6 +317,58 @@ interface TaskEditorItemProps {
   allExistingIcons: string[];
 }
 
+const TaskEditorTimeInput: React.FC<{
+  task: Task;
+  mode: 'duration' | 'target-time';
+  targetHour: number;
+  targetMinute: number;
+  onTaskChange: (taskId: string, updates: Partial<Task>) => void;
+  onTargetTimeChange: (updates: Partial<TargetTimeSettings>) => void;
+}> = ({ task, mode, targetHour, targetMinute, onTaskChange, onTargetTimeChange }) => {
+  if (task.kind === 'reward' && mode === 'target-time') {
+    return (
+      <div className={styles.taskTargetTimeInputs}>
+        <select
+          className={styles.timeSelectSmall}
+          value={targetHour}
+          onChange={(e) => onTargetTimeChange({ targetHour: parseInt(e.target.value) })}
+        >
+          {Array.from({ length: 24 }).map((_, i) => (
+            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+          ))}
+        </select>
+        <span className={styles.timeSeparatorSmall}>:</span>
+        <select
+          className={styles.timeSelectSmall}
+          value={targetMinute}
+          onChange={(e) => onTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
+        >
+          {Array.from({ length: 60 }).map((_, i) => (
+            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+          ))}
+        </select>
+        <span className={styles.timeLabelSmall}>におわる</span>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <input
+        type="number"
+        className={styles.taskMinutesInput}
+        value={Math.floor(task.plannedSeconds / 60)}
+        onChange={(e) => onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
+        disabled={task.kind === 'reward' && mode === 'target-time'}
+      />
+      <span>ぷん</span>
+      {task.kind === 'reward' && mode === 'target-time' && (
+        <span className={styles.autoCalcHint}>（じどう計算）</span>
+      )}
+    </>
+  );
+};
+
 const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   task,
   mode,
@@ -369,7 +389,6 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // ファイルサイズチェック（目安として1MB以下）
       if (file.size > 1024 * 1024) {
         alert('画像サイズが大きすぎます。1MB以下の画像を選んでください。');
         return;
@@ -477,50 +496,14 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           onChange={(e) => onTaskChange(task.id, { name: e.target.value })}
         />
         <div className={styles.taskTimeInputGroup}>
-          {task.kind === 'reward' && mode === 'target-time' ? (
-            <div className={styles.taskTargetTimeInputs}>
-              <select
-                className={styles.timeSelectSmall}
-                value={targetHour}
-                onChange={(e) => onTargetTimeChange({ targetHour: parseInt(e.target.value) })}
-              >
-                {Array.from({ length: 24 }).map((_, i) => (
-                  <option key={i} value={i}>
-                    {i.toString().padStart(2, '0')}
-                  </option>
-                ))}
-              </select>
-              <span className={styles.timeSeparatorSmall}>:</span>
-              <select
-                className={styles.timeSelectSmall}
-                value={targetMinute}
-                onChange={(e) => onTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
-              >
-                {Array.from({ length: 60 }).map((_, i) => (
-                  <option key={i} value={i}>
-                    {i.toString().padStart(2, '0')}
-                  </option>
-                ))}
-              </select>
-              <span className={styles.timeLabelSmall}>におわる</span>
-            </div>
-          ) : (
-            <>
-              <input
-                type="number"
-                className={styles.taskMinutesInput}
-                value={Math.floor(task.plannedSeconds / 60)}
-                onChange={(e) =>
-                  onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })
-                }
-                disabled={task.kind === 'reward' && mode === 'target-time'}
-              />
-              <span>ぷん</span>
-              {task.kind === 'reward' && mode === 'target-time' && (
-                <span className={styles.autoCalcHint}>（じどう計算）</span>
-              )}
-            </>
-          )}
+          <TaskEditorTimeInput
+            task={task}
+            mode={mode}
+            targetHour={targetHour}
+            targetMinute={targetMinute}
+            onTaskChange={onTaskChange}
+            onTargetTimeChange={onTargetTimeChange}
+          />
         </div>
       </div>
 
