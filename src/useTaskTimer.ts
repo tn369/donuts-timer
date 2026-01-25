@@ -140,57 +140,69 @@ function timerReducer(state: State, action: Action): State {
     }
 
     case 'SELECT_TASK': {
-      const { taskId } = action;
-      const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
+      const { taskId, now } = action;
+      const tappedIndex = state.tasks.findIndex((t) => t.id === taskId);
 
-      // Selectable check
-      if (taskIndex === -1) return state;
-      if (taskIndex > 0 && state.tasks[taskIndex - 1].status !== 'done') return state;
+      if (tappedIndex === -1) return state;
 
-      const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
+      const tappedTask = state.tasks[tappedIndex];
       const isCurrentTapped = taskId === state.selectedTaskId;
 
       let updatedTasks = [...state.tasks];
       let nextTaskIdToSelect = state.selectedTaskId;
       let nextIsTimerRunning = state.isTimerRunning;
 
-      if (currentIndex !== -1) {
-        const currentTask = updatedTasks[currentIndex];
-
-        if (currentTask.status === 'done' && isCurrentTapped) {
-          return state;
+      if (tappedTask.status === 'done') {
+        // --- 完了済みのタスクをタップした場合 ---
+        // 現在のタスク（もしあれば）を一時停止にする
+        if (state.selectedTaskId) {
+          updatedTasks = updatedTasks.map((t) =>
+            t.id === state.selectedTaskId && t.status === 'running'
+              ? { ...t, status: 'paused' as const }
+              : t
+          );
         }
+        // タップされたタスクをアクティブ（todo）に戻す。実測時間はリセット
+        updatedTasks = updatedTasks.map((t) =>
+          t.id === taskId ? { ...t, status: 'todo' as const, actualSeconds: 0 } : t
+        );
+        nextTaskIdToSelect = taskId;
+        nextIsTimerRunning = false;
+      } else if (isCurrentTapped) {
+        // --- アクティブなタスクをタップした場合 ---
+        // 現在のタスクを完了にする
+        updatedTasks[tappedIndex] = {
+          ...tappedTask,
+          status: 'done' as const,
+          actualSeconds: tappedTask.elapsedSeconds,
+        };
 
-        if (currentTask.status === 'running' || currentTask.status === 'paused') {
-          updatedTasks[currentIndex] = {
-            ...currentTask,
-            status: 'done' as const,
-            actualSeconds: currentTask.elapsedSeconds,
-          };
-
-          if (isCurrentTapped) {
-            const nextTask = state.tasks[currentIndex + 1];
-            if (nextTask) {
-              nextTaskIdToSelect = nextTask.id;
-            } else {
-              nextIsTimerRunning = false;
-            }
-          } else {
-            nextTaskIdToSelect = taskId;
-          }
+        // 次の「未完了」タスクを探す（既に完了しているものは飛ばす）
+        const nextIncomplete = updatedTasks.slice(tappedIndex + 1).find((t) => t.status !== 'done');
+        if (nextIncomplete) {
+          nextTaskIdToSelect = nextIncomplete.id;
         } else {
-          nextTaskIdToSelect = taskId;
+          // 全て完了した場合
+          nextTaskIdToSelect = null;
+          nextIsTimerRunning = false;
         }
       } else {
+        // --- まだ開始していないタスクをタップした場合 ---
+        // 飛び級は許可しない（前のタスクが完了している必要がある）
+        if (tappedIndex > 0 && updatedTasks[tappedIndex - 1].status !== 'done') {
+          return state;
+        }
         nextTaskIdToSelect = taskId;
       }
 
+      // 遊び時間を更新
       updatedTasks = updateRewardTime(
         updatedTasks,
         state.targetTimeSettings,
         getBaseRewardSeconds(state.activeList)
       );
 
+      // 次のタスクを開始状態にする（タイマーが動いていた場合のみ継承）
       if (nextTaskIdToSelect && nextIsTimerRunning) {
         updatedTasks = updatedTasks.map((t) =>
           t.id === nextTaskIdToSelect ? { ...t, status: 'running' as const } : t
@@ -202,7 +214,7 @@ function timerReducer(state: State, action: Action): State {
         tasks: updatedTasks,
         selectedTaskId: nextTaskIdToSelect,
         isTimerRunning: nextIsTimerRunning,
-        lastTickTimestamp: nextIsTimerRunning ? action.now : null,
+        lastTickTimestamp: nextIsTimerRunning ? now : null,
       };
     }
 
@@ -519,7 +531,11 @@ export function useTaskTimer() {
     (taskId: string): boolean => {
       const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
       if (taskIndex === -1) return false;
-      if (taskIndex === 0) return true;
+
+      // 最初のタスク、または既に完了しているタスクは常に選択可能（戻るため）
+      if (taskIndex === 0 || state.tasks[taskIndex].status === 'done') return true;
+
+      // 未完了のタスクは、前のタスクが完了している場合のみ選択可能
       const previousTask = state.tasks[taskIndex - 1];
       return previousTask.status === 'done';
     },
