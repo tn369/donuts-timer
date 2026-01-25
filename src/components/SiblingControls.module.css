@@ -8,6 +8,11 @@
   padding: 8px 0;
 }
 
+.btnSpacer {
+  width: 52px;
+  height: 52px;
+}
+
 .btn {
   width: 52px;
   height: 52px;
@@ -59,11 +64,6 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
-.btnBack {
-  background: var(--glass-bg);
-  color: var(--color-text-muted);
-  border: 1px solid var(--glass-border);
-}
 
 .btnReset {
   background: var(--glass-bg);

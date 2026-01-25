@@ -18,7 +18,6 @@ type Action =
   | { type: 'SELECT_TASK'; taskId: string; now: number }
   | { type: 'START'; now: number }
   | { type: 'STOP' }
-  | { type: 'BACK'; now: number }
   | { type: 'RESET' }
   | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
   | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
@@ -271,49 +270,6 @@ function timerReducer(state: State, action: Action): State {
       };
     }
 
-    case 'BACK': {
-      const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
-      if (currentIndex === -1) return state;
-
-      const currentTask = state.tasks[currentIndex];
-      const updatedTasks = [...state.tasks];
-      let newSelectedTaskId = state.selectedTaskId;
-
-      if (currentTask.status === 'done') {
-        updatedTasks[currentIndex] = {
-          ...updatedTasks[currentIndex],
-          status: state.isTimerRunning ? ('running' as const) : ('paused' as const),
-          actualSeconds: 0,
-        };
-      } else {
-        if (currentIndex <= 0) return state;
-
-        const prevTaskIndex = currentIndex - 1;
-        newSelectedTaskId = state.tasks[prevTaskIndex].id;
-
-        updatedTasks[currentIndex] = {
-          ...updatedTasks[currentIndex],
-          status: 'todo' as const,
-        };
-
-        updatedTasks[prevTaskIndex] = {
-          ...updatedTasks[prevTaskIndex],
-          status: state.isTimerRunning ? ('running' as const) : ('paused' as const),
-          actualSeconds: 0,
-        };
-      }
-
-      return {
-        ...state,
-        tasks: updateRewardTime(
-          updatedTasks,
-          state.targetTimeSettings,
-          getBaseRewardSeconds(state.activeList)
-        ),
-        selectedTaskId: newSelectedTaskId,
-        lastTickTimestamp: state.isTimerRunning ? action.now : null,
-      };
-    }
 
     case 'RESET': {
       if (!state.activeList) return state;
@@ -543,9 +499,6 @@ export function useTaskTimer() {
     dispatch({ type: 'STOP' });
   }, []);
 
-  const goBack = useCallback(() => {
-    dispatch({ type: 'BACK', now: Date.now() });
-  }, []);
 
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });
@@ -605,7 +558,6 @@ export function useTaskTimer() {
     selectTask,
     startTimer,
     stopTimer,
-    goBack,
     reset,
     setTasks,
     setTargetTimeSettings,

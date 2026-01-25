@@ -35,7 +35,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     selectTask,
     startTimer,
     stopTimer,
-    goBack,
     reset,
     initList,
     timerSettings,
@@ -78,10 +77,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
 
   const isRunning = selectedTask?.status === 'running';
 
-  const canGoBack = useMemo(() => {
-    const currentIndex = tasks.findIndex((t) => t.id === selectedTaskId);
-    return currentIndex > 0 || selectedTask?.status === 'done';
-  }, [tasks, selectedTaskId, selectedTask]);
 
   const canStartOrStop = useMemo(() => {
     return !(!isRunning && (!selectedTaskId || selectedTask?.status === 'done'));
@@ -106,11 +101,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
           <div className={styles.topMainControls}>
             <Controls
               isRunning={isRunning}
-              onBack={goBack}
               onStart={startTimer}
               onStop={stopTimer}
               onReset={() => setShowResetConfirm(true)}
-              canGoBack={canGoBack}
               canStartOrStop={canStartOrStop}
               isCompact={true}
             />
@@ -238,11 +231,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
           <div className={styles.sideControls}>
             <SiblingControls
               isRunning={isRunning}
-              onBack={goBack}
               onStart={startTimer}
               onStop={stopTimer}
               onReset={() => setShowResetConfirm(true)}
-              canGoBack={canGoBack}
               canStartOrStop={canStartOrStop}
             />
           </div>

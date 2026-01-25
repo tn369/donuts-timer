@@ -1,38 +1,28 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import styles from './Controls.module.css';
 import { ControlButton } from './ControlButton';
 
 interface ControlsProps {
   isRunning: boolean;
-  onBack: () => void;
   onStart: () => void;
   onStop: () => void;
   onReset: () => void;
-  canGoBack: boolean;
   canStartOrStop: boolean;
   isCompact?: boolean;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
   isRunning,
-  onBack,
   onStart,
   onStop,
   onReset,
-  canGoBack,
   canStartOrStop,
   isCompact = false,
 }) => {
   return (
     <div className={`${styles.controls} ${isCompact ? styles.compact : ''}`}>
-      <ControlButton
-        className={`${styles.btn} ${styles.btnBack}`}
-        onClick={onBack}
-        disabled={!canGoBack}
-      >
-        <ArrowLeft size={18} /> ひとつもどる
-      </ControlButton>
+      {isCompact && <div className={styles.btnSpacer} />}
 
       <ControlButton
         layout
