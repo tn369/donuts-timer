@@ -37,7 +37,11 @@ const calculateChunks = (totalSeconds: number) => {
   return chunks;
 };
 
-const calculateChunkRemaining = (chunks: number[], elapsedSeconds: number, totalSeconds: number) => {
+const calculateChunkRemaining = (
+  chunks: number[],
+  elapsedSeconds: number,
+  totalSeconds: number
+) => {
   const totalRemaining = Math.max(0, totalSeconds - elapsedSeconds);
   const chunkRemaining: number[] = [];
   let tempRemaining = totalRemaining;
@@ -60,7 +64,11 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
   children,
 }) => {
   const chunks = calculateChunks(totalSeconds);
-  const { size: baseSize, stroke: baseStrokeWidth } = getBaseMetrics(chunks.length, size, strokeWidth);
+  const { size: baseSize, stroke: baseStrokeWidth } = getBaseMetrics(
+    chunks.length,
+    size,
+    strokeWidth
+  );
   const chunkRemaining = calculateChunkRemaining(chunks, elapsedSeconds, totalSeconds);
 
   const hasMore = chunks.length > MAX_DISPLAY_CHUNKS;

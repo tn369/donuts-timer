@@ -108,7 +108,10 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
   };
 }
 
-function handleDoneTaskClick(state: State, taskId: string): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
+function handleDoneTaskClick(
+  state: State,
+  taskId: string
+): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
   let updatedTasks = [...state.tasks];
   if (state.selectedTaskId) {
     updatedTasks = updatedTasks.map((t) =>
@@ -139,7 +142,10 @@ function getNextIncompleteTaskId(tasks: Task[], currentIndex: number): string | 
   return allIncomplete.length > 0 ? allIncomplete[0].id : null;
 }
 
-function handleActiveTaskClick(state: State, tappedIndex: number): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
+function handleActiveTaskClick(
+  state: State,
+  tappedIndex: number
+): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
   const tappedTask = state.tasks[tappedIndex];
   const updatedTasks = [...state.tasks];
   let nextTaskIdToSelect = state.selectedTaskId;
@@ -163,7 +169,11 @@ function handleActiveTaskClick(state: State, tappedIndex: number): { updatedTask
   return { updatedTasks, nextTaskIdToSelect, nextIsTimerRunning };
 }
 
-function handleTodoTaskClick(state: State, taskId: string, tappedIndex: number): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } | null {
+function handleTodoTaskClick(
+  state: State,
+  taskId: string,
+  tappedIndex: number
+): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } | null {
   const tappedTask = state.tasks[tappedIndex];
   let updatedTasks = [...state.tasks];
 
@@ -185,7 +195,10 @@ function handleTodoTaskClick(state: State, taskId: string, tappedIndex: number):
   return { updatedTasks, nextTaskIdToSelect: taskId, nextIsTimerRunning: true };
 }
 
-function handleSelectTask(state: State, action: { type: 'SELECT_TASK'; taskId: string; now: number }): State {
+function handleSelectTask(
+  state: State,
+  action: { type: 'SELECT_TASK'; taskId: string; now: number }
+): State {
   const { taskId, now } = action;
   const tappedIndex = state.tasks.findIndex((t) => t.id === taskId);
   if (tappedIndex === -1) return state;
@@ -193,7 +206,11 @@ function handleSelectTask(state: State, action: { type: 'SELECT_TASK'; taskId: s
   const tappedTask = state.tasks[tappedIndex];
   const isCurrentTapped = taskId === state.selectedTaskId;
 
-  let result: { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } | null;
+  let result: {
+    updatedTasks: Task[];
+    nextTaskIdToSelect: string | null;
+    nextIsTimerRunning: boolean;
+  } | null;
 
   if (tappedTask.status === 'done') {
     result = handleDoneTaskClick(state, taskId);
@@ -281,14 +298,21 @@ function handleReset(state: State): State {
   }));
   return {
     ...state,
-    tasks: updateRewardTime(resetTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
+    tasks: updateRewardTime(
+      resetTasks,
+      state.targetTimeSettings,
+      getBaseRewardSeconds(state.activeList)
+    ),
     selectedTaskId: null,
     isTimerRunning: false,
     lastTickTimestamp: null,
   };
 }
 
-function handleUpdateActiveList(state: State, action: { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }): State {
+function handleUpdateActiveList(
+  state: State,
+  action: { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
+): State {
   const { list } = action;
   const updatedTasks = list.tasks.map((newTask: Task) => {
     const existingTask = state.tasks.find((t) => t.id === newTask.id);
@@ -350,7 +374,11 @@ function handleFastForward(state: State): State {
     t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
   );
 
-  updatedTasks = updateRewardTime(updatedTasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList));
+  updatedTasks = updateRewardTime(
+    updatedTasks,
+    state.targetTimeSettings,
+    getBaseRewardSeconds(state.activeList)
+  );
 
   return {
     ...state,
@@ -358,7 +386,10 @@ function handleFastForward(state: State): State {
   };
 }
 
-type Handler<T extends Action['type']> = (state: State, action: Extract<Action, { type: T }>) => State;
+type Handler<T extends Action['type']> = (
+  state: State,
+  action: Extract<Action, { type: T }>
+) => State;
 
 const handlers: { [K in Action['type']]?: Handler<K> } = {
   TICK: handleTick as Handler<'TICK'>,
@@ -367,18 +398,18 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   STOP: handleStop as unknown as Handler<'STOP'>,
   RESET: handleReset as unknown as Handler<'RESET'>,
   UPDATE_ACTIVE_LIST: handleUpdateActiveList as Handler<'UPDATE_ACTIVE_LIST'>,
-  INIT_LIST: (state, action) => handleInitList(action as { type: 'INIT_LIST'; list: TodoList }),
-  SET_TIMER_SETTINGS: (state, action) => ({ ...state, timerSettings: (action as { settings: any }).settings }),
-  SET_TASKS: (state, action) => ({ ...state, tasks: (action as { tasks: any }).tasks }),
+  INIT_LIST: (state, action) => handleInitList(action),
+  SET_TIMER_SETTINGS: (state, action) => ({ ...state, timerSettings: action.settings }),
+  SET_TASKS: (state, action) => ({ ...state, tasks: action.tasks }),
   RESTORE_SESSION: (state, action) => ({
     ...state,
-    tasks: (action as any).tasks,
-    selectedTaskId: (action as any).selectedTaskId,
-    isTimerRunning: (action as any).isTimerRunning,
-    lastTickTimestamp: (action as any).lastTickTimestamp,
+    tasks: action.tasks,
+    selectedTaskId: action.selectedTaskId,
+    isTimerRunning: action.isTimerRunning,
+    lastTickTimestamp: action.lastTickTimestamp,
   }),
   SET_TARGET_TIME_SETTINGS: (state, action) => {
-    const settings = (action as any).settings;
+    const settings = action.settings;
     return {
       ...state,
       targetTimeSettings: settings,
@@ -387,15 +418,19 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   },
   REFRESH_REWARD_TIME: (state) => ({
     ...state,
-    tasks: updateRewardTime(state.tasks, state.targetTimeSettings, getBaseRewardSeconds(state.activeList)),
+    tasks: updateRewardTime(
+      state.tasks,
+      state.targetTimeSettings,
+      getBaseRewardSeconds(state.activeList)
+    ),
   }),
   FAST_FORWARD: handleFastForward as unknown as Handler<'FAST_FORWARD'>,
 };
 
 export function timerReducer(state: State, action: Action): State {
-  const handler = handlers[action.type];
+  const handler = handlers[action.type] as Handler<Action['type']>;
   if (handler) {
-    return (handler as any)(state, action);
+    return handler(state, action);
   }
   return state;
 }

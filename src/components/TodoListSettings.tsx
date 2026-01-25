@@ -334,7 +334,9 @@ const TaskEditorTimeInput: React.FC<{
           onChange={(e) => onTargetTimeChange({ targetHour: parseInt(e.target.value) })}
         >
           {Array.from({ length: 24 }).map((_, i) => (
-            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+            <option key={i} value={i}>
+              {i.toString().padStart(2, '0')}
+            </option>
           ))}
         </select>
         <span className={styles.timeSeparatorSmall}>:</span>
@@ -344,7 +346,9 @@ const TaskEditorTimeInput: React.FC<{
           onChange={(e) => onTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
         >
           {Array.from({ length: 60 }).map((_, i) => (
-            <option key={i} value={i}>{i.toString().padStart(2, '0')}</option>
+            <option key={i} value={i}>
+              {i.toString().padStart(2, '0')}
+            </option>
           ))}
         </select>
         <span className={styles.timeLabelSmall}>におわる</span>
@@ -358,7 +362,9 @@ const TaskEditorTimeInput: React.FC<{
         type="number"
         className={styles.taskMinutesInput}
         value={Math.floor(task.plannedSeconds / 60)}
-        onChange={(e) => onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })}
+        onChange={(e) =>
+          onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })
+        }
         disabled={task.kind === 'reward' && mode === 'target-time'}
       />
       <span>ぷん</span>

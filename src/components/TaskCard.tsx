@@ -82,9 +82,9 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
             animate={
               isSelected && task.elapsedSeconds < task.plannedSeconds
                 ? {
-                  scale: [1, 1.05, 1],
-                  rotate: [0, -2, 2, 0],
-                }
+                    scale: [1, 1.05, 1],
+                    rotate: [0, -2, 2, 0],
+                  }
                 : {}
             }
             transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
@@ -126,7 +126,12 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   </>
 );
 
-const getCardClassName = (isSelected: boolean, isDone: boolean, isOverdue: boolean, isCompact: boolean) => {
+const getCardClassName = (
+  isSelected: boolean,
+  isDone: boolean,
+  isOverdue: boolean,
+  isCompact: boolean
+) => {
   return [
     styles.taskCard,
     isSelected && styles.selected,
@@ -159,7 +164,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const isOverdue = !isDone && task.elapsedSeconds > task.plannedSeconds;
 
   const cardClassName = getCardClassName(isSelected, isDone, isOverdue, isCompact);
-  const flexGrow = getFlexGrow(task.status, task.elapsedSeconds, task.plannedSeconds, task.actualSeconds);
+  const flexGrow = getFlexGrow(
+    task.status,
+    task.elapsedSeconds,
+    task.plannedSeconds,
+    task.actualSeconds
+  );
 
   const viewProps: TaskCardViewProps = {
     task,

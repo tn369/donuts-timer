@@ -45,16 +45,16 @@ const SHAPES: (
   | 'star'
   | 'heart'
 )[] = [
-    'circle',
-    'square',
-    'triangle',
-    'diamond',
-    'pentagon',
-    'hexagon',
-    'octagon',
-    'star',
-    'heart',
-  ];
+  'circle',
+  'square',
+  'triangle',
+  'diamond',
+  'pentagon',
+  'hexagon',
+  'octagon',
+  'star',
+  'heart',
+];
 
 const COLORS: (
   | 'red'
@@ -69,18 +69,18 @@ const COLORS: (
   | 'cyan'
   | 'lime'
 )[] = [
-    'red',
-    'blue',
-    'yellow',
-    'green',
-    'pink',
-    'purple',
-    'orange',
-    'teal',
-    'indigo',
-    'cyan',
-    'lime',
-  ];
+  'red',
+  'blue',
+  'yellow',
+  'green',
+  'pink',
+  'purple',
+  'orange',
+  'teal',
+  'indigo',
+  'cyan',
+  'lime',
+];
 
 interface HeaderControlsProps {
   showSelectionButton: boolean;
