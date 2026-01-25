@@ -398,7 +398,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   STOP: handleStop as unknown as Handler<'STOP'>,
   RESET: handleReset as unknown as Handler<'RESET'>,
   UPDATE_ACTIVE_LIST: handleUpdateActiveList as Handler<'UPDATE_ACTIVE_LIST'>,
-  INIT_LIST: (state, action) => handleInitList(action),
+  INIT_LIST: (_state, action) => handleInitList(action),
   SET_TIMER_SETTINGS: (state, action) => ({ ...state, timerSettings: action.settings }),
   SET_TASKS: (state, action) => ({ ...state, tasks: action.tasks }),
   RESTORE_SESSION: (state, action) => ({
