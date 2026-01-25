@@ -56,11 +56,11 @@ export const Controls: React.FC<ControlsProps> = ({
       >
         {isRunning ? (
           <>
-            <Pause size={20} fill="currentColor" /> おわり
+            <Pause size={20} fill="currentColor" /> ストップ
           </>
         ) : (
           <>
-            <Play size={20} fill="currentColor" /> はじめる
+              <Play size={20} fill="currentColor" /> スタート
           </>
         )}
       </motion.button>
