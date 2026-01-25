@@ -1,10 +1,7 @@
 import { useEffect } from 'react';
 import type { Action, State } from './types';
 
-export function useTimerInterval(
-  state: State,
-  dispatch: React.Dispatch<Action>
-) {
+export function useTimerInterval(state: State, dispatch: React.Dispatch<Action>) {
   useEffect(() => {
     // タイマーが動いている場合は TICK を送る
     // タイマーが止まっていても、目標時刻モードの場合は時刻経過に合わせて遊び時間を再計算するために REFRESH を送る

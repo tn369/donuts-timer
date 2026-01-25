@@ -149,7 +149,9 @@ export function timerReducer(state: State, action: Action): State {
             actualSeconds: tappedTask.elapsedSeconds,
           };
 
-          const nextIncomplete = updatedTasks.slice(tappedIndex + 1).find((t) => t.status !== 'done');
+          const nextIncomplete = updatedTasks
+            .slice(tappedIndex + 1)
+            .find((t) => t.status !== 'done');
           const allIncomplete = updatedTasks.filter((t) => t.status !== 'done');
 
           if (nextIncomplete) {
@@ -182,7 +184,9 @@ export function timerReducer(state: State, action: Action): State {
         // --- まだ開始していないタスクをタップした場合（飛び級） ---
         // ごほうびタスクの場合、前のタスクが完了しているかチェック
         if (tappedTask.kind === 'reward') {
-          const hasIncompleteBefore = updatedTasks.slice(0, tappedIndex).some((t) => t.status !== 'done');
+          const hasIncompleteBefore = updatedTasks
+            .slice(0, tappedIndex)
+            .some((t) => t.status !== 'done');
           if (hasIncompleteBefore) {
             // 前に未完了がある場合は遷移させない
             return state;

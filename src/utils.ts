@@ -190,4 +190,3 @@ export const playTaskCompletionSound = () => {
   osc.start(now);
   osc.stop(now + 0.3);
 };
-

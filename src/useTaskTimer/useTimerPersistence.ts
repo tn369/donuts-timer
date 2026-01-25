@@ -2,17 +2,15 @@ import { useEffect } from 'react';
 import { loadExecutionState, saveExecutionState, clearExecutionState } from '../storage';
 import type { Action, State } from './types';
 
-export function useTimerPersistence(
-  state: State,
-  dispatch: React.Dispatch<Action>
-) {
+export function useTimerPersistence(state: State, dispatch: React.Dispatch<Action>) {
   // 保存されたステートの復元
   useEffect(() => {
     if (state.activeList) {
       const saved = loadExecutionState();
       if (saved && saved.listId === state.activeList.id) {
         // すべてのタスクが完了済みかどうかをチェック
-        const allCompleted = saved.tasks.length > 0 && saved.tasks.every((t) => t.status === 'done');
+        const allCompleted =
+          saved.tasks.length > 0 && saved.tasks.every((t) => t.status === 'done');
 
         if (allCompleted) {
           // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
@@ -41,5 +39,11 @@ export function useTimerPersistence(
         listId: state.activeList.id,
       });
     }
-  }, [state.tasks, state.selectedTaskId, state.isTimerRunning, state.lastTickTimestamp, state.activeList?.id]);
+  }, [
+    state.tasks,
+    state.selectedTaskId,
+    state.isTimerRunning,
+    state.lastTickTimestamp,
+    state.activeList?.id,
+  ]);
 }

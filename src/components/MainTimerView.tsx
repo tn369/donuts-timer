@@ -62,7 +62,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     const currentCompletedIds = new Set(currentCompletedTasks.map((t) => t.id));
 
     // 前回いなかった（＝新しく完了した）タスクを探す
-    const newlyCompletedTask = currentCompletedTasks.find((t) => !prevCompletedIdsRef.current.has(t.id));
+    const newlyCompletedTask = currentCompletedTasks.find(
+      (t) => !prevCompletedIdsRef.current.has(t.id)
+    );
 
     if (newlyCompletedTask) {
       if (newlyCompletedTask.kind === 'reward') {
@@ -76,7 +78,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   }, [tasks]);
 
   const isRunning = selectedTask?.status === 'running';
-
 
   const canStartOrStop = useMemo(() => {
     if (isRunning) return true;
