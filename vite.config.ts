@@ -15,6 +15,8 @@ export default defineConfig({
         description: 'どーなつがたのタイマーで、やることをじゅんばんにこなしていこう！',
         theme_color: '#ff85a2',
         lang: 'ja',
+        display: 'standalone',
+        orientation: 'landscape',
         icons: [
           {
             src: 'icon-192.png',
