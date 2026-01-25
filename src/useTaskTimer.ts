@@ -154,7 +154,6 @@ function timerReducer(state: State, action: Action): State {
 
       if (tappedTask.status === 'done') {
         // --- 完了済みのタスクをタップした場合 ---
-        // 現在のタスク（もしあれば）を一時停止にする
         if (state.selectedTaskId) {
           updatedTasks = updatedTasks.map((t) =>
             t.id === state.selectedTaskId && t.status === 'running'
@@ -162,7 +161,6 @@ function timerReducer(state: State, action: Action): State {
               : t
           );
         }
-        // タップされたタスクをアクティブ（todo）に戻す。実測時間はリセット
         updatedTasks = updatedTasks.map((t) =>
           t.id === taskId ? { ...t, status: 'todo' as const, actualSeconds: 0 } : t
         );
@@ -170,39 +168,48 @@ function timerReducer(state: State, action: Action): State {
         nextIsTimerRunning = false;
       } else if (isCurrentTapped) {
         // --- アクティブなタスクをタップした場合 ---
-        // 現在のタスクを完了にする
         updatedTasks[tappedIndex] = {
           ...tappedTask,
           status: 'done' as const,
           actualSeconds: tappedTask.elapsedSeconds,
         };
 
-        // 次の「未完了」タスクを探す（既に完了しているものは飛ばす）
         const nextIncomplete = updatedTasks.slice(tappedIndex + 1).find((t) => t.status !== 'done');
         if (nextIncomplete) {
           nextTaskIdToSelect = nextIncomplete.id;
         } else {
-          // 全て完了した場合
           nextTaskIdToSelect = null;
           nextIsTimerRunning = false;
         }
       } else {
-        // --- まだ開始していないタスクをタップした場合 ---
-        // 飛び級は許可しない（前のタスクが完了している必要がある）
-        if (tappedIndex > 0 && updatedTasks[tappedIndex - 1].status !== 'done') {
-          return state;
+        // --- まだ開始していないタスクをタップした場合（飛び級） ---
+        // ごほうびタスクの場合、前のタスクが完了しているかチェック
+        if (tappedTask.kind === 'reward') {
+          const hasIncompleteBefore = updatedTasks.slice(0, tappedIndex).some((t) => t.status !== 'done');
+          if (hasIncompleteBefore) {
+            // 前に未完了がある場合は遷移させない
+            return state;
+          }
+        }
+
+        // 現在のタスクがあれば中断（ステータスのみ変更）して遷移
+        if (state.selectedTaskId) {
+          updatedTasks = updatedTasks.map((t) =>
+            t.id === state.selectedTaskId && t.status === 'running'
+              ? { ...t, status: 'paused' as const }
+              : t
+          );
         }
         nextTaskIdToSelect = taskId;
+        // nextIsTimerRunning は維持する（飛ばしてもカウントを継続するため）
       }
 
-      // 遊び時間を更新
       updatedTasks = updateRewardTime(
         updatedTasks,
         state.targetTimeSettings,
         getBaseRewardSeconds(state.activeList)
       );
 
-      // 次のタスクを開始状態にする（タイマーが動いていた場合のみ継承）
       if (nextTaskIdToSelect && nextIsTimerRunning) {
         updatedTasks = updatedTasks.map((t) =>
           t.id === nextTaskIdToSelect ? { ...t, status: 'running' as const } : t
@@ -532,12 +539,18 @@ export function useTaskTimer() {
       const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
       if (taskIndex === -1) return false;
 
-      // 最初のタスク、または既に完了しているタスクは常に選択可能（戻るため）
-      if (taskIndex === 0 || state.tasks[taskIndex].status === 'done') return true;
+      const task = state.tasks[taskIndex];
 
-      // 未完了のタスクは、前のタスクが完了している場合のみ選択可能
-      const previousTask = state.tasks[taskIndex - 1];
-      return previousTask.status === 'done';
+      // 既に完了しているタスクは常に選択可能（戻るため）
+      if (task.status === 'done') return true;
+
+      // ごほうびタスクの場合、前のタスクが全て完了している必要がある
+      if (task.kind === 'reward') {
+        return state.tasks.slice(0, taskIndex).every((t) => t.status === 'done');
+      }
+
+      // それ以外の未完了タスクは自由に選択可能
+      return true;
     },
     [state.tasks]
   );
