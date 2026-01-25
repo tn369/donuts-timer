@@ -6,6 +6,7 @@ import { ShapeIcon } from './ShapeIcon';
 
 import { TaskList } from './TaskList';
 import { Controls } from './Controls';
+import { SiblingControls } from './SiblingControls';
 import { ResetModal } from './ResetModal';
 import { useTaskTimer } from '../useTaskTimer';
 import type { TodoList, Task } from '../types';
@@ -187,7 +188,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
 
         {isSiblingMode && (
           <div className={styles.sideControls}>
-            <Controls
+            <SiblingControls
               isRunning={isRunning}
               onBack={goBack}
               onStart={startTimer}
@@ -195,7 +196,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
               onReset={() => setShowResetConfirm(true)}
               canGoBack={canGoBack}
               canStartOrStop={canStartOrStop}
-              isCompact={true}
             />
           </div>
         )}
