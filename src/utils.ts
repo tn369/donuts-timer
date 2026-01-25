@@ -125,3 +125,44 @@ export const resizeImage = (
     img.src = dataUrl;
   });
 };
+
+/**
+ * 優しいチャイム音を再生する（Web Audio API）
+ */
+export const playGentleAlarm = () => {
+  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  const ctx = new AudioContextClass();
+  const now = ctx.currentTime;
+
+  const playNote = (freq: number, startTime: number, duration: number) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.2, startTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+
+  // 「さんぽ」のイントロ風メロディ（ドレミファソソララソ）
+  const tempo = 0.25; // 1拍の長さ
+  playNote(523.25, now, tempo * 0.8); // ド (C5)
+  playNote(587.33, now + tempo, tempo * 0.8); // レ (D5)
+  playNote(659.25, now + tempo * 2, tempo * 0.8); // ミ (E5)
+  playNote(698.46, now + tempo * 3, tempo * 0.8); // ファ (F5)
+  playNote(783.99, now + tempo * 4, tempo * 1.5); // ソ (G5)
+  playNote(783.99, now + tempo * 6, tempo * 1.5); // ソ (G5)
+  playNote(880.00, now + tempo * 8, tempo * 1.5); // ラ (A5)
+  playNote(880.00, now + tempo * 10, tempo * 1.5); // ラ (A5)
+  playNote(783.99, now + tempo * 12, tempo * 3); // ソ (G5)
+};
