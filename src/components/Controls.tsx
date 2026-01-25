@@ -32,7 +32,7 @@ export const Controls: React.FC<ControlsProps> = ({
         onClick={onBack}
         disabled={!canGoBack}
       >
-        <ArrowLeft size={18} /> もどる
+        <ArrowLeft size={18} /> ひとつもどる
       </motion.button>
 
       <motion.button

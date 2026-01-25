@@ -7,7 +7,6 @@ import { ShapeIcon } from './ShapeIcon';
 import { TaskList } from './TaskList';
 import { Controls } from './Controls';
 import { ResetModal } from './ResetModal';
-import { DebugControls } from './DebugControls';
 import { useTaskTimer } from '../useTaskTimer';
 import type { TodoList, Task } from '../types';
 import { playGentleAlarm } from '../utils';
@@ -37,7 +36,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     stopTimer,
     goBack,
     reset,
-    setTasks,
     initList,
     timerSettings,
     setTimerSettings,
@@ -93,6 +91,22 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             <ChevronLeft size={isSiblingMode ? 20 : 24} /> もどる
           </motion.button>
         )}
+
+        {!isSiblingMode && (
+          <div className={styles.topMainControls}>
+            <Controls
+              isRunning={isRunning}
+              onBack={goBack}
+              onStart={startTimer}
+              onStop={stopTimer}
+              onReset={() => setShowResetConfirm(true)}
+              canGoBack={canGoBack}
+              canStartOrStop={canStartOrStop}
+              isCompact={true}
+            />
+          </div>
+        )}
+
         <div className={styles.topControlsGroup}>
           <motion.button
             whileHover={{ scale: 1.05, translateY: -2 }}
@@ -187,19 +201,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         )}
       </div>
 
-      {!isSiblingMode && (
-        <Controls
-          isRunning={isRunning}
-          onBack={goBack}
-          onStart={startTimer}
-          onStop={stopTimer}
-          onReset={() => setShowResetConfirm(true)}
-          canGoBack={canGoBack}
-          canStartOrStop={canStartOrStop}
-          isCompact={false}
-        />
-      )}
-
       <AnimatePresence>
         {showResetConfirm && (
           <ResetModal
@@ -211,8 +212,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
           />
         )}
       </AnimatePresence>
-
-      <DebugControls selectedTaskId={selectedTaskId} tasks={tasks} setTasks={setTasks} />
     </div>
   );
 };
