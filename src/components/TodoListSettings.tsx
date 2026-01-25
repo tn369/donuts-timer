@@ -95,6 +95,16 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         return '#ec4899';
       case 'purple':
         return '#8b5cf6';
+      case 'orange':
+        return '#f97316';
+      case 'teal':
+        return '#14b8a6';
+      case 'indigo':
+        return '#6366f1';
+      case 'cyan':
+        return '#06b6d4';
+      case 'lime':
+        return '#84cc16';
       default:
         return '#3b82f6';
     }
@@ -114,6 +124,16 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         return 'ももいろ';
       case 'purple':
         return 'むらさき';
+      case 'orange':
+        return 'だいだい';
+      case 'teal':
+        return 'てぃーる';
+      case 'indigo':
+        return 'あい';
+      case 'cyan':
+        return 'しあん';
+      case 'lime':
+        return 'らいむ';
       default:
         return 'あお';
     }
@@ -152,7 +172,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>どーなつタイマー の かたち</h2>
           <div className={styles.shapeSelection}>
-            {(['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon', 'star'] as const).map((s) => (
+            {(['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon', 'octagon', 'star', 'heart'] as const).map((s) => (
               <button
                 key={s}
                 className={`${styles.modeButton} ${editedList.timerSettings?.shape === s || (!editedList.timerSettings?.shape && s === 'circle') ? styles.active : ''}`}
@@ -177,7 +197,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                   {s === 'diamond' && 'だいや'}
                   {s === 'pentagon' && 'ごかく'}
                   {s === 'hexagon' && 'ろっかく'}
+                  {s === 'octagon' && 'はっかく'}
                   {s === 'star' && 'ほし'}
+                  {s === 'heart' && 'はーと'}
                 </div>
               </button>
             ))}
@@ -185,7 +207,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
 
           <h2 className={styles.sectionTitle}>どーなつタイマー の いろ</h2>
           <div className={styles.colorSelection}>
-            {(['red', 'blue', 'yellow', 'green', 'pink', 'purple'] as const).map((c) => (
+            {(['red', 'blue', 'yellow', 'green', 'pink', 'purple', 'orange', 'teal', 'indigo', 'cyan', 'lime'] as const).map((c) => (
               <button
                 key={c}
                 className={`${styles.colorButton} ${editedList.timerSettings?.color === c || (!editedList.timerSettings?.color && c === 'blue') ? styles.active : ''}`}

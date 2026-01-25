@@ -75,7 +75,9 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
   const isDiamond = shape === 'diamond';
   const isPentagon = shape === 'pentagon';
   const isHexagon = shape === 'hexagon';
+  const isOctagon = shape === 'octagon';
   const isStar = shape === 'star';
+  const isHeart = shape === 'heart';
 
   return (
     <div className={styles.donutTimerGroup}>
@@ -154,10 +156,20 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
           points = getShapePoints(radius, 6, -Math.PI / 2);
           perimeter = calculatePerimeter(points);
           path = pointsToPath(points);
+        } else if (isOctagon) {
+          points = getShapePoints(radius, 8, -Math.PI / 2);
+          perimeter = calculatePerimeter(points);
+          path = pointsToPath(points);
         } else if (isStar) {
           points = getShapePoints(radius, 5, -Math.PI / 2, true);
           perimeter = calculatePerimeter(points);
           path = pointsToPath(points);
+        } else if (isHeart) {
+          // ハート型のパス近似（24x24のものをリサイズ）
+          const scale = currentSize / 24;
+          path = `M ${12 * scale} ${21.35 * scale} l ${-1.45 * scale} ${-1.32 * scale} C ${5.4 * scale} ${15.36 * scale} ${2 * scale} ${12.28 * scale} ${2 * scale} ${8.5 * scale} C ${2 * scale} ${5.42 * scale} ${4.42 * scale} ${3 * scale} ${7.5 * scale} ${3 * scale} c ${1.74 * scale} 0 ${3.41 * scale} ${0.81 * scale} ${4.5 * scale} ${2.09 * scale} C ${13.09 * scale} ${3.81 * scale} ${14.76 * scale} ${3 * scale} ${16.5 * scale} ${3 * scale} C ${19.58 * scale} ${3 * scale} ${22 * scale} ${5.42 * scale} ${22 * scale} ${8.5 * scale} c 0 ${3.78 * scale} ${-3.4 * scale} ${6.86 * scale} ${-8.55 * scale} ${11.54 * scale} L ${12 * scale} ${21.35 * scale} z`;
+          // パスの長さを概算（簡易的）
+          perimeter = 2 * Math.PI * radius * 1.2;
         }
 
         const offset = perimeter * (1 - progress);
@@ -176,6 +188,16 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
               return styles.colorPink;
             case 'purple':
               return styles.colorPurple;
+            case 'orange':
+              return styles.colorOrange;
+            case 'teal':
+              return styles.colorTeal;
+            case 'indigo':
+              return styles.colorIndigo;
+            case 'cyan':
+              return styles.colorCyan;
+            case 'lime':
+              return styles.colorLime;
             default:
               return styles.colorBlue;
           }
@@ -226,8 +248,8 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                   d={pointsToPath(
                     getShapePoints(
                       radius + 1,
-                      isStar ? 5 : isTriangle ? 3 : isDiamond ? 4 : isPentagon ? 5 : 6,
-                      isHexagon ? -Math.PI / 2 : isDiamond ? -Math.PI / 2 : -Math.PI / 2,
+                      isStar ? 5 : isTriangle ? 3 : isDiamond ? 4 : isPentagon ? 5 : isHexagon ? 6 : isOctagon ? 8 : 5,
+                      -Math.PI / 2,
                       isStar
                     )
                   )}
@@ -335,20 +357,37 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
                               ? 5
                               : isHexagon
                                 ? 6
-                                : 5
+                                : isOctagon
+                                  ? 8
+                                  : 5
                   ),
-                ].map((_, j) => (
+              ].map((_, j) => {
+                const getTicksCount = () => {
+                  if (isCircle) return 4;
+                  if (isSquare) return 4;
+                  if (isTriangle) return 3;
+                  if (isDiamond) return 4;
+                  if (isPentagon) return 5;
+                  if (isHexagon) return 6;
+                  if (isOctagon) return 8;
+                  return 5;
+                };
+                const ticksCount = getTicksCount();
+                const rotationDegree = 360 / ticksCount;
+
+                return (
                   <line
                     key={j}
                     x1={center}
                     y1={isCircle ? 0 : currentStrokeWidth / 2}
                     x2={center}
                     y2={currentStrokeWidth}
-                    transform={`rotate(${j * (isCircle ? 90 : isSquare ? 90 : isTriangle ? 120 : isDiamond ? 90 : isPentagon ? 72 : isHexagon ? 60 : 72)} ${center} ${center})`}
-                    className={styles.donutTimerTick}
-                    style={{ stroke: 'rgba(0,0,0,0.2)' }}
-                  />
-                ))}
+                      transform={`rotate(${j * rotationDegree} ${center} ${center})`}
+                      className={styles.donutTimerTick}
+                      style={{ stroke: 'rgba(0,0,0,0.2)' }}
+                    />
+                  );
+                })}
             </svg>
             {/* 最初のチャンクの中央に子供（画像など）を配置 */}
             {i === 0 && children && <div className={styles.donutTimerHole}>{children}</div>}

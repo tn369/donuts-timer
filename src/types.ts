@@ -38,8 +38,21 @@ export type TimerShape =
   | 'diamond'
   | 'pentagon'
   | 'hexagon'
-  | 'star';
-export type TimerColor = 'red' | 'blue' | 'yellow' | 'green' | 'pink' | 'purple';
+  | 'star'
+  | 'heart'
+  | 'octagon';
+export type TimerColor =
+  | 'red'
+  | 'blue'
+  | 'yellow'
+  | 'green'
+  | 'pink'
+  | 'purple'
+  | 'orange'
+  | 'teal'
+  | 'indigo'
+  | 'cyan'
+  | 'lime';
 
 export interface TimerSettings {
   shape: TimerShape;

@@ -63,6 +63,11 @@
 .colorGreen { stroke: #10b981; }
 .colorPink { stroke: #ff7eb3; }
 .colorPurple { stroke: #a18cd1; }
+.colorOrange { stroke: #f97316; }
+.colorTeal { stroke: #14b8a6; }
+.colorIndigo { stroke: #6366f1; }
+.colorCyan { stroke: #06b6d4; }
+.colorLime { stroke: #84cc16; }
 
 .overdue {
   animation: timer-pulse-danger 1.5s infinite;
