@@ -79,8 +79,12 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
 
 
   const canStartOrStop = useMemo(() => {
-    return !(!isRunning && (!selectedTaskId || selectedTask?.status === 'done'));
-  }, [isRunning, selectedTaskId, selectedTask]);
+    if (isRunning) return true;
+    if (selectedTaskId) {
+      return selectedTask?.status !== 'done';
+    }
+    return tasks.some((t) => t.status !== 'done');
+  }, [isRunning, selectedTaskId, selectedTask, tasks]);
 
   return (
     <div className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''}`}>

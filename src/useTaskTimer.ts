@@ -167,36 +167,42 @@ function timerReducer(state: State, action: Action): State {
         nextIsTimerRunning = false;
       } else if (isCurrentTapped) {
         // --- アクティブなタスクをタップした場合 ---
-        updatedTasks[tappedIndex] = {
-          ...tappedTask,
-          status: 'done' as const,
-          actualSeconds: tappedTask.elapsedSeconds,
-        };
+        if (state.isTimerRunning) {
+          // 実行中なら「完了」にする
+          updatedTasks[tappedIndex] = {
+            ...tappedTask,
+            status: 'done' as const,
+            actualSeconds: tappedTask.elapsedSeconds,
+          };
 
-        const nextIncomplete = updatedTasks.slice(tappedIndex + 1).find((t) => t.status !== 'done');
-        const allIncomplete = updatedTasks.filter((t) => t.status !== 'done');
+          const nextIncomplete = updatedTasks.slice(tappedIndex + 1).find((t) => t.status !== 'done');
+          const allIncomplete = updatedTasks.filter((t) => t.status !== 'done');
 
-        if (nextIncomplete) {
-          if (nextIncomplete.kind === 'reward') {
-            // 次がごほうびの場合、他に未完了の手順がないか確認
-            const hasOtherTodo = updatedTasks.some(
-              (t) => t.status !== 'done' && t.kind === 'todo' && t.id !== nextIncomplete.id
-            );
-            if (hasOtherTodo) {
-              // 他に未完了があれば、全体の最初にある未完了に戻る
-              nextTaskIdToSelect = allIncomplete[0].id;
+          if (nextIncomplete) {
+            if (nextIncomplete.kind === 'reward') {
+              // 次がごほうびの場合、他に未完了の手順がないか確認
+              const hasOtherTodo = updatedTasks.some(
+                (t) => t.status !== 'done' && t.kind === 'todo' && t.id !== nextIncomplete.id
+              );
+              if (hasOtherTodo) {
+                // 他に未完了があれば、全体の最初にある未完了に戻る
+                nextTaskIdToSelect = allIncomplete[0].id;
+              } else {
+                nextTaskIdToSelect = nextIncomplete.id;
+              }
             } else {
               nextTaskIdToSelect = nextIncomplete.id;
             }
+          } else if (allIncomplete.length > 0) {
+            // 次以降にないが、全体にはある場合（戻り）
+            nextTaskIdToSelect = allIncomplete[0].id;
           } else {
-            nextTaskIdToSelect = nextIncomplete.id;
+            nextTaskIdToSelect = null;
+            nextIsTimerRunning = false;
           }
-        } else if (allIncomplete.length > 0) {
-          // 次以降にないが、全体にはある場合（戻り）
-          nextTaskIdToSelect = allIncomplete[0].id;
         } else {
-          nextTaskIdToSelect = null;
-          nextIsTimerRunning = false;
+          // 停止中なら「開始」にする
+          nextIsTimerRunning = true;
         }
       } else {
         // --- まだ開始していないタスクをタップした場合（飛び級） ---
@@ -218,7 +224,7 @@ function timerReducer(state: State, action: Action): State {
           );
         }
         nextTaskIdToSelect = taskId;
-        // nextIsTimerRunning は維持する（飛ばしてもカウントを継続するため）
+        nextIsTimerRunning = true; // タップされたらカウントを開始する
       }
 
       updatedTasks = updateRewardTime(
@@ -243,16 +249,30 @@ function timerReducer(state: State, action: Action): State {
     }
 
     case 'START': {
-      if (!state.selectedTaskId) return state;
-      const updatedTasks = state.tasks.map((task) => {
-        if (task.id === state.selectedTaskId && task.status !== 'done') {
+      let targetTaskId = state.selectedTaskId;
+      let updatedTasks = state.tasks;
+
+      // もしタスクが選択されていない場合は、最初の未完了タスクを探す
+      if (!targetTaskId) {
+        const firstIncomplete = state.tasks.find((t) => t.status !== 'done');
+        if (firstIncomplete) {
+          targetTaskId = firstIncomplete.id;
+        } else {
+          return state;
+        }
+      }
+
+      updatedTasks = updatedTasks.map((task) => {
+        if (task.id === targetTaskId && task.status !== 'done') {
           return { ...task, status: 'running' as const };
         }
         return task;
       });
+
       return {
         ...state,
         tasks: updatedTasks,
+        selectedTaskId: targetTaskId,
         isTimerRunning: true,
         lastTickTimestamp: action.now,
       };
@@ -286,7 +306,7 @@ function timerReducer(state: State, action: Action): State {
           state.targetTimeSettings,
           getBaseRewardSeconds(state.activeList)
         ),
-        selectedTaskId: state.activeList.tasks[0]?.id || null,
+        selectedTaskId: null,
         isTimerRunning: false,
         lastTickTimestamp: null,
       };
@@ -334,7 +354,7 @@ function timerReducer(state: State, action: Action): State {
           list.targetTimeSettings,
           getBaseRewardSeconds(list)
         ),
-        selectedTaskId: list.tasks[0]?.id || null,
+        selectedTaskId: null,
         isTimerRunning: false,
         lastTickTimestamp: null,
         targetTimeSettings: list.targetTimeSettings,
