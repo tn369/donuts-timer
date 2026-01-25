@@ -10,7 +10,7 @@ import { SiblingControls } from './SiblingControls';
 import { ResetModal } from './ResetModal';
 import { useTaskTimer } from '../useTaskTimer';
 import type { TodoList, Task } from '../types';
-import { playGentleAlarm, playTaskCompletionSound } from '../utils';
+import { playGentleAlarm, playTaskCompletionSound } from '../utils/audio';
 
 interface MainTimerViewProps {
   initialList: TodoList;

@@ -5,7 +5,7 @@ import type { TodoList, Task, TargetTimeSettings } from '../types';
 import styles from './TodoListSettings.module.css';
 import { ShapeIcon } from './ShapeIcon';
 import { v4 as uuidv4 } from 'uuid';
-import { resizeImage } from '../utils';
+import { resizeImage } from '../utils/image';
 
 interface TodoListSettingsProps {
   list: TodoList;

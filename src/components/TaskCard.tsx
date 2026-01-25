@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Check, Camera } from 'lucide-react';
 import { DonutTimer } from './DonutTimer';
 import type { Task, TimerShape, TimerColor } from '../types';
-import { formatTime } from '../utils';
+import { formatTime } from '../utils/time';
 import styles from './TaskCard.module.css';
 
 interface TaskCardProps {

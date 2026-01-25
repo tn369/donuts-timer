@@ -1,6 +1,6 @@
 import { useReducer, useCallback, useEffect } from 'react';
 import type { Task, TargetTimeSettings, TodoList, TimerSettings } from './types';
-import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
+import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils/task';
 import { loadExecutionState, saveExecutionState, clearExecutionState } from './storage';
 
 interface State {
