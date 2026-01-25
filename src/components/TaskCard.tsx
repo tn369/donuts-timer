@@ -89,64 +89,68 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 totalSeconds={task.plannedSeconds}
                 elapsedSeconds={task.elapsedSeconds}
                 isOverdue={isOverdue}
-                  size={80}
-                  strokeWidth={14}
+                size={80}
+                strokeWidth={14}
                 shape={shape}
                 color={color}
-                />
+              />
             )}
           </div>
         </div>
       ) : (
         // 通常モード：縦型レイアウト
         <>
-            {!isDone && (
-              <div className={styles.taskImageContainer}>
-                {task.icon ? (
-                  <motion.img
-                    src={task.icon}
-                    alt={task.name}
-                    className={styles.taskImage}
-                    animate={
-                      isSelected && task.elapsedSeconds < task.plannedSeconds
-                        ? {
+          {!isDone && (
+            <div className={styles.taskImageContainer}>
+              {task.icon ? (
+                <motion.img
+                  src={task.icon}
+                  alt={task.name}
+                  className={styles.taskImage}
+                  animate={
+                    isSelected && task.elapsedSeconds < task.plannedSeconds
+                      ? {
                           scale: [1, 1.05, 1],
                           rotate: [0, -2, 2, 0],
                         }
-                        : {}
-                    }
-                    transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                  />
-                ) : (
-                  <div className={styles.placeholderIcon}>
-                    <Camera size={48} color="var(--color-primary)" opacity={0.3} />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isDone ? (
-              <div className={`${styles.taskIcon} ${styles.done}`}>
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 10 }}>
-                  <Check size={48} strokeWidth={4} />
-                </motion.div>
-              </div>
-            ) : (
-              <DonutTimer
-                totalSeconds={task.plannedSeconds}
-                elapsedSeconds={task.elapsedSeconds}
-                isOverdue={isOverdue}
-                size={100}
-                strokeWidth={20}
-                shape={shape}
-                color={color}
-              />
-            )}
-
-            <div className={styles.taskName}>{task.name}</div>
-            <div className={styles.taskTime}>
-              {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
+                      : {}
+                  }
+                  transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+                />
+              ) : (
+                <div className={styles.placeholderIcon}>
+                  <Camera size={48} color="var(--color-primary)" opacity={0.3} />
+                </div>
+              )}
             </div>
+          )}
+
+          {isDone ? (
+            <div className={`${styles.taskIcon} ${styles.done}`}>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', damping: 10 }}
+              >
+                <Check size={48} strokeWidth={4} />
+              </motion.div>
+            </div>
+          ) : (
+            <DonutTimer
+              totalSeconds={task.plannedSeconds}
+              elapsedSeconds={task.elapsedSeconds}
+              isOverdue={isOverdue}
+              size={100}
+              strokeWidth={20}
+              shape={shape}
+              color={color}
+            />
+          )}
+
+          <div className={styles.taskName}>{task.name}</div>
+          <div className={styles.taskTime}>
+            {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
+          </div>
         </>
       )}
     </motion.div>

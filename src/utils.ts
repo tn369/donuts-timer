@@ -92,11 +92,7 @@ export const calculateRewardSecondsFromTargetTime = (
 /**
  * 画像をリサイズする
  */
-export const resizeImage = (
-  dataUrl: string,
-  maxWidth = 200,
-  maxHeight = 200
-): Promise<string> => {
+export const resizeImage = (dataUrl: string, maxWidth = 200, maxHeight = 200): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -162,7 +158,7 @@ export const playGentleAlarm = () => {
   playNote(698.46, now + tempo * 3, tempo * 0.8); // ファ (F5)
   playNote(783.99, now + tempo * 4, tempo * 1.5); // ソ (G5)
   playNote(783.99, now + tempo * 6, tempo * 1.5); // ソ (G5)
-  playNote(880.00, now + tempo * 8, tempo * 1.5); // ラ (A5)
-  playNote(880.00, now + tempo * 10, tempo * 1.5); // ラ (A5)
+  playNote(880.0, now + tempo * 8, tempo * 1.5); // ラ (A5)
+  playNote(880.0, now + tempo * 10, tempo * 1.5); // ラ (A5)
   playNote(783.99, now + tempo * 12, tempo * 3); // ソ (G5)
 };

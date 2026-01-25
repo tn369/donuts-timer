@@ -172,7 +172,19 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>どーなつタイマー の かたち</h2>
           <div className={styles.shapeSelection}>
-            {(['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon', 'octagon', 'star', 'heart'] as const).map((s) => (
+            {(
+              [
+                'circle',
+                'square',
+                'triangle',
+                'diamond',
+                'pentagon',
+                'hexagon',
+                'octagon',
+                'star',
+                'heart',
+              ] as const
+            ).map((s) => (
               <button
                 key={s}
                 className={`${styles.modeButton} ${editedList.timerSettings?.shape === s || (!editedList.timerSettings?.shape && s === 'circle') ? styles.active : ''}`}
@@ -207,7 +219,21 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
 
           <h2 className={styles.sectionTitle}>どーなつタイマー の いろ</h2>
           <div className={styles.colorSelection}>
-            {(['red', 'blue', 'yellow', 'green', 'pink', 'purple', 'orange', 'teal', 'indigo', 'cyan', 'lime'] as const).map((c) => (
+            {(
+              [
+                'red',
+                'blue',
+                'yellow',
+                'green',
+                'pink',
+                'purple',
+                'orange',
+                'teal',
+                'indigo',
+                'cyan',
+                'lime',
+              ] as const
+            ).map((c) => (
               <button
                 key={c}
                 className={`${styles.colorButton} ${editedList.timerSettings?.color === c || (!editedList.timerSettings?.color && c === 'blue') ? styles.active : ''}`}
@@ -358,8 +384,6 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       reader.readAsDataURL(file);
     }
   };
-
-
 
   return (
     <motion.div

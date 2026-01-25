@@ -23,7 +23,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.06));
   flex-shrink: 0;
   aspect-ratio: 1 / 1;
 }
@@ -57,30 +57,59 @@
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-.colorRed { stroke: #ff4d4d; }
-.colorBlue { stroke: #4facfe; }
-.colorYellow { stroke: #ffb347; }
-.colorGreen { stroke: #10b981; }
-.colorPink { stroke: #ff7eb3; }
-.colorPurple { stroke: #a18cd1; }
-.colorOrange { stroke: #f97316; }
-.colorTeal { stroke: #14b8a6; }
-.colorIndigo { stroke: #6366f1; }
-.colorCyan { stroke: #06b6d4; }
-.colorLime { stroke: #84cc16; }
+.colorRed {
+  stroke: #ff4d4d;
+}
+.colorBlue {
+  stroke: #4facfe;
+}
+.colorYellow {
+  stroke: #ffb347;
+}
+.colorGreen {
+  stroke: #10b981;
+}
+.colorPink {
+  stroke: #ff7eb3;
+}
+.colorPurple {
+  stroke: #a18cd1;
+}
+.colorOrange {
+  stroke: #f97316;
+}
+.colorTeal {
+  stroke: #14b8a6;
+}
+.colorIndigo {
+  stroke: #6366f1;
+}
+.colorCyan {
+  stroke: #06b6d4;
+}
+.colorLime {
+  stroke: #84cc16;
+}
 
 .overdue {
   animation: timer-pulse-danger 1.5s infinite;
 }
 
 @keyframes timer-pulse-danger {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 77, 77, 0.4)); opacity: 1; }
-  50% { filter: drop-shadow(0 0 12px rgba(255, 77, 77, 0.8)); opacity: 0.8; }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(255, 77, 77, 0.4));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 77, 77, 0.8));
+    opacity: 0.8;
+  }
 }
 
 .donutTimerTick {
   stroke-linecap: round;
-  stroke: rgba(0,0,0,0.1);
+  stroke: rgba(0, 0, 0, 0.1);
 }
 
 .donutTimerIconContainer {

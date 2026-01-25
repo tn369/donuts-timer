@@ -3,9 +3,9 @@
 :root {
   /* Color Palette - Vibrant, Playful & Premium */
   --color-bg: #f8f9ff;
-  --color-primary: #00d2ff;    /* Sky Blue */
-  --color-secondary: #ff6a95;  /* Soft Pink */
-  --color-accent: #7b61ff;     /* Royal Purple */
+  --color-primary: #00d2ff; /* Sky Blue */
+  --color-secondary: #ff6a95; /* Soft Pink */
+  --color-accent: #7b61ff; /* Royal Purple */
   --color-success: #00f2fe;
   --color-danger: #ff4d4d;
   --color-warning: #fabe66;
@@ -29,11 +29,10 @@
 
   /* Claymorphism */
   --clay-bg: #ffffff;
-  --clay-shadow: 
-    12px 12px 24px rgba(0, 0, 0, 0.04),
-    inset -8px -8px 16px rgba(0, 0, 0, 0.04),
+  --clay-shadow:
+    12px 12px 24px rgba(0, 0, 0, 0.04), inset -8px -8px 16px rgba(0, 0, 0, 0.04),
     inset 8px 8px 16px rgba(255, 255, 255, 1);
-  
+
   --radius-xl: 40px;
   --radius-lg: 28px;
   --radius-md: 20px;
@@ -53,7 +52,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-bg);
-  background-image: 
+  background-image:
     radial-gradient(at 0% 0%, hsla(190, 84%, 93%, 1) 0, transparent 50%),
     radial-gradient(at 50% 0%, hsla(225, 39%, 95%, 1) 0, transparent 50%),
     radial-gradient(at 100% 0%, hsla(339, 49%, 91%, 1) 0, transparent 50%),
@@ -71,13 +70,17 @@ body {
   height: 100%;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

@@ -157,19 +157,34 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             className={styles.settingsButton}
             aria-label="タイマーのいろをかえる"
           >
-            <Palette size={isSiblingMode ? 20 : 24} color={
-              timerSettings.color === 'red' ? '#ff6b6b' :
-                timerSettings.color === 'blue' ? '#4facfe' :
-                  timerSettings.color === 'yellow' ? '#fabe66' :
-                    timerSettings.color === 'green' ? '#10b981' :
-                      timerSettings.color === 'pink' ? '#ff6a95' :
-                        timerSettings.color === 'purple' ? '#7b61ff' :
-                          timerSettings.color === 'orange' ? '#f97316' :
-                            timerSettings.color === 'teal' ? '#14b8a6' :
-                              timerSettings.color === 'indigo' ? '#6366f1' :
-                                timerSettings.color === 'cyan' ? '#06b6d4' :
-                                  timerSettings.color === 'lime' ? '#84cc16' : undefined
-            } />
+            <Palette
+              size={isSiblingMode ? 20 : 24}
+              color={
+                timerSettings.color === 'red'
+                  ? '#ff6b6b'
+                  : timerSettings.color === 'blue'
+                    ? '#4facfe'
+                    : timerSettings.color === 'yellow'
+                      ? '#fabe66'
+                      : timerSettings.color === 'green'
+                        ? '#10b981'
+                        : timerSettings.color === 'pink'
+                          ? '#ff6a95'
+                          : timerSettings.color === 'purple'
+                            ? '#7b61ff'
+                            : timerSettings.color === 'orange'
+                              ? '#f97316'
+                              : timerSettings.color === 'teal'
+                                ? '#14b8a6'
+                                : timerSettings.color === 'indigo'
+                                  ? '#6366f1'
+                                  : timerSettings.color === 'cyan'
+                                    ? '#06b6d4'
+                                    : timerSettings.color === 'lime'
+                                      ? '#84cc16'
+                                      : undefined
+              }
+            />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05, rotate: 15 }}

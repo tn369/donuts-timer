@@ -58,15 +58,12 @@ export const Controls: React.FC<ControlsProps> = ({
           </>
         ) : (
           <>
-              <Play size={20} fill="currentColor" /> スタート
+            <Play size={20} fill="currentColor" /> スタート
           </>
         )}
       </ControlButton>
 
-      <ControlButton
-        className={`${styles.btn} ${styles.btnReset}`}
-        onClick={onReset}
-      >
+      <ControlButton className={`${styles.btn} ${styles.btnReset}`} onClick={onReset}>
         <RotateCcw size={18} />
       </ControlButton>
     </div>

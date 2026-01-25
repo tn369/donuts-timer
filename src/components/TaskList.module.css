@@ -7,8 +7,20 @@
   padding: 16px 4px;
   overflow-x: auto;
   overflow-y: hidden;
-  mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 20px,
+    black calc(100% - 20px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 20px,
+    black calc(100% - 20px),
+    transparent
+  );
   transition: all 0.3s ease;
 }
 

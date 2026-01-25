@@ -27,7 +27,7 @@
 
 .taskCard:hover:not(.done) {
   transform: translateY(-12px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     20px 20px 40px rgba(0, 0, 0, 0.06),
     inset -8px -8px 16px rgba(0, 0, 0, 0.04);
 }
@@ -58,8 +58,13 @@
 }
 
 @keyframes card-pulse-danger {
-  0%, 100% { box-shadow: 0 0 20px rgba(255, 77, 77, 0.1); }
-  50% { box-shadow: 0 0 40px rgba(255, 77, 77, 0.2); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 77, 77, 0.2);
+  }
 }
 
 .taskImageContainer {
@@ -71,7 +76,9 @@
   margin-bottom: 20px;
   position: relative;
   flex-shrink: 0;
-  transition: height 0.3s ease, margin 0.3s ease;
+  transition:
+    height 0.3s ease,
+    margin 0.3s ease;
 }
 
 .compact .taskImageContainer {
@@ -124,7 +131,9 @@
   border-radius: 20px;
   margin-top: auto;
   letter-spacing: 1px;
-  transition: font-size 0.3s ease, padding 0.3s ease;
+  transition:
+    font-size 0.3s ease,
+    padding 0.3s ease;
 }
 
 .compact .taskTime {

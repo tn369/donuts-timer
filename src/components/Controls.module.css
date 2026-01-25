@@ -5,7 +5,9 @@
   padding: 8px 0;
   position: relative;
   width: 100%;
-  transition: padding 0.3s ease, gap 0.3s ease;
+  transition:
+    padding 0.3s ease,
+    gap 0.3s ease;
 }
 
 .controls.compact {
@@ -35,7 +37,7 @@
   gap: 16px;
   color: white;
   box-shadow: var(--clay-shadow);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .compact .btn {
@@ -71,7 +73,7 @@
 
 .btnStart {
   background: var(--brand-gradient);
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(0, 210, 255, 0.2),
     0 4px 8px rgba(0, 0, 0, 0.05),
     inset 0 0 0 1px rgba(255, 255, 255, 0.3);
@@ -81,7 +83,7 @@
 .compact .btnStop {
   min-width: 160px; /* Make the main action button stand out */
   font-weight: 800;
-  box-shadow: 
+  box-shadow:
     0 10px 20px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.3);
   transform: scale(1.05); /* Slightly larger than others */
@@ -89,7 +91,7 @@
 
 .btnStop {
   background: var(--danger-gradient);
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(255, 77, 77, 0.2),
     0 4px 8px rgba(0, 0, 0, 0.05),
     inset 0 0 0 1px rgba(255, 255, 255, 0.3);
