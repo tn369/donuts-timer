@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Settings, Palette, ChevronLeft } from 'lucide-react';
+import { Settings, Palette, ChevronLeft, Zap } from 'lucide-react';
 import styles from '../App.module.css';
 import { ShapeIcon } from './ShapeIcon';
 
@@ -40,6 +40,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     initList,
     timerSettings,
     setTimerSettings,
+    fastForward,
   } = useTaskTimer();
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
@@ -109,6 +110,18 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         )}
 
         <div className={styles.topControlsGroup}>
+          {import.meta.env.DEV && (
+            <motion.button
+              whileHover={{ scale: 1.05, translateY: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={fastForward}
+              className={styles.settingsButton}
+              style={{ color: '#fbbf24' }}
+              aria-label="デバッグ：すすめる"
+            >
+              <Zap size={isSiblingMode ? 20 : 24} fill="currentColor" />
+            </motion.button>
+          )}
           <motion.button
             whileHover={{ scale: 1.05, translateY: -2 }}
             whileTap={{ scale: 0.95 }}

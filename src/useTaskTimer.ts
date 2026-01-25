@@ -23,7 +23,8 @@ type Action =
   | { type: 'REFRESH_REWARD_TIME' }
   | { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
   | { type: 'INIT_LIST'; list: TodoList }
-  | { type: 'SET_TIMER_SETTINGS'; settings: TimerSettings };
+  | { type: 'SET_TIMER_SETTINGS'; settings: TimerSettings }
+  | { type: 'FAST_FORWARD' };
 
 function getBaseRewardSeconds(list: TodoList | null): number {
   const rewardTask = list?.tasks.find((t) => t.kind === 'reward');
@@ -366,9 +367,37 @@ function timerReducer(state: State, action: Action): State {
       };
     }
 
+    case 'FAST_FORWARD': {
+      if (!state.selectedTaskId) return state;
+      const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
+      if (currentIndex === -1) return state;
+
+      const task = state.tasks[currentIndex];
+      if (task.status === 'done') return state;
+
+      // 10% または 10秒 早く進める
+      const skipAmount = Math.max(10, Math.floor(task.plannedSeconds * 0.1));
+      const newElapsed = Math.min(task.plannedSeconds, task.elapsedSeconds + skipAmount);
+
+      let updatedTasks = state.tasks.map((t) =>
+        t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
+      );
+
+      updatedTasks = updateRewardTime(
+        updatedTasks,
+        state.targetTimeSettings,
+        getBaseRewardSeconds(state.activeList)
+      );
+
+      return {
+        ...state,
+        tasks: updatedTasks,
+      };
+    }
+
     default:
       return state;
-  }
+    }
 }
 
 export function useTaskTimer() {
@@ -446,6 +475,12 @@ export function useTaskTimer() {
     dispatch({ type: 'SET_TIMER_SETTINGS', settings });
   }, []);
 
+  const fastForward = useCallback(() => {
+    if (import.meta.env.DEV) {
+      dispatch({ type: 'FAST_FORWARD' });
+    }
+  }, []);
+
   return {
     ...state,
     isTaskSelectable,
@@ -459,5 +494,6 @@ export function useTaskTimer() {
     initList,
     updateActiveList,
     setTimerSettings,
+    fastForward,
   };
 }
