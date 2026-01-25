@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import styles from './DonutTimer.module.css';
 import type { TimerShape, TimerColor } from '../types';
-import { createRenderer } from '../utils/shapeUtils';
+import { createRenderer, type SVGRenderProps } from '../utils/shapeUtils';
 
 interface TimerChunkProps {
   capacity: number;
@@ -58,7 +58,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
     ${getColorClass(color)}
   `.trim();
 
-  const renderShape = (componentProps: any, isProgress = false) => {
+  const renderShape = (componentProps: SVGRenderProps, isProgress = false) => {
     const commonProps = {
       className: isProgress ? fillClassName : styles.donutTimerBg,
       strokeWidth: isProgress ? strokeWidth : strokeWidth * 1.1,
@@ -71,7 +71,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
         strokeDasharray: perimeter,
         initial: { strokeDashoffset: 0 },
         animate: { strokeDashoffset: offset },
-        transition: { duration: 0.5, ease: 'linear' },
+        transition: { duration: 0.5, ease: 'linear' as const },
         strokeLinecap: 'butt' as const,
         ...(renderer.type === 'circle'
           ? { transform: `rotate(-90 ${size / 2} ${size / 2})` }

@@ -132,7 +132,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             whileHover={{ scale: 1.05, translateY: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
-              const shapes: Array<typeof timerSettings.shape> = [
+              const shapes: typeof timerSettings.shape[] = [
                 'circle',
                 'square',
                 'triangle',
@@ -156,7 +156,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             whileHover={{ scale: 1.05, translateY: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
-              const colors: Array<typeof timerSettings.color> = [
+              const colors: typeof timerSettings.color[] = [
                 'red',
                 'blue',
                 'yellow',

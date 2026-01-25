@@ -26,7 +26,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
         }
       }
     }
-  }, [state.activeList?.id, dispatch]);
+  }, [state.activeList, dispatch]);
 
   useEffect(() => {
     // ステートが変わるたびに保存（ただし初期化前は避ける）
@@ -44,6 +44,6 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
     state.selectedTaskId,
     state.isTimerRunning,
     state.lastTickTimestamp,
-    state.activeList?.id,
+    state.activeList,
   ]);
 }

@@ -7,6 +7,27 @@ export interface Point {
   y: number;
 }
 
+export interface SVGRenderProps {
+  d?: string;
+  cx?: number;
+  cy?: number;
+  r?: number;
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  height?: number | string;
+  rx?: number | string;
+  ry?: number | string;
+  transform?: string;
+  x1?: number | string;
+  y1?: number | string;
+  x2?: number | string;
+  y2?: number | string;
+  stroke?: string;
+  strokeWidth?: number | string;
+  fill?: string;
+}
+
 export abstract class ShapeRenderer {
   protected size: number;
   protected strokeWidth: number;
@@ -31,10 +52,10 @@ export abstract class ShapeRenderer {
   abstract getTicksCount(): number;
 
   // SVG要素の属性を取得するメソッド
-  abstract getBackgroundProps(): any;
-  abstract getProgressProps(): any;
-  abstract getOuterProps(): any;
-  abstract getTickProps(index: number, rotationDegree: number): any;
+  abstract getBackgroundProps(): SVGRenderProps;
+  abstract getProgressProps(): SVGRenderProps;
+  abstract getOuterProps(): SVGRenderProps;
+  abstract getTickProps(index: number, rotationDegree: number): SVGRenderProps;
 }
 
 export class CircleRenderer extends ShapeRenderer {
@@ -46,16 +67,16 @@ export class CircleRenderer extends ShapeRenderer {
     return 4;
   }
 
-  getBackgroundProps() {
+  getBackgroundProps(): SVGRenderProps {
     return { cx: this.center, cy: this.center, r: this.radius };
   }
-  getProgressProps() {
+  getProgressProps(): SVGRenderProps {
     return { cx: this.center, cy: this.center, r: this.radius };
   }
-  getOuterProps() {
+  getOuterProps(): SVGRenderProps {
     return { cx: this.center, cy: this.center, r: this.radius + 1 };
   }
-  getTickProps(index: number, rotationDegree: number) {
+  getTickProps(index: number, rotationDegree: number): SVGRenderProps {
     return {
       x1: this.center,
       y1: 0,
@@ -75,7 +96,7 @@ export class SquareRenderer extends ShapeRenderer {
     return 4;
   }
 
-  getBackgroundProps() {
+  getBackgroundProps(): SVGRenderProps {
     return {
       x: this.strokeWidth / 2,
       y: this.strokeWidth / 2,
@@ -85,7 +106,7 @@ export class SquareRenderer extends ShapeRenderer {
       ry: 2,
     };
   }
-  getProgressProps() {
+  getProgressProps(): SVGRenderProps {
     return {
       x: this.strokeWidth / 2,
       y: this.strokeWidth / 2,
@@ -95,7 +116,7 @@ export class SquareRenderer extends ShapeRenderer {
       ry: 2,
     };
   }
-  getOuterProps() {
+  getOuterProps(): SVGRenderProps {
     return {
       x: this.strokeWidth / 2 - 1,
       y: this.strokeWidth / 2 - 1,
@@ -105,7 +126,7 @@ export class SquareRenderer extends ShapeRenderer {
       ry: 4,
     };
   }
-  getTickProps(index: number, rotationDegree: number) {
+  getTickProps(index: number, rotationDegree: number): SVGRenderProps {
     return {
       x1: this.center,
       y1: this.strokeWidth / 2,
@@ -118,10 +139,10 @@ export class SquareRenderer extends ShapeRenderer {
 
 export class PathRenderer extends ShapeRenderer {
   readonly type = 'path';
-  protected path: string = '';
-  protected outerPath: string = '';
-  protected perimeter: number = 0;
-  protected ticksCount: number = 5;
+  protected path = '';
+  protected outerPath = '';
+  protected perimeter = 0;
+  protected ticksCount = 5;
 
   getPerimeter() {
     return this.perimeter;
@@ -130,16 +151,16 @@ export class PathRenderer extends ShapeRenderer {
     return this.ticksCount;
   }
 
-  getBackgroundProps() {
+  getBackgroundProps(): SVGRenderProps {
     return { d: this.path };
   }
-  getProgressProps() {
+  getProgressProps(): SVGRenderProps {
     return { d: this.path };
   }
-  getOuterProps() {
+  getOuterProps(): SVGRenderProps {
     return { d: this.outerPath };
   }
-  getTickProps(index: number, rotationDegree: number) {
+  getTickProps(index: number, rotationDegree: number): SVGRenderProps {
     return {
       x1: this.center,
       y1: this.strokeWidth / 2,

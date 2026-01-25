@@ -1,11 +1,10 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 
 interface ControlButtonProps {
   onClick: () => void;
   disabled?: boolean;
   className: string;
-  animate?: any;
+  animate?: React.ComponentPropsWithoutRef<typeof motion.button>['animate'];
   layout?: boolean;
   title?: string;
   children: React.ReactNode;

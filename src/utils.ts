@@ -126,7 +126,9 @@ export const resizeImage = (dataUrl: string, maxWidth = 200, maxHeight = 200): P
  * 優しいチャイム音を再生する（Web Audio API）
  */
 export const playGentleAlarm = () => {
-  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  const AudioContextClass =
+    window.AudioContext ||
+    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
   if (!AudioContextClass) return;
 
   const ctx = new AudioContextClass();
@@ -167,7 +169,9 @@ export const playGentleAlarm = () => {
  * 短い効果音を再生する（タスク完了時など）
  */
 export const playTaskCompletionSound = () => {
-  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  const AudioContextClass =
+    window.AudioContext ||
+    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
   if (!AudioContextClass) return;
 
   const ctx = new AudioContextClass();
