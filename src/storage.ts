@@ -1,8 +1,17 @@
-import type { TodoList } from './types';
+import type { TodoList, Task } from './types';
 import { DEFAULT_TODO_LISTS } from './constants';
 
 const LISTS_STORAGE_KEY = 'task-timer-lists';
 const ACTIVE_LIST_ID_KEY = 'task-timer-active-id';
+const EXECUTION_STATE_KEY = 'task-timer-execution-state';
+
+export interface ExecutionState {
+  tasks: Task[];
+  selectedTaskId: string | null;
+  isTimerRunning: boolean;
+  lastTickTimestamp: number | null;
+  listId: string;
+}
 
 /**
  * localStorageからすべてのやることリストを読み込み
@@ -48,4 +57,27 @@ export const saveActiveListId = (id: string | null): void => {
   } else {
     localStorage.removeItem(ACTIVE_LIST_ID_KEY);
   }
+};
+
+export const saveExecutionState = (state: ExecutionState): void => {
+  try {
+    localStorage.setItem(EXECUTION_STATE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save execution state:', error);
+  }
+};
+
+export const loadExecutionState = (): ExecutionState | null => {
+  try {
+    const stored = localStorage.getItem(EXECUTION_STATE_KEY);
+    if (!stored) return null;
+    return JSON.parse(stored) as ExecutionState;
+  } catch (error) {
+    console.error('Failed to load execution state:', error);
+    return null;
+  }
+};
+
+export const clearExecutionState = (): void => {
+  localStorage.removeItem(EXECUTION_STATE_KEY);
 };

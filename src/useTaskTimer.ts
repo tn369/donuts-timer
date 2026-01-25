@@ -1,6 +1,7 @@
 import { useReducer, useCallback, useEffect } from 'react';
 import type { Task, TargetTimeSettings, TodoList, TimerSettings } from './types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from './utils';
+import { loadExecutionState, saveExecutionState, clearExecutionState } from './storage';
 
 interface State {
   tasks: Task[];
@@ -9,14 +10,15 @@ interface State {
   targetTimeSettings: TargetTimeSettings;
   activeList: TodoList | null;
   timerSettings: TimerSettings;
+  lastTickTimestamp: number | null;
 }
 
 type Action =
-  | { type: 'TICK' }
-  | { type: 'SELECT_TASK'; taskId: string }
-  | { type: 'START' }
+  | { type: 'TICK'; now: number }
+  | { type: 'SELECT_TASK'; taskId: string; now: number }
+  | { type: 'START'; now: number }
   | { type: 'STOP' }
-  | { type: 'BACK' }
+  | { type: 'BACK'; now: number }
   | { type: 'RESET' }
   | { type: 'SET_TASKS'; tasks: Task[] } // Debug use
   | { type: 'SET_TARGET_TIME_SETTINGS'; settings: TargetTimeSettings }
@@ -24,6 +26,7 @@ type Action =
   | { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
   | { type: 'INIT_LIST'; list: TodoList }
   | { type: 'SET_TIMER_SETTINGS'; settings: TimerSettings }
+  | { type: 'RESTORE_SESSION'; tasks: Task[]; selectedTaskId: string | null; isTimerRunning: boolean; lastTickTimestamp: number | null }
   | { type: 'FAST_FORWARD' };
 
 function getBaseRewardSeconds(list: TodoList | null): number {
@@ -82,7 +85,15 @@ function updateRewardTime(
 function timerReducer(state: State, action: Action): State {
   switch (action.type) {
     case 'TICK': {
-      if (!state.isTimerRunning || !state.selectedTaskId) return state;
+      if (!state.isTimerRunning || !state.selectedTaskId || state.lastTickTimestamp === null) {
+        return state;
+      }
+
+      const { now } = action;
+      const deltaMs = now - state.lastTickTimestamp;
+      const deltaSeconds = Math.floor(deltaMs / 1000);
+
+      if (deltaSeconds < 1) return state;
 
       const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
       if (currentIndex === -1) return state;
@@ -90,7 +101,7 @@ function timerReducer(state: State, action: Action): State {
       const task = state.tasks[currentIndex];
       if (task.status !== 'running') return state;
 
-      const newElapsed = task.elapsedSeconds + 1;
+      const newElapsed = task.elapsedSeconds + deltaSeconds;
       let updatedTasks = state.tasks.map((t) =>
         t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
       );
@@ -117,12 +128,14 @@ function timerReducer(state: State, action: Action): State {
           ...state,
           tasks: updatedTasks,
           isTimerRunning: false,
+          lastTickTimestamp: null,
         };
       }
 
       return {
         ...state,
         tasks: updatedTasks,
+        lastTickTimestamp: state.lastTickTimestamp + deltaSeconds * 1000,
       };
     }
 
@@ -189,6 +202,7 @@ function timerReducer(state: State, action: Action): State {
         tasks: updatedTasks,
         selectedTaskId: nextTaskIdToSelect,
         isTimerRunning: nextIsTimerRunning,
+        lastTickTimestamp: nextIsTimerRunning ? action.now : null,
       };
     }
 
@@ -204,6 +218,7 @@ function timerReducer(state: State, action: Action): State {
         ...state,
         tasks: updatedTasks,
         isTimerRunning: true,
+        lastTickTimestamp: action.now,
       };
     }
 
@@ -215,6 +230,7 @@ function timerReducer(state: State, action: Action): State {
         ...state,
         tasks: updatedTasks,
         isTimerRunning: false,
+        lastTickTimestamp: null,
       };
     }
 
@@ -258,6 +274,7 @@ function timerReducer(state: State, action: Action): State {
           getBaseRewardSeconds(state.activeList)
         ),
         selectedTaskId: newSelectedTaskId,
+        lastTickTimestamp: state.isTimerRunning ? action.now : null,
       };
     }
 
@@ -278,6 +295,7 @@ function timerReducer(state: State, action: Action): State {
         ),
         selectedTaskId: state.activeList.tasks[0]?.id || null,
         isTimerRunning: false,
+        lastTickTimestamp: null,
       };
     }
 
@@ -325,6 +343,7 @@ function timerReducer(state: State, action: Action): State {
         ),
         selectedTaskId: list.tasks[0]?.id || null,
         isTimerRunning: false,
+        lastTickTimestamp: null,
         targetTimeSettings: list.targetTimeSettings,
         timerSettings: list.timerSettings || { shape: 'circle', color: 'blue' },
       };
@@ -341,6 +360,16 @@ function timerReducer(state: State, action: Action): State {
       return {
         ...state,
         tasks: action.tasks,
+      };
+    }
+
+    case 'RESTORE_SESSION': {
+      return {
+        ...state,
+        tasks: action.tasks,
+        selectedTaskId: action.selectedTaskId,
+        isTimerRunning: action.isTimerRunning,
+        lastTickTimestamp: action.lastTickTimestamp,
       };
     }
 
@@ -408,28 +437,69 @@ export function useTaskTimer() {
     targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
     activeList: null,
     timerSettings: { shape: 'circle', color: 'blue' },
+    lastTickTimestamp: null,
   });
+
+  // 保存されたステートの復元
+  useEffect(() => {
+    if (state.activeList) {
+      const saved = loadExecutionState();
+      if (saved && saved.listId === state.activeList.id) {
+        dispatch({
+          type: 'RESTORE_SESSION',
+          tasks: saved.tasks,
+          selectedTaskId: saved.selectedTaskId,
+          isTimerRunning: saved.isTimerRunning,
+          lastTickTimestamp: saved.lastTickTimestamp,
+        });
+      }
+    }
+  }, [state.activeList?.id]);
+
+  useEffect(() => {
+    // ステートが変わるたびに保存（ただし初期化前は避ける）
+    if (state.activeList && state.tasks.length > 0) {
+      saveExecutionState({
+        tasks: state.tasks,
+        selectedTaskId: state.selectedTaskId,
+        isTimerRunning: state.isTimerRunning,
+        lastTickTimestamp: state.lastTickTimestamp,
+        listId: state.activeList.id,
+      });
+    }
+  }, [state.tasks, state.selectedTaskId, state.isTimerRunning, state.lastTickTimestamp, state.activeList?.id]);
 
   useEffect(() => {
     // タイマーが動いている場合は TICK を送る
     // タイマーが止まっていても、目標時刻モードの場合は時刻経過に合わせて遊び時間を再計算するために REFRESH を送る
     const interval = setInterval(() => {
       if (state.isTimerRunning && state.selectedTaskId) {
-        dispatch({ type: 'TICK' });
+        dispatch({ type: 'TICK', now: Date.now() });
       } else if (state.targetTimeSettings.mode === 'target-time') {
         dispatch({ type: 'REFRESH_REWARD_TIME' });
       }
     }, 1000);
 
-    return () => clearInterval(interval);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && state.isTimerRunning && state.selectedTaskId) {
+        dispatch({ type: 'TICK', now: Date.now() });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [state.isTimerRunning, state.selectedTaskId, state.targetTimeSettings.mode]);
 
   const selectTask = useCallback((taskId: string) => {
-    dispatch({ type: 'SELECT_TASK', taskId });
+    dispatch({ type: 'SELECT_TASK', taskId, now: Date.now() });
   }, []);
 
   const startTimer = useCallback(() => {
-    dispatch({ type: 'START' });
+    dispatch({ type: 'START', now: Date.now() });
   }, []);
 
   const stopTimer = useCallback(() => {
@@ -437,11 +507,12 @@ export function useTaskTimer() {
   }, []);
 
   const goBack = useCallback(() => {
-    dispatch({ type: 'BACK' });
+    dispatch({ type: 'BACK', now: Date.now() });
   }, []);
 
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });
+    clearExecutionState();
   }, []);
 
   const isTaskSelectable = useCallback(
