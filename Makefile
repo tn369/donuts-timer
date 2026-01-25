@@ -1,4 +1,4 @@
-.PHONY: install dev build lint format clean
+.PHONY: install dev build lint format test clean
 
 install:
 	npm install
@@ -14,6 +14,9 @@ lint:
 
 format:
 	npm run format
+
+test:
+	npm run test
 
 clean:
 	rm -rf node_modules dist
