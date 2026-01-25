@@ -135,7 +135,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
         {renderShape(renderer.getBackgroundProps())}
 
         {/* 進捗 */}
-        {renderShape(renderer.getProgressProps(), true)}
+        {progress > 0 && renderShape(renderer.getProgressProps(), true)}
 
         {/* 目盛り */}
         {capacity >= 60 &&
