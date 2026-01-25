@@ -162,3 +162,32 @@ export const playGentleAlarm = () => {
   playNote(880.0, now + tempo * 10, tempo * 1.5); // ラ (A5)
   playNote(783.99, now + tempo * 12, tempo * 3); // ソ (G5)
 };
+
+/**
+ * 短い効果音を再生する（タスク完了時など）
+ */
+export const playTaskCompletionSound = () => {
+  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  const ctx = new AudioContextClass();
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(880, now); // A5
+  osc.frequency.exponentialRampToValueAtTime(1320, now + 0.1); // E6 に向かって少し上げる
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.1, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.3);
+};
+
