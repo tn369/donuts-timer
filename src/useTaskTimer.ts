@@ -175,8 +175,26 @@ function timerReducer(state: State, action: Action): State {
         };
 
         const nextIncomplete = updatedTasks.slice(tappedIndex + 1).find((t) => t.status !== 'done');
+        const allIncomplete = updatedTasks.filter((t) => t.status !== 'done');
+
         if (nextIncomplete) {
-          nextTaskIdToSelect = nextIncomplete.id;
+          if (nextIncomplete.kind === 'reward') {
+            // 次がごほうびの場合、他に未完了の手順がないか確認
+            const hasOtherTodo = updatedTasks.some(
+              (t) => t.status !== 'done' && t.kind === 'todo' && t.id !== nextIncomplete.id
+            );
+            if (hasOtherTodo) {
+              // 他に未完了があれば、全体の最初にある未完了に戻る
+              nextTaskIdToSelect = allIncomplete[0].id;
+            } else {
+              nextTaskIdToSelect = nextIncomplete.id;
+            }
+          } else {
+            nextTaskIdToSelect = nextIncomplete.id;
+          }
+        } else if (allIncomplete.length > 0) {
+          // 次以降にないが、全体にはある場合（戻り）
+          nextTaskIdToSelect = allIncomplete[0].id;
         } else {
           nextTaskIdToSelect = null;
           nextIsTimerRunning = false;
