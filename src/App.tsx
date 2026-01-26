@@ -6,12 +6,31 @@ import { TodoListSettings } from './components/TodoListSettings';
 import { MainTimerView } from './components/MainTimerView';
 import type { TodoList } from './types';
 import { loadTodoLists, saveTodoLists, loadActiveListId, saveActiveListId } from './storage';
+import { PRESET_IMAGES, migrateTasksWithDefaultIcons } from './constants';
 import { v4 as uuid_v4 } from 'uuid';
 
 type CurrentScreen = 'selection' | 'main' | 'settings';
 
 function App() {
-  const [todoLists, setTodoLists] = useState<TodoList[]>(() => loadTodoLists());
+  const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
+    const loaded = loadTodoLists();
+    let hasChanges = false;
+    const migrated = loaded.map((list) => {
+      const migratedTasks = migrateTasksWithDefaultIcons(list.tasks);
+      if (JSON.stringify(migratedTasks) !== JSON.stringify(list.tasks)) {
+        hasChanges = true;
+      }
+      return {
+        ...list,
+        tasks: migratedTasks,
+      };
+    });
+
+    if (hasChanges) {
+      saveTodoLists(migrated);
+    }
+    return migrated;
+  });
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>(() => {
     const loadedLists = loadTodoLists();
     const activeId = loadActiveListId();
@@ -29,7 +48,14 @@ function App() {
     const activeId = loadActiveListId();
     if (activeId) {
       const active = loadedLists.find((l) => l.id === activeId);
-      if (active) return [active];
+      if (active) {
+        return [
+          {
+            ...active,
+            tasks: migrateTasksWithDefaultIcons(active.tasks),
+          },
+        ];
+      }
     }
     return [];
   });
@@ -64,7 +90,7 @@ function App() {
     const newList: TodoList = {
       id: uuid_v4(),
       title: 'あたらしいやることリスト',
-      tasks: [
+      tasks: migrateTasksWithDefaultIcons([
         {
           id: uuid_v4(),
           name: 'トイレ',
@@ -85,7 +111,7 @@ function App() {
           elapsedSeconds: 0,
           actualSeconds: 0,
         },
-      ],
+      ]),
       targetTimeSettings: {
         mode: 'duration',
         targetHour: 7,
@@ -164,10 +190,13 @@ function App() {
   if (currentScreen === 'settings' && editingListId) {
     const listToEdit = todoLists.find((l) => l.id === editingListId);
     if (listToEdit) {
-      // すべてのリストからユニークなアイコンURLを抽出
+      // すべてのリストからユニークなアイコンURLを抽出（プリセット画像も含む）
       const allUniqueIcons = Array.from(
-        new Set(todoLists.flatMap((l) => l.tasks.map((t) => t.icon)))
-      );
+        new Set([
+          ...PRESET_IMAGES,
+          ...todoLists.flatMap((l) => l.tasks.map((t) => t.icon)),
+        ])
+      ).filter((icon) => icon !== '');
 
       return (
         <TodoListSettings
