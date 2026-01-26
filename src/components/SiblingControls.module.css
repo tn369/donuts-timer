@@ -27,6 +27,13 @@
   transition: var(--transition-smooth);
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.3;
+  filter: grayscale(0.8);
+}
+
 .btn:hover:not(:disabled) {
   filter: brightness(1.1);
   transform: scale(1.1);
@@ -35,13 +42,6 @@
 .btn:active:not(:disabled) {
   box-shadow: inset 2px 2px 8px rgb(0 0 0 / 10%);
   transform: scale(0.95);
-}
-
-.btn:disabled {
-  cursor: not-allowed;
-  box-shadow: none;
-  opacity: 0.3;
-  filter: grayscale(0.8);
 }
 
 .btnStart {

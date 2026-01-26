@@ -101,7 +101,6 @@
     0 4px 12px rgb(0 0 0 / 5%),
     inset 0 0 0 1px rgb(255 255 255 / 50%);
   backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
