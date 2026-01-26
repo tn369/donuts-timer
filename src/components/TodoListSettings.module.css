@@ -562,7 +562,6 @@
 
 .iconSelectorPopup {
   position: absolute;
-  top: 70px;
   left: 0;
   width: 280px;
   background: white;
@@ -573,6 +572,16 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.iconSelectorPopup.bottom {
+  top: 70px;
+  transform-origin: top left;
+}
+
+.iconSelectorPopup.top {
+  bottom: 70px;
+  transform-origin: bottom left;
 }
 
 .iconSelectorHeader {

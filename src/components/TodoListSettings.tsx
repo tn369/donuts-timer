@@ -386,7 +386,26 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   allExistingIcons,
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
+  const [popupDirection, setPopupDirection] = useState<'bottom' | 'top'>('bottom');
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (showIconSelector && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const popupHeight = 350;
+
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      if (spaceBelow < popupHeight && spaceAbove > spaceBelow) {
+        setPopupDirection('top');
+      } else {
+        setPopupDirection('bottom');
+      }
+    }
+  }, [showIconSelector]);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -418,7 +437,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       exit={{ opacity: 0, x: 20 }}
       className={`${styles.taskEditorItem} ${task.kind === 'reward' ? styles.reward : ''}`}
     >
-      <div className={styles.taskEditorImage}>
+      <div className={styles.taskEditorImage} ref={containerRef}>
         {task.icon ? (
           <img src={task.icon} alt={task.name} />
         ) : (
@@ -454,10 +473,10 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                 onClick={() => setShowIconSelector(false)}
               />
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                initial={{ opacity: 0, scale: 0.9, y: popupDirection === 'bottom' ? 10 : -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className={styles.iconSelectorPopup}
+                exit={{ opacity: 0, scale: 0.9, y: popupDirection === 'bottom' ? 10 : -10 }}
+                className={`${styles.iconSelectorPopup} ${styles[popupDirection]}`}
               >
                 <div className={styles.iconSelectorHeader}>
                   <span>がぞうをえらぶ</span>
