@@ -395,6 +395,32 @@
   border: 1px solid #e2e8f0;
 }
 
+.taskEditorItem:not(.reward) {
+  transition: background-color 0.2s;
+}
+
+.taskEditorItem:not(.reward):hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.taskEditorItem:not(.reward):active {
+  background: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  padding-left: 4px;
+}
+
+.taskEditorItem:hover .dragHandle {
+  color: #94a3b8;
+}
+
 .taskEditorItem.reward {
   border: 2px solid rgba(16, 185, 129, 0.3);
   background: rgba(16, 185, 129, 0.02);
@@ -411,6 +437,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  pointer-events: none;
 }
 
 .placeholderIconSmall {
@@ -422,6 +449,7 @@
   background: #f1f5f9;
   border-radius: var(--radius-sm);
   color: var(--color-primary);
+  pointer-events: none;
 }
 
 .changeImageBtn {
@@ -475,6 +503,7 @@
   padding: 8px 12px;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-sm);
+  cursor: text;
 }
 
 .taskTimeInputGroup {
@@ -491,6 +520,7 @@
   padding: 8px;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-sm);
+  cursor: text;
 }
 
 .deleteTaskBtn {

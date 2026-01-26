@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Trash2, Camera, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Camera, Save, GripVertical } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import type { TodoList, Task, TargetTimeSettings } from '../types';
 import styles from './TodoListSettings.module.css';
@@ -437,9 +437,14 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       exit={{ opacity: 0, x: 20 }}
       className={`${styles.taskEditorItem} ${task.kind === 'reward' ? styles.reward : ''}`}
     >
+      {task.kind !== 'reward' && (
+        <div className={styles.dragHandle}>
+          <GripVertical size={20} />
+        </div>
+      )}
       <div className={styles.taskEditorImage} ref={containerRef}>
         {task.icon ? (
-          <img src={task.icon} alt={task.name} />
+          <img src={task.icon} alt={task.name} draggable={false} />
         ) : (
           <div className={styles.placeholderIconSmall}>
             <Camera size={24} opacity={0.3} />
