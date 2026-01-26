@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Camera,Check } from 'lucide-react';
+import { Camera, Check } from 'lucide-react';
 import React from 'react';
 
-import type { Task, TimerColor,TimerShape } from '../types';
+import type { Task, TimerColor, TimerShape } from '../types';
 import { formatTime } from '../utils/time';
 import { DonutTimer } from './DonutTimer';
 import styles from './TaskCard.module.css';

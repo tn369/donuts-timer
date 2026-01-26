@@ -1,12 +1,17 @@
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
-import React, { useEffect,useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import styles from '../App.module.css';
-import type { Task, TimerColor,TimerShape, TodoList } from '../types';
+import type { Task, TimerColor, TimerShape, TodoList } from '../types';
 import { useTaskTimer } from '../useTaskTimer';
-import { playCelebrationSound,playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound } from '../utils/audio';
+import {
+  playCelebrationSound,
+  playGentleAlarm,
+  playTaskCompletionSound,
+  playTaskIncompleteSound,
+} from '../utils/audio';
 import { Controls } from './Controls';
 import { ResetModal } from './ResetModal';
 import { ShapeIcon } from './ShapeIcon';
@@ -46,16 +51,16 @@ const SHAPES: (
   | 'star'
   | 'heart'
 )[] = [
-    'circle',
-    'square',
-    'triangle',
-    'diamond',
-    'pentagon',
-    'hexagon',
-    'octagon',
-    'star',
-    'heart',
-  ];
+  'circle',
+  'square',
+  'triangle',
+  'diamond',
+  'pentagon',
+  'hexagon',
+  'octagon',
+  'star',
+  'heart',
+];
 
 const COLORS: (
   | 'red'
@@ -70,18 +75,18 @@ const COLORS: (
   | 'cyan'
   | 'lime'
 )[] = [
-    'red',
-    'blue',
-    'yellow',
-    'green',
-    'pink',
-    'purple',
-    'orange',
-    'teal',
-    'indigo',
-    'cyan',
-    'lime',
-  ];
+  'red',
+  'blue',
+  'yellow',
+  'green',
+  'pink',
+  'purple',
+  'orange',
+  'teal',
+  'indigo',
+  'cyan',
+  'lime',
+];
 
 interface HeaderControlsProps {
   showSelectionButton: boolean;
@@ -133,7 +138,9 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
           isRunning={isRunning}
           onStart={startTimer}
           onStop={stopTimer}
-          onReset={() => { setShowResetConfirm(true); }}
+          onReset={() => {
+            setShowResetConfirm(true);
+          }}
           canStartOrStop={canStartOrStop}
           isCompact={true}
         />
@@ -337,7 +344,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
               isRunning={isRunning}
               onStart={startTimer}
               onStop={stopTimer}
-              onReset={() => { setShowResetConfirm(true); }}
+              onReset={() => {
+                setShowResetConfirm(true);
+              }}
               canStartOrStop={canStartOrStop}
             />
           </div>
@@ -347,7 +356,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
       <AnimatePresence>
         {showResetConfirm && (
           <ResetModal
-            onCancel={() => { setShowResetConfirm(false); }}
+            onCancel={() => {
+              setShowResetConfirm(false);
+            }}
             onConfirm={() => {
               reset();
               setShowResetConfirm(false);

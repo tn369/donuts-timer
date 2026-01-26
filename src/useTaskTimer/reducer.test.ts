@@ -1,8 +1,8 @@
-import { describe, expect,it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import type { TargetTimeSettings, Task, TimerSettings } from '../types';
 import { timerReducer } from './reducer';
-import type { Action,State } from './types';
+import type { Action, State } from './types';
 
 const mockTask: Task = {
   id: '1',

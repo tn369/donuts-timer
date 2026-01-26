@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import React, { useMemo } from 'react';
 
-import type { TimerColor,TimerShape } from '../types';
-import type { ShapeRenderer,SVGRenderProps  } from '../utils/shapeUtils';
+import type { TimerColor, TimerShape } from '../types';
+import type { ShapeRenderer, SVGRenderProps } from '../utils/shapeUtils';
 import { createRenderer } from '../utils/shapeUtils';
 import styles from './DonutTimer.module.css';
 

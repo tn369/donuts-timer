@@ -1,4 +1,4 @@
-import type { TargetTimeSettings, Task, TimerSettings,TodoList } from '../types';
+import type { TargetTimeSettings, Task, TimerSettings, TodoList } from '../types';
 
 export interface State {
   tasks: Task[];

@@ -113,7 +113,12 @@ export const playCelebrationSound = () => {
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
-  const playFestiveNote = (freq: number, startTime: number, duration: number, type: OscillatorType = 'sine') => {
+  const playFestiveNote = (
+    freq: number,
+    startTime: number,
+    duration: number,
+    type: OscillatorType = 'sine'
+  ) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 

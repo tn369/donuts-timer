@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { clearExecutionState,loadExecutionState, saveExecutionState } from '../storage';
+import { clearExecutionState, loadExecutionState, saveExecutionState } from '../storage';
 import type { Action, State } from './types';
 
 export function useTimerPersistence(state: State, dispatch: React.Dispatch<Action>) {

@@ -1,7 +1,7 @@
-import { useCallback,useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 
 import { clearExecutionState } from './storage';
-import type { TargetTimeSettings, Task, TimerSettings,TodoList } from './types';
+import type { TargetTimeSettings, Task, TimerSettings, TodoList } from './types';
 import { timerReducer } from './useTaskTimer/reducer';
 import type { State } from './useTaskTimer/types';
 import { useTimerInterval } from './useTaskTimer/useTimerInterval';

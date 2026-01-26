@@ -5,8 +5,8 @@ import styles from './App.module.css';
 import { MainTimerView } from './components/MainTimerView';
 import { TodoListSelection } from './components/TodoListSelection';
 import { TodoListSettings } from './components/TodoListSettings';
-import { migrateTasksWithDefaultIcons,PRESET_IMAGES } from './constants';
-import { loadActiveListId, loadTodoLists, saveActiveListId,saveTodoLists } from './storage';
+import { migrateTasksWithDefaultIcons, PRESET_IMAGES } from './constants';
+import { loadActiveListId, loadTodoLists, saveActiveListId, saveTodoLists } from './storage';
 import type { TodoList } from './types';
 
 type CurrentScreen = 'selection' | 'main' | 'settings';
@@ -192,10 +192,7 @@ function App() {
     if (listToEdit) {
       // すべてのリストからユニークなアイコンURLを抽出（プリセット画像も含む）
       const allUniqueIcons = Array.from(
-        new Set([
-          ...PRESET_IMAGES,
-          ...todoLists.flatMap((l) => l.tasks.map((t) => t.icon)),
-        ])
+        new Set([...PRESET_IMAGES, ...todoLists.flatMap((l) => l.tasks.map((t) => t.icon))])
       ).filter((icon) => icon !== '');
 
       return (
