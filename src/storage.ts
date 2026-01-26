@@ -1,5 +1,5 @@
-import type { TodoList, Task } from './types';
 import { DEFAULT_TODO_LISTS } from './constants';
+import type { Task,TodoList } from './types';
 
 const LISTS_STORAGE_KEY = 'task-timer-lists';
 const ACTIVE_LIST_ID_KEY = 'task-timer-active-id';

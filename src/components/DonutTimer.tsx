@@ -1,6 +1,7 @@
 import React from 'react';
+
+import type { TimerColor,TimerShape } from '../types';
 import styles from './DonutTimer.module.css';
-import type { TimerShape, TimerColor } from '../types';
 import { TimerChunk } from './TimerChunk';
 
 interface DonutTimerProps {

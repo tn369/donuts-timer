@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { loadExecutionState, saveExecutionState, clearExecutionState } from '../storage';
+
+import { clearExecutionState,loadExecutionState, saveExecutionState } from '../storage';
 import type { Action, State } from './types';
 
 export function useTimerPersistence(state: State, dispatch: React.Dispatch<Action>) {
@@ -7,7 +8,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
   useEffect(() => {
     if (state.activeList) {
       const saved = loadExecutionState();
-      if (saved && saved.listId === state.activeList.id) {
+      if (saved?.listId === state.activeList.id) {
         // すべてのタスクが完了済みかどうかをチェック
         const allCompleted =
           saved.tasks.length > 0 && saved.tasks.every((t) => t.status === 'done');

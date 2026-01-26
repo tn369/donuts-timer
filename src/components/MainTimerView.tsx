@@ -1,17 +1,17 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Settings, Palette, ChevronLeft, Zap } from 'lucide-react';
-import styles from '../App.module.css';
-import { ShapeIcon } from './ShapeIcon';
-
-import { TaskList } from './TaskList';
-import { Controls } from './Controls';
-import { SiblingControls } from './SiblingControls';
-import { ResetModal } from './ResetModal';
-import { useTaskTimer } from '../useTaskTimer';
-import type { TodoList, Task, TimerShape, TimerColor } from '../types';
-import { playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound, playCelebrationSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
+import React, { useEffect,useMemo, useState } from 'react';
+
+import styles from '../App.module.css';
+import type { Task, TimerColor,TimerShape, TodoList } from '../types';
+import { useTaskTimer } from '../useTaskTimer';
+import { playCelebrationSound,playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound } from '../utils/audio';
+import { Controls } from './Controls';
+import { ResetModal } from './ResetModal';
+import { ShapeIcon } from './ShapeIcon';
+import { SiblingControls } from './SiblingControls';
+import { TaskList } from './TaskList';
 
 interface MainTimerViewProps {
   initialList: TodoList;
@@ -133,7 +133,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
           isRunning={isRunning}
           onStart={startTimer}
           onStop={stopTimer}
-          onReset={() => setShowResetConfirm(true)}
+          onReset={() => { setShowResetConfirm(true); }}
           canStartOrStop={canStartOrStop}
           isCompact={true}
         />
@@ -187,7 +187,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
             onEditSettings(activeList.id);
           }
         }}
-        className={`${styles.settingsButton}`}
+        className={styles.settingsButton}
         aria-label="リストのせってい"
       >
         <Settings size={isSiblingMode ? 20 : 24} />
@@ -337,7 +337,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
               isRunning={isRunning}
               onStart={startTimer}
               onStop={stopTimer}
-              onReset={() => setShowResetConfirm(true)}
+              onReset={() => { setShowResetConfirm(true); }}
               canStartOrStop={canStartOrStop}
             />
           </div>
@@ -347,7 +347,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
       <AnimatePresence>
         {showResetConfirm && (
           <ResetModal
-            onCancel={() => setShowResetConfirm(false)}
+            onCancel={() => { setShowResetConfirm(false); }}
             onConfirm={() => {
               reset();
               setShowResetConfirm(false);

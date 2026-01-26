@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import styles from './App.module.css';
+import { v4 as uuid_v4 } from 'uuid';
 
+import styles from './App.module.css';
+import { MainTimerView } from './components/MainTimerView';
 import { TodoListSelection } from './components/TodoListSelection';
 import { TodoListSettings } from './components/TodoListSettings';
-import { MainTimerView } from './components/MainTimerView';
+import { migrateTasksWithDefaultIcons,PRESET_IMAGES } from './constants';
+import { loadActiveListId, loadTodoLists, saveActiveListId,saveTodoLists } from './storage';
 import type { TodoList } from './types';
-import { loadTodoLists, saveTodoLists, loadActiveListId, saveActiveListId } from './storage';
-import { PRESET_IMAGES, migrateTasksWithDefaultIcons } from './constants';
-import { v4 as uuid_v4 } from 'uuid';
 
 type CurrentScreen = 'selection' | 'main' | 'settings';
 

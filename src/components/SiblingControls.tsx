@@ -1,7 +1,8 @@
+import { Pause, Play, RotateCcw } from 'lucide-react';
 import React from 'react';
-import { Play, Pause, RotateCcw } from 'lucide-react';
-import styles from './SiblingControls.module.css';
+
 import { ControlButton } from './ControlButton';
+import styles from './SiblingControls.module.css';
 
 interface SiblingControlsProps {
   isRunning: boolean;
