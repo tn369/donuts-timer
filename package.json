@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
     "preview": "vite preview",
     "test": "vitest"
@@ -33,6 +35,9 @@
     "globals": "^16.5.0",
     "happy-dom": "^17.6.1",
     "prettier": "^3.8.1",
+    "stylelint": "^16.26.1",
+    "stylelint-config-recess-order": "^7.6.0",
+    "stylelint-config-standard": "^39.0.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^5.1.0",
