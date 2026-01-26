@@ -220,7 +220,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                     ...editedList,
                     timerSettings: {
                       shape: s,
-                      color: editedList.timerSettings?.color || 'blue',
+                      color: editedList.timerSettings?.color ?? 'blue',
                     },
                   });
                 }}
@@ -244,7 +244,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                   setEditedList({
                     ...editedList,
                     timerSettings: {
-                      shape: editedList.timerSettings?.shape || 'circle',
+                      shape: editedList.timerSettings?.shape ?? 'circle',
                       color: c,
                     },
                   });
@@ -382,7 +382,7 @@ const TimeStepper: React.FC<{
         type="button"
         className={styles.stepperBtn}
         onClick={handleDecrement}
-        disabled={disabled || value <= 0}
+        disabled={(disabled ?? false) || value <= 0}
       >
         -
       </button>
@@ -402,7 +402,7 @@ const TimeStepper: React.FC<{
         type="button"
         className={styles.stepperBtn}
         onClick={handleIncrement}
-        disabled={disabled || (max !== undefined && value >= max)}
+        disabled={(disabled ?? false) || (max !== undefined && value >= max)}
       >
         +
       </button>
@@ -474,7 +474,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
   const [popupDirection, setPopupDirection] = useState<'bottom' | 'top'>('bottom');
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLButtonElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -529,7 +529,8 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           <GripVertical size={20} />
         </div>
       )}
-      <div
+      <button
+        type="button"
         className={styles.taskEditorImage}
         ref={containerRef}
         onClick={() => {
@@ -614,7 +615,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             </>
           )}
         </AnimatePresence>
-      </div>
+      </button>
 
       <div className={styles.taskEditorInfo}>
         <input

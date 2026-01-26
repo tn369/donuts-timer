@@ -350,7 +350,7 @@ function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
     isTimerRunning: false,
     lastTickTimestamp: null,
     targetTimeSettings: list.targetTimeSettings,
-    timerSettings: list.timerSettings || { shape: 'circle', color: 'blue' },
+    timerSettings: list.timerSettings ?? { shape: 'circle', color: 'blue' },
   };
 }
 
@@ -425,8 +425,5 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
 
 export function timerReducer(state: State, action: Action): State {
   const handler = handlers[action.type] as Handler<Action['type']>;
-  if (handler) {
-    return handler(state, action);
-  }
-  return state;
+  return handler(state, action);
 }

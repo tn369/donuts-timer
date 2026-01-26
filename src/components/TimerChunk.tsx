@@ -164,7 +164,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
           />
         )}
         {capacity >= 60 &&
-          [...Array(ticksCount)].map((_, j) => (
+          Array.from({ length: ticksCount }).map((_, j) => (
             <line
               key={j}
               {...renderer.getTickProps(j, rotationDegree)}

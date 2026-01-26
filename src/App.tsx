@@ -14,19 +14,12 @@ type CurrentScreen = 'selection' | 'main' | 'settings';
 function App() {
   const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
     const loaded = loadTodoLists();
-    let hasChanges = false;
-    const migrated = loaded.map((list) => {
-      const migratedTasks = migrateTasksWithDefaultIcons(list.tasks);
-      if (JSON.stringify(migratedTasks) !== JSON.stringify(list.tasks)) {
-        hasChanges = true;
-      }
-      return {
-        ...list,
-        tasks: migratedTasks,
-      };
-    });
+    const migrated = loaded.map((list) => ({
+      ...list,
+      tasks: migrateTasksWithDefaultIcons(list.tasks),
+    }));
 
-    if (hasChanges) {
+    if (JSON.stringify(migrated) !== JSON.stringify(loaded)) {
       saveTodoLists(migrated);
     }
     return migrated;

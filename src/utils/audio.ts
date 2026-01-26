@@ -2,11 +2,7 @@
  * 優しいチャイム音を再生する（Web Audio API）
  */
 export const playGentleAlarm = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
@@ -45,11 +41,7 @@ export const playGentleAlarm = () => {
  * 短い効果音を再生する（タスク完了時など）
  */
 export const playTaskCompletionSound = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
@@ -75,11 +67,7 @@ export const playTaskCompletionSound = () => {
  * タスクが未完了に戻ったときの効果音を再生する
  */
 export const playTaskIncompleteSound = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
@@ -105,11 +93,7 @@ export const playTaskIncompleteSound = () => {
  * お祝いの豪華な効果音を再生する
  */
 export const playCelebrationSound = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 

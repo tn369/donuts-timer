@@ -243,7 +243,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   // 祝いの演出
   const triggerCelebration = () => {
     playCelebrationSound();
-    confetti({
+    void confetti({
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 },

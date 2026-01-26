@@ -201,7 +201,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       whileTap={isSelectable && !isDone ? { scale: 0.95 } : {}}
       className={cardClassName}
       style={{ flexGrow }}
-      onClick={() => isSelectable && onSelect(task.id)}
+      onClick={() => {
+        if (isSelectable) onSelect(task.id);
+      }}
     >
       {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardNormal {...viewProps} />}
     </motion.div>
