@@ -79,6 +79,9 @@ const COLORS = [
   'lime',
 ] as const;
 
+const TITLE_SUFFIX = 'のやることリスト';
+const PRESET_TITLES = ['あさ', 'おひる', 'ゆうがた', 'よる', 'しゅくだい', 'おけいこ'];
+
 export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   list,
   allExistingIcons = [],
@@ -89,6 +92,14 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
 
   const handleTitleChange = (title: string) => {
     setEditedList({ ...editedList, title });
+  };
+
+  const currentPrefix = editedList.title.endsWith(TITLE_SUFFIX)
+    ? editedList.title.slice(0, -TITLE_SUFFIX.length)
+    : editedList.title;
+
+  const handlePresetClick = (preset: string) => {
+    handleTitleChange(preset + TITLE_SUFFIX);
   };
 
   const handleTaskChange = (taskId: string, updates: Partial<Task>) => {
@@ -165,13 +176,28 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
       <div className={styles.settingsContent}>
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>リストのなまえ</h2>
-          <input
-            type="text"
-            className={styles.titleInput}
-            value={editedList.title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="リストのなまえを入力..."
-          />
+          <div className={styles.titleInputContainer}>
+            <input
+              type="text"
+              className={styles.titleInputPrefix}
+              value={currentPrefix}
+              onChange={(e) => handleTitleChange(e.target.value + TITLE_SUFFIX)}
+              placeholder="なまえ"
+              onFocus={(e) => e.target.select()}
+            />
+            <span className={styles.titleSuffix}>{TITLE_SUFFIX}</span>
+          </div>
+          <div className={styles.presetsContainer}>
+            {PRESET_TITLES.map((preset) => (
+              <button
+                key={preset}
+                className={`${styles.presetChip} ${currentPrefix === preset ? styles.active : ''}`}
+                onClick={() => handlePresetClick(preset)}
+              >
+                {preset}
+              </button>
+            ))}
+          </div>
         </section>
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>どーなつタイマー の かたち</h2>
