@@ -14,58 +14,58 @@
 }
 
 .btn {
-  width: 52px;
-  height: 52px;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: var(--transition-smooth);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 52px;
+  height: 52px;
   color: white;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-md);
   box-shadow: var(--clay-shadow);
+  transition: var(--transition-smooth);
 }
 
 .btn:hover:not(:disabled) {
-  transform: scale(1.1);
   filter: brightness(1.1);
+  transform: scale(1.1);
 }
 
 .btn:active:not(:disabled) {
+  box-shadow: inset 2px 2px 8px rgb(0 0 0 / 10%);
   transform: scale(0.95);
-  box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn:disabled {
-  opacity: 0.3;
   cursor: not-allowed;
-  filter: grayscale(0.8);
   box-shadow: none;
+  opacity: 0.3;
+  filter: grayscale(0.8);
 }
 
 .btnStart {
-  background: var(--brand-gradient);
   width: 60px;
   height: 60px;
+  background: var(--brand-gradient);
   border-radius: var(--radius-lg);
   box-shadow:
-    0 4px 12px rgba(0, 210, 255, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    0 4px 12px rgb(0 210 255 / 20%),
+    inset 0 0 0 1px rgb(255 255 255 / 30%);
 }
 
 .btnStop {
-  background: var(--danger-gradient);
   width: 60px;
   height: 60px;
+  background: var(--danger-gradient);
   border-radius: var(--radius-lg);
   box-shadow:
-    0 4px 12px rgba(255, 77, 77, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    0 4px 12px rgb(255 77 77 / 20%),
+    inset 0 0 0 1px rgb(255 255 255 / 30%);
 }
 
 .btnReset {
-  background: var(--glass-bg);
   color: var(--color-text-muted);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
 }

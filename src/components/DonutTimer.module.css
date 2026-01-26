@@ -1,15 +1,15 @@
 .donutTimerGroup {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-  margin-bottom: 12px;
   width: 100%;
   max-height: 240px;
-  overflow-y: auto;
   padding: 8px 4px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  overflow-y: auto;
   scrollbar-width: none;
 }
 
@@ -21,24 +21,24 @@
 .donutTimer {
   position: relative;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.06));
-  flex-shrink: 0;
   aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 6%));
 }
 
 .donutTimerHole {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 60%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 60%;
+  height: 60%;
   pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
 .donutTimerSvg {
@@ -47,46 +47,56 @@
 
 .donutTimerBg {
   fill: none;
-  stroke: rgba(0, 0, 0, 0.04);
+  stroke: rgb(0 0 0 / 4%);
 }
 
 .donutTimerFill {
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 10%));
   fill: none;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
 .colorRed {
   stroke: #ff4d4d;
 }
+
 .colorBlue {
   stroke: #4facfe;
 }
+
 .colorYellow {
   stroke: #ffb347;
 }
+
 .colorGreen {
   stroke: #10b981;
 }
+
 .colorPink {
   stroke: #ff7eb3;
 }
+
 .colorPurple {
   stroke: #a18cd1;
 }
+
 .colorOrange {
   stroke: #f97316;
 }
+
 .colorTeal {
   stroke: #14b8a6;
 }
+
 .colorIndigo {
   stroke: #6366f1;
 }
+
 .colorCyan {
   stroke: #06b6d4;
 }
+
 .colorLime {
   stroke: #84cc16;
 }
@@ -98,45 +108,46 @@
 @keyframes timer-pulse-danger {
   0%,
   100% {
-    filter: drop-shadow(0 0 4px rgba(255, 77, 77, 0.4));
     opacity: 1;
+    filter: drop-shadow(0 0 4px rgb(255 77 77 / 40%));
   }
+
   50% {
-    filter: drop-shadow(0 0 12px rgba(255, 77, 77, 0.8));
     opacity: 0.8;
+    filter: drop-shadow(0 0 12px rgb(255 77 77 / 80%));
   }
 }
 
 .donutTimerTick {
+  stroke: rgb(0 0 0 / 10%);
   stroke-linecap: round;
-  stroke: rgba(0, 0, 0, 0.1);
 }
 
 .donutTimerIconContainer {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
 .donutTimerIcon {
   font-size: 56px;
-  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 12px 18px rgb(0 0 0 / 15%));
 }
 
 .donutTimerMore {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px 12px;
   font-size: 18px;
   font-weight: 800;
   color: var(--color-text-muted);
-  background: rgba(0, 0, 0, 0.05);
-  padding: 4px 12px;
+  background: rgb(0 0 0 / 5%);
   border-radius: 12px;
 }
