@@ -343,6 +343,58 @@ interface TaskEditorItemProps {
   allExistingIcons: string[];
 }
 
+const TimeStepper: React.FC<{
+  value: number;
+  onChange: (val: number) => void;
+  unit: string;
+  disabled?: boolean;
+  step?: number;
+  max?: number;
+}> = ({ value, onChange, unit, disabled, step = 5, max }) => {
+  const handleDecrement = () => {
+    let newValue = value - step;
+    if (newValue < 0) newValue = 0;
+    onChange(newValue);
+  };
+
+  const handleIncrement = () => {
+    let newValue = value + step;
+    if (max !== undefined && newValue > max) newValue = max;
+    onChange(newValue);
+  };
+
+  return (
+    <div className={styles.stepperContainer}>
+      <button
+        type="button"
+        className={styles.stepperBtn}
+        onClick={handleDecrement}
+        disabled={disabled || value <= 0}
+      >
+        -
+      </button>
+      <div className={styles.stepperValueContainer}>
+        <input
+          type="number"
+          className={styles.stepperInput}
+          value={value}
+          onChange={(e) => onChange(parseInt(e.target.value || '0'))}
+          disabled={disabled}
+        />
+        <span className={styles.stepperUnit}>{unit}</span>
+      </div>
+      <button
+        type="button"
+        className={styles.stepperBtn}
+        onClick={handleIncrement}
+        disabled={disabled || (max !== undefined && value >= max)}
+      >
+        +
+      </button>
+    </div>
+  );
+};
+
 const TaskEditorTimeInput: React.FC<{
   task: Task;
   mode: 'duration' | 'target-time';
@@ -354,50 +406,38 @@ const TaskEditorTimeInput: React.FC<{
   if (task.kind === 'reward' && mode === 'target-time') {
     return (
       <div className={styles.taskTargetTimeInputs}>
-        <select
-          className={styles.timeSelectSmall}
+        <TimeStepper
           value={targetHour}
-          onChange={(e) => onTargetTimeChange({ targetHour: parseInt(e.target.value) })}
-        >
-          {Array.from({ length: 24 }).map((_, i) => (
-            <option key={i} value={i}>
-              {i.toString().padStart(2, '0')}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => onTargetTimeChange({ targetHour: val % 24 })}
+          unit="じ"
+          step={1}
+          max={23}
+        />
         <span className={styles.timeSeparatorSmall}>:</span>
-        <select
-          className={styles.timeSelectSmall}
+        <TimeStepper
           value={targetMinute}
-          onChange={(e) => onTargetTimeChange({ targetMinute: parseInt(e.target.value) })}
-        >
-          {Array.from({ length: 60 }).map((_, i) => (
-            <option key={i} value={i}>
-              {i.toString().padStart(2, '0')}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => onTargetTimeChange({ targetMinute: val % 60 })}
+          unit="ふん"
+          step={1}
+          max={59}
+        />
         <span className={styles.timeLabelSmall}>におわる</span>
       </div>
     );
   }
 
   return (
-    <>
-      <input
-        type="number"
-        className={styles.taskMinutesInput}
+    <div className={styles.taskTimeInputGroup}>
+      <TimeStepper
         value={Math.floor(task.plannedSeconds / 60)}
-        onChange={(e) =>
-          onTaskChange(task.id, { plannedSeconds: parseInt(e.target.value || '0') * 60 })
-        }
+        onChange={(val) => onTaskChange(task.id, { plannedSeconds: val * 60 })}
+        unit="ぷん"
         disabled={task.kind === 'reward' && mode === 'target-time'}
       />
-      <span>ぷん</span>
       {task.kind === 'reward' && mode === 'target-time' && (
         <span className={styles.autoCalcHint}>（じどう計算）</span>
       )}
-    </>
+    </div>
   );
 };
 
@@ -468,7 +508,11 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           <GripVertical size={20} />
         </div>
       )}
-      <div className={styles.taskEditorImage} ref={containerRef}>
+      <div
+        className={styles.taskEditorImage}
+        ref={containerRef}
+        onClick={() => setShowIconSelector(!showIconSelector)}
+      >
         {task.icon ? (
           <img src={task.icon} alt={task.name} draggable={false} />
         ) : (
@@ -476,14 +520,15 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             <Camera size={24} opacity={0.3} />
           </div>
         )}
+        <div className={styles.imageOverlayLabel}>
+          がぞうを
+          <br />
+          かえる
+        </div>
         <div className={styles.taskEditorImageButtons}>
-          <button
-            className={styles.changeImageBtn}
-            title="がぞうをえらぶ"
-            onClick={() => setShowIconSelector(!showIconSelector)}
-          >
-            <Camera size={14} />
-          </button>
+          <div className={styles.changeImageBtn}>
+            <Camera size={16} />
+          </div>
         </div>
         <input
           type="file"

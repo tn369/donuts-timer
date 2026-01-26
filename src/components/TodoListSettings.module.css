@@ -279,6 +279,101 @@
   margin-left: 4px;
 }
 
+/* Stepper Styles */
+.stepperContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  transition: var(--transition-smooth);
+}
+
+.stepperContainer:focus-within {
+  border-color: var(--color-primary);
+  background: white;
+}
+
+.stepperBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: var(--color-primary);
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+}
+
+.stepperBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stepperBtn:active:not(:disabled) {
+  transform: translateY(0) scale(0.95);
+}
+
+.stepperBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  color: var(--color-text-muted);
+}
+
+.stepperValueContainer {
+  display: flex;
+  align-items: baseline;
+  padding: 0 8px;
+  min-width: 70px;
+  justify-content: center;
+}
+
+.stepperInput {
+  width: 45px;
+  border: none;
+  background: transparent;
+  text-align: right;
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+  color: var(--color-text-main);
+  padding: 0;
+  appearance: none;
+}
+
+.stepperInput:focus {
+  outline: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.stepperInput::-webkit-outer-spin-button,
+.stepperInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.stepperInput[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stepperUnit {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-left: 2px;
+}
+
 .timePreview {
   text-align: center;
   font-size: 18px;
@@ -497,9 +592,17 @@
 
 .taskEditorImage {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 72px;
+  height: 72px;
   flex-shrink: 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  overflow: visible;
+  transition: var(--transition-smooth);
+}
+
+.taskEditorImage:hover {
+  transform: scale(1.05);
 }
 
 .taskEditorImage img {
@@ -507,6 +610,7 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  border-radius: var(--radius-sm);
 }
 
 .placeholderIconSmall {
@@ -522,8 +626,8 @@
 }
 
 .changeImageBtn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--color-primary);
   color: white;
@@ -532,13 +636,39 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.2s;
 }
 
 .changeImageBtn:hover {
   transform: scale(1.1);
   background: var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.imageOverlayLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  padding: 4px;
+  pointer-events: none;
+}
+
+.taskEditorImage:hover .imageOverlayLabel {
+  opacity: 1;
 }
 
 .changeImageBtn.secondary {
@@ -640,7 +770,7 @@
   font-size: 12px;
   color: var(--color-text-muted);
   font-weight: 400;
-  margin-left: 4px;
+  margin-top: 4px;
 }
 
 .taskMinutesInput:disabled {
