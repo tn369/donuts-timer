@@ -10,7 +10,7 @@ import { SiblingControls } from './SiblingControls';
 import { ResetModal } from './ResetModal';
 import { useTaskTimer } from '../useTaskTimer';
 import type { TodoList, Task, TimerShape, TimerColor } from '../types';
-import { playGentleAlarm, playTaskCompletionSound } from '../utils/audio';
+import { playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound } from '../utils/audio';
 
 interface MainTimerViewProps {
   initialList: TodoList;
@@ -236,16 +236,25 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     const currentCompletedTasks = tasks.filter((t) => t.status === 'done');
     const currentCompletedIds = new Set(currentCompletedTasks.map((t) => t.id));
 
-    // 前回いなかった（＝新しく完了した）タスクを探す
-    const newlyCompletedTask = currentCompletedTasks.find(
-      (t) => !prevCompletedIdsRef.current.has(t.id)
+    // 前回完了していて、今回完了していないタスクを探す
+    const newlyIncompleteTask = Array.from(prevCompletedIdsRef.current).find(
+      (id) => !currentCompletedIds.has(id)
     );
 
-    if (newlyCompletedTask) {
-      if (newlyCompletedTask.kind === 'reward') {
-        playGentleAlarm();
-      } else {
-        playTaskCompletionSound();
+    if (newlyIncompleteTask) {
+      playTaskIncompleteSound();
+    } else {
+      // 前回いなかった（＝新しく完了した）タスクを探す
+      const newlyCompletedTask = currentCompletedTasks.find(
+        (t) => !prevCompletedIdsRef.current.has(t.id)
+      );
+
+      if (newlyCompletedTask) {
+        if (newlyCompletedTask.kind === 'reward') {
+          playGentleAlarm();
+        } else {
+          playTaskCompletionSound();
+        }
       }
     }
 
