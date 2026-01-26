@@ -214,3 +214,36 @@
   margin-bottom: 0 !important;
 }
 
+.reward {
+  background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%);
+  border-color: #ffb6c1;
+}
+
+.reward.selected {
+  border: 6px solid #ff6a95 !important;
+  box-shadow:
+    0 0 20px rgb(255 106 149 / 20%),
+    var(--clay-shadow) !important;
+}
+
+/* ごほうびタスク実行中の特別なアニメーション（キラキラ感） */
+.reward.selected:not(.done) .taskImage {
+  filter: drop-shadow(0 0 12px #ff6a95);
+  animation: reward-float 3s infinite ease-in-out;
+}
+
+@keyframes reward-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  25% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+
+  75% {
+    transform: translateY(5px) rotate(1deg);
+  }
+}
+

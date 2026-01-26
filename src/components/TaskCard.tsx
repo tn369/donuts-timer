@@ -130,7 +130,8 @@ const getCardClassName = (
   isSelected: boolean,
   isDone: boolean,
   isOverdue: boolean,
-  isCompact: boolean
+  isCompact: boolean,
+  isReward: boolean
 ) => {
   return [
     styles.taskCard,
@@ -138,6 +139,7 @@ const getCardClassName = (
     isDone && styles.done,
     isOverdue && styles.overdue,
     isCompact && styles.compact,
+    isReward && styles.reward,
   ]
     .filter(Boolean)
     .join(' ');
@@ -162,8 +164,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
   const isOverdue = !isDone && task.elapsedSeconds > task.plannedSeconds;
+  const isReward = task.kind === 'reward';
 
-  const cardClassName = getCardClassName(isSelected, isDone, isOverdue, isCompact);
+  const cardClassName = getCardClassName(isSelected, isDone, isOverdue, isCompact, isReward);
   const flexGrow = getFlexGrow(
     task.status,
     task.elapsedSeconds,
