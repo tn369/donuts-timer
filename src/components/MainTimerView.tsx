@@ -4,6 +4,7 @@ import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import styles from '../App.module.css';
+import { type TimerMode } from '../storage';
 import type { Task, TimerColor, TimerShape, TodoList } from '../types';
 import { useTaskTimer } from '../useTaskTimer';
 import {
@@ -24,6 +25,7 @@ interface MainTimerViewProps {
   onEditSettings: (listId: string) => void;
   showSelectionButton?: boolean;
   isSiblingMode?: boolean;
+  timerMode?: TimerMode;
 }
 
 const TIMER_COLORS: Record<string, string> = {
@@ -209,6 +211,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   onEditSettings,
   showSelectionButton = true,
   isSiblingMode = false,
+  timerMode = 'single',
 }) => {
   const {
     tasks,
@@ -223,7 +226,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     timerSettings,
     setTimerSettings,
     fastForward,
-  } = useTaskTimer();
+  } = useTaskTimer(timerMode);
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 

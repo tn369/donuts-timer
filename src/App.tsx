@@ -217,6 +217,7 @@ function App() {
                 setCurrentScreen('settings');
               }}
               isSiblingMode={true}
+              timerMode="sibling-0"
             />
           </div>
           <div className={styles.siblingItem}>
@@ -231,6 +232,7 @@ function App() {
               }}
               showSelectionButton={false}
               isSiblingMode={true}
+              timerMode="sibling-1"
             />
           </div>
         </div>
@@ -243,6 +245,7 @@ function App() {
             setSettingsSource('main');
             setCurrentScreen('settings');
           }}
+          timerMode="single"
         />
       )}
     </div>

@@ -1,13 +1,22 @@
 import { useEffect } from 'react';
 
-import { clearExecutionState, loadExecutionState, saveExecutionState } from '../storage';
+import {
+  clearExecutionState,
+  loadExecutionState,
+  saveExecutionState,
+  type TimerMode,
+} from '../storage';
 import type { Action, State } from './types';
 
-export function useTimerPersistence(state: State, dispatch: React.Dispatch<Action>) {
+export function useTimerPersistence(
+  state: State,
+  dispatch: React.Dispatch<Action>,
+  mode: TimerMode = 'single'
+) {
   // 保存されたステートの復元
   useEffect(() => {
     if (state.activeList) {
-      const saved = loadExecutionState();
+      const saved = loadExecutionState(state.activeList.id, mode);
       if (saved?.listId === state.activeList.id) {
         // すべてのタスクが完了済みかどうかをチェック
         const allCompleted =
@@ -15,7 +24,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
 
         if (allCompleted) {
           // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
-          clearExecutionState();
+          clearExecutionState(state.activeList.id, mode);
         } else {
           dispatch({
             type: 'RESTORE_SESSION',
@@ -27,7 +36,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
         }
       }
     }
-  }, [state.activeList, dispatch]);
+  }, [state.activeList, dispatch, mode]);
 
   useEffect(() => {
     // ステートが変わるたびに保存（ただし初期化前は避ける）
@@ -38,6 +47,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
         isTimerRunning: state.isTimerRunning,
         lastTickTimestamp: state.lastTickTimestamp,
         listId: state.activeList.id,
+        mode,
       });
     }
   }, [
@@ -46,5 +56,6 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
     state.isTimerRunning,
     state.lastTickTimestamp,
     state.activeList,
+    mode,
   ]);
 }
