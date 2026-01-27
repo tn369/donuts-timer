@@ -36,4 +36,16 @@ npm run dev
 
 # ビルド
 npm run build
+
+# フォーマット
+npm run format
+
+# Lint
+npm run lint
+
+# テスト
+npm run test
+
+# プレビュー
+npm run preview
 ```
