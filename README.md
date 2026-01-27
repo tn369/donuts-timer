@@ -29,23 +29,23 @@
 
 ```bash
 # インストール
-npm install
+make install
 
 # 開発サーバー起動
-npm run dev
+make dev
 
 # ビルド
-npm run build
+make build
 
 # フォーマット
-npm run format
+make format
 
 # Lint
-npm run lint
+make lint
 
 # テスト
-npm run test
+make test
 
 # プレビュー
-npm run preview
+make preview
 ```
