@@ -2,10 +2,9 @@
  * 形状計算のためのクラスとユーティリティ
  */
 
-export interface Point {
-  x: number;
-  y: number;
-}
+import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils';
+
+export type { Point } from './polygonUtils';
 
 export interface SVGRenderProps {
   d?: string;
@@ -176,45 +175,12 @@ export class PolygonRenderer extends PathRenderer {
   constructor(size: number, strokeWidth: number, sides: number, isStar = false) {
     super(size, strokeWidth);
     this.ticksCount = sides;
-    const pts = this.getShapePoints(this.radius, sides, -Math.PI / 2, isStar);
-    this.path = this.pointsToPath(pts);
-    this.perimeter = this.calculatePerimeter(pts);
-    this.outerPath = this.pointsToPath(
-      this.getShapePoints(this.radius + 1, sides, -Math.PI / 2, isStar)
-    );
-  }
-
-  private getShapePoints(
-    r: number,
-    sides: number,
-    rotation: number,
-    isStarShape: boolean
-  ): Point[] {
-    const pts: Point[] = [];
-    const totalPoints = isStarShape ? sides * 2 : sides;
-    const innerR = r * 0.45;
-    for (let j = 0; j < totalPoints; j++) {
-      const currentR = isStarShape ? (j % 2 === 0 ? r : innerR) : r;
-      const angle = rotation + (j * 2 * Math.PI) / totalPoints;
-      pts.push({
-        x: this.center + currentR * Math.cos(angle),
-        y: this.center + currentR * Math.sin(angle),
-      });
-    }
-    return pts;
-  }
-
-  private pointsToPath(pts: Point[]): string {
-    return pts.map((p, j) => `${j === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
-  }
-
-  private calculatePerimeter(pts: Point[]): number {
-    let p = 0;
-    for (let j = 0; j < pts.length; j++) {
-      const next = pts[(j + 1) % pts.length];
-      p += Math.sqrt(Math.pow(next.x - pts[j].x, 2) + Math.pow(next.y - pts[j].y, 2));
-    }
-    return p;
+    const center = this.center;
+    const rotation = -Math.PI / 2;
+    const pts = getShapePoints(center, this.radius, sides, rotation, isStar);
+    this.path = pointsToPath(pts);
+    this.perimeter = calculatePerimeter(pts);
+    this.outerPath = pointsToPath(getShapePoints(center, this.radius + 1, sides, rotation, isStar));
   }
 }
 
