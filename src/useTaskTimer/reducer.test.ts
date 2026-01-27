@@ -40,8 +40,17 @@ describe('timerReducer', () => {
     expect(newState.tasks).toEqual(newTasks);
   });
 
-  it('should handle RESTORE_SESSION', () => {
-    const restoredTasks: Task[] = [{ ...mockTask, status: 'running', elapsedSeconds: 100 }];
+  it('should handle RESTORE_SESSION by merging progress with existing definitions', () => {
+    // initialState uses 'Test Task' and 300s
+    const restoredTasks: Task[] = [
+      {
+        ...mockTask,
+        name: 'Old Task Name',
+        plannedSeconds: 10,
+        status: 'running',
+        elapsedSeconds: 100,
+      },
+    ];
     const action: Action = {
       type: 'RESTORE_SESSION',
       tasks: restoredTasks,
@@ -50,7 +59,13 @@ describe('timerReducer', () => {
       lastTickTimestamp: 123456789,
     };
     const newState = timerReducer(initialState, action);
-    expect(newState.tasks).toEqual(restoredTasks);
+
+    // Should keep current definition (name, plannedSeconds) but restore progress
+    expect(newState.tasks[0].name).toBe('Test Task');
+    expect(newState.tasks[0].plannedSeconds).toBe(300);
+    expect(newState.tasks[0].status).toBe('running');
+    expect(newState.tasks[0].elapsedSeconds).toBe(100);
+
     expect(newState.selectedTaskId).toBe('1');
     expect(newState.isTimerRunning).toBe(true);
     expect(newState.lastTickTimestamp).toBe(123456789);

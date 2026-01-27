@@ -397,13 +397,43 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   INIT_LIST: (_state, action) => handleInitList(action),
   SET_TIMER_SETTINGS: (state, action) => ({ ...state, timerSettings: action.settings }),
   SET_TASKS: (state, action) => ({ ...state, tasks: action.tasks }),
-  RESTORE_SESSION: (state, action) => ({
-    ...state,
-    tasks: action.tasks,
-    selectedTaskId: action.selectedTaskId,
-    isTimerRunning: action.isTimerRunning,
-    lastTickTimestamp: action.lastTickTimestamp,
-  }),
+  RESTORE_SESSION: (state, action) => {
+    // 既存のタスク定義（名前、予定時間など）を維持しつつ、保存された実行状態（ステータス、経過時間など）を復元する
+    // これにより、設定画面で変更された内容が実行画面に反映されるようになる
+    const mergedTasks =
+      state.tasks.length > 0
+        ? state.tasks.map((task) => {
+            const savedTask = action.tasks.find((t) => t.id === task.id);
+            if (savedTask) {
+              return {
+                ...task,
+                status: savedTask.status,
+                elapsedSeconds: savedTask.elapsedSeconds,
+                actualSeconds: savedTask.actualSeconds,
+              };
+            }
+            return task;
+          })
+        : action.tasks;
+
+    const selectedTaskId = mergedTasks.some((t) => t.id === action.selectedTaskId)
+      ? action.selectedTaskId
+      : null;
+
+    const isTimerRunning = !!(selectedTaskId && action.isTimerRunning);
+
+    return {
+      ...state,
+      tasks: updateRewardTime(
+        mergedTasks,
+        state.targetTimeSettings,
+        getBaseRewardSeconds(state.activeList)
+      ),
+      selectedTaskId,
+      isTimerRunning,
+      lastTickTimestamp: action.lastTickTimestamp,
+    };
+  },
   SET_TARGET_TIME_SETTINGS: (state, action) => {
     const settings = action.settings;
     return {
