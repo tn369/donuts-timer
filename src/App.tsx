@@ -192,10 +192,7 @@ function App() {
     if (listToEdit) {
       // すべてのリストからユニークなアイコンURLを抽出（プリセット画像も含む）
       const allUniqueIcons = Array.from(
-        new Set([
-          ...PRESET_IMAGES,
-          ...todoLists.flatMap((l) => l.tasks.map((t) => t.icon)),
-        ])
+        new Set([...PRESET_IMAGES, ...todoLists.flatMap((l) => l.tasks.map((t) => t.icon))])
       ).filter((icon) => icon !== '');
 
       return (
@@ -255,7 +252,7 @@ function App() {
             setSettingsSource('main');
             setCurrentScreen('settings');
           }}
-            timerMode="single"
+          timerMode="single"
         />
       )}
     </div>
