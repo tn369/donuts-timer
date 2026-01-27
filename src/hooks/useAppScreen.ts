@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
+import { DEFAULT_TODO_LISTS } from '../constants';
 import { loadActiveListId, loadTodoLists, saveActiveListId } from '../storage';
 
 export type CurrentScreen = 'selection' | 'main' | 'settings';
 export type SettingsSource = 'selection' | 'main';
 
 const getInitialScreen = (): CurrentScreen => {
-  const loadedLists = loadTodoLists();
+  const loadedLists = loadTodoLists(DEFAULT_TODO_LISTS);
   const activeId = loadActiveListId();
   if (activeId) {
     const active = loadedLists.find((list) => list.id === activeId);
