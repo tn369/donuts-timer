@@ -1,3 +1,7 @@
+/**
+ * localStorage への保存/読み込みユーティリティ。
+ */
+
 import { DEFAULT_TODO_LISTS } from './constants';
 import type { Task, TodoList } from './types';
 

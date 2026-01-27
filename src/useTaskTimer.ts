@@ -1,3 +1,7 @@
+/**
+ * タスクタイマーの状態管理フック。
+ */
+
 import { useCallback, useReducer } from 'react';
 
 import { clearExecutionState, type TimerMode } from './storage';

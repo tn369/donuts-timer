@@ -1,3 +1,7 @@
+/**
+ * time ユーティリティの単体テスト。
+ */
+
 import { describe, expect, it } from 'vitest';
 
 import { formatTime } from './time';

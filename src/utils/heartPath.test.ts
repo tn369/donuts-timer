@@ -1,3 +1,7 @@
+/**
+ * heartPath の単体テスト。
+ */
+
 import { describe, expect, it } from 'vitest';
 
 import { approximateHeartPerimeter, getHeartPath, HEART_PERIMETER_FACTOR } from './heartPath';

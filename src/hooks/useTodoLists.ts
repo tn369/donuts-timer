@@ -1,3 +1,7 @@
+/**
+ * やることリストの取得・更新を管理するフック。
+ */
+
 import { useState } from 'react';
 import { v4 as uuid_v4 } from 'uuid';
 

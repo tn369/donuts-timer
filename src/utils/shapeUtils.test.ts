@@ -1,3 +1,7 @@
+/**
+ * shapeUtils の単体テスト。
+ */
+
 import { describe, expect, it } from 'vitest';
 
 import { approximateHeartPerimeter } from './heartPath';

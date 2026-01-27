@@ -1,3 +1,5 @@
+/* TaskCard コンポーネントのスタイル。 */
+
 .taskCard {
   position: relative;
   display: flex;

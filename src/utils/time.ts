@@ -1,4 +1,8 @@
 /**
+ * 時間フォーマットのユーティリティ。
+ */
+
+/**
  * 時間を MM:SS 形式にフォーマットする
  */
 export const formatTime = (seconds: number): string => {

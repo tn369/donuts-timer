@@ -1,3 +1,5 @@
+/* TodoListSelection コンポーネントのスタイル。 */
+
 .selectionScreen {
   display: flex;
   flex-direction: column;

@@ -1,3 +1,7 @@
+/**
+ * ドーナツ型タイマー表示コンポーネント。
+ */
+
 import React from 'react';
 
 import type { TimerColor, TimerShape } from '../types';

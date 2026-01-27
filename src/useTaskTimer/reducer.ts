@@ -1,3 +1,7 @@
+/**
+ * タイマー状態遷移の reducer。
+ */
+
 import type { TargetTimeSettings, Task, TodoList } from '../types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from '../utils/task';
 import type { Action, State } from './types';

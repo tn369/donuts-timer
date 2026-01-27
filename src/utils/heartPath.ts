@@ -1,3 +1,7 @@
+/**
+ * ハート形状パスの生成ユーティリティ。
+ */
+
 export const HEART_PERIMETER_FACTOR = 1.2;
 
 export const getHeartPath = (size: number): string => {

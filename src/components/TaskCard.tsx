@@ -1,3 +1,7 @@
+/**
+ * タスク情報を表示するカードコンポーネント。
+ */
+
 import { motion } from 'framer-motion';
 import { Camera, Check } from 'lucide-react';
 import React from 'react';

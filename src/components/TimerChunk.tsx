@@ -1,3 +1,7 @@
+/**
+ * タイマーの区切り表示要素。
+ */
+
 import { motion } from 'framer-motion';
 import React, { useMemo } from 'react';
 

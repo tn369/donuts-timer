@@ -1,3 +1,7 @@
+/**
+ * アプリ全体を構成するルートコンポーネント。
+ */
+
 import styles from './App.module.css';
 import { MainTimerView } from './components/MainTimerView';
 import { TodoListSelection } from './components/TodoListSelection';

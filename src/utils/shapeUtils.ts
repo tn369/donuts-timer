@@ -1,4 +1,8 @@
 /**
+ * タイマー形状描画用ユーティリティ。
+ */
+
+/**
  * 形状計算のためのクラスとユーティリティ
  */
 import { approximateHeartPerimeter, getHeartPath, HEART_PERIMETER_FACTOR } from './heartPath';

@@ -1,3 +1,7 @@
+/**
+ * task ユーティリティの単体テスト。
+ */
+
 import { describe, expect, it } from 'vitest';
 
 import type { Task } from '../types';

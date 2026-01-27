@@ -1,3 +1,7 @@
+/**
+ * タスクリスト表示コンポーネント。
+ */
+
 import type { Task, TimerColor, TimerShape } from '../types';
 import { TaskCard } from './TaskCard';
 import styles from './TaskList.module.css';

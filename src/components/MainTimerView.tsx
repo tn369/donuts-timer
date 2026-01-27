@@ -1,3 +1,7 @@
+/**
+ * メインのタイマー画面レイアウト。
+ */
+
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';

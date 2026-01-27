@@ -1,4 +1,8 @@
 /**
+ * 効果音/アラーム音の再生ユーティリティ。
+ */
+
+/**
  * 優しいチャイム音を再生する（Web Audio API）
  */
 export const playGentleAlarm = () => {

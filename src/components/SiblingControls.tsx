@@ -1,3 +1,7 @@
+/**
+ * きょうだいモードの操作ボタン群。
+ */
+
 import { Pause, Play, RotateCcw } from 'lucide-react';
 import React from 'react';
 

@@ -1,3 +1,7 @@
+/**
+ * タイマー状態の永続化フック。
+ */
+
 import { useEffect } from 'react';
 
 import {

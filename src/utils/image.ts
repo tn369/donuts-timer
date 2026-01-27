@@ -1,4 +1,8 @@
 /**
+ * 画像リサイズのユーティリティ。
+ */
+
+/**
  * 画像をリサイズする
  */
 export const resizeImage = (dataUrl: string, maxWidth = 200, maxHeight = 200): Promise<string> => {

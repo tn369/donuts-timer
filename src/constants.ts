@@ -1,3 +1,7 @@
+/**
+ * プリセット画像や初期データなどの定数定義。
+ */
+
 import womanIcon from './assets/futon_derenai_woman.png';
 import hamigakiIcon from './assets/hamigaki_boy.png';
 import changeIcon from './assets/kid_kigae_boy.png';

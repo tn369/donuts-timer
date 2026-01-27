@@ -1,3 +1,7 @@
+/**
+ * タイマー状態とアクション型定義。
+ */
+
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from '../types';
 
 export interface State {

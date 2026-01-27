@@ -1,3 +1,7 @@
+/**
+ * React アプリのエントリーポイント。
+ */
+
 import './index.css';
 
 import { StrictMode } from 'react';

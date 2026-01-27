@@ -1,3 +1,7 @@
+/**
+ * タイマーリセット確認モーダル。
+ */
+
 import { motion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 import React from 'react';

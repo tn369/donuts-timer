@@ -1,3 +1,7 @@
+/**
+ * 多角形座標/パス計算ユーティリティ。
+ */
+
 export interface Point {
   x: number;
   y: number;

@@ -1,3 +1,5 @@
+/* TodoListSettings コンポーネントのスタイル。 */
+
 .settingsContainer {
   display: flex;
   flex-direction: column;

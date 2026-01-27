@@ -1,3 +1,7 @@
+/**
+ * polygonUtils の単体テスト。
+ */
+
 import { describe, expect, it } from 'vitest';
 
 import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils';

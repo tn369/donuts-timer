@@ -1,3 +1,5 @@
+/* TaskList コンポーネントのスタイル。 */
+
 .taskList {
   display: flex;
   flex: 1;

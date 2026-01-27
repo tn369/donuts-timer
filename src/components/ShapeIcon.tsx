@@ -1,3 +1,7 @@
+/**
+ * タスク用の形状アイコンを描画するコンポーネント。
+ */
+
 import React from 'react';
 
 import type { TimerShape } from '../types';

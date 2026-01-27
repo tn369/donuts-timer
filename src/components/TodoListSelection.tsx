@@ -1,3 +1,7 @@
+/**
+ * やることリスト選択画面。
+ */
+
 import { AnimatePresence, motion } from 'framer-motion';
 import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';

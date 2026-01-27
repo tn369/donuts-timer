@@ -1,3 +1,7 @@
+/**
+ * やることリストの設定編集画面。
+ */
+
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 import { ArrowLeft, Camera, GripVertical, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';

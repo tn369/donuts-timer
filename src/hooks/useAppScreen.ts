@@ -1,3 +1,7 @@
+/**
+ * 画面遷移状態を管理するフック。
+ */
+
 import { useState } from 'react';
 
 import { loadActiveListId, loadTodoLists, saveActiveListId } from '../storage';

@@ -1,3 +1,7 @@
+/**
+ * タイマー操作用ボタンコンポーネント。
+ */
+
 import { motion } from 'framer-motion';
 
 interface ControlButtonProps {

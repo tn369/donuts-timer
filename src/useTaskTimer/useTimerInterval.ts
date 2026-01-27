@@ -1,3 +1,7 @@
+/**
+ * タイマーのインターバル処理フック。
+ */
+
 import { useEffect } from 'react';
 
 import type { Action, State } from './types';
