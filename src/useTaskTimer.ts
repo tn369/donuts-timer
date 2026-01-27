@@ -39,8 +39,12 @@ export function useTaskTimer() {
 
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });
-    clearExecutionState();
-  }, []);
+    if (state.activeList?.id) {
+      clearExecutionState(state.activeList.id);
+    } else {
+      clearExecutionState();
+    }
+  }, [state.activeList]);
 
   const isTaskSelectable = useCallback(
     (taskId: string): boolean => {

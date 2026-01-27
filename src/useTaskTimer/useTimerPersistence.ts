@@ -6,7 +6,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
   // 保存されたステートの復元
   useEffect(() => {
     if (state.activeList) {
-      const saved = loadExecutionState();
+      const saved = loadExecutionState(state.activeList.id);
       if (saved && saved.listId === state.activeList.id) {
         // すべてのタスクが完了済みかどうかをチェック
         const allCompleted =
@@ -14,7 +14,7 @@ export function useTimerPersistence(state: State, dispatch: React.Dispatch<Actio
 
         if (allCompleted) {
           // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
-          clearExecutionState();
+          clearExecutionState(state.activeList.id);
         } else {
           dispatch({
             type: 'RESTORE_SESSION',
