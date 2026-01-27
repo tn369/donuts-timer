@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import styles from '../App.module.css';
 import { type TimerMode } from '../storage';
 import type { Task, TimerColor, TimerShape, TodoList } from '../types';
 import { useTaskTimer } from '../useTaskTimer';
@@ -14,6 +13,7 @@ import {
   playTaskIncompleteSound,
 } from '../utils/audio';
 import { Controls } from './Controls';
+import styles from './MainTimerView.module.css';
 import { ResetModal } from './ResetModal';
 import { ShapeIcon } from './ShapeIcon';
 import { SiblingControls } from './SiblingControls';

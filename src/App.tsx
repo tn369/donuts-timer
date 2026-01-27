@@ -1,169 +1,61 @@
-import { useState } from 'react';
-import { v4 as uuid_v4 } from 'uuid';
-
 import styles from './App.module.css';
 import { MainTimerView } from './components/MainTimerView';
 import { TodoListSelection } from './components/TodoListSelection';
 import { TodoListSettings } from './components/TodoListSettings';
-import { migrateTasksWithDefaultIcons, PRESET_IMAGES } from './constants';
-import { loadActiveListId, loadTodoLists, saveActiveListId, saveTodoLists } from './storage';
+import { useAppScreen } from './hooks/useAppScreen';
+import { useTodoLists } from './hooks/useTodoLists';
 import type { TodoList } from './types';
 
-type CurrentScreen = 'selection' | 'main' | 'settings';
-
 function App() {
-  const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
-    const loaded = loadTodoLists();
-    const migrated = loaded.map((list) => ({
-      ...list,
-      tasks: migrateTasksWithDefaultIcons(list.tasks),
-    }));
-
-    if (JSON.stringify(migrated) !== JSON.stringify(loaded)) {
-      saveTodoLists(migrated);
-    }
-    return migrated;
-  });
-  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>(() => {
-    const loadedLists = loadTodoLists();
-    const activeId = loadActiveListId();
-    if (activeId) {
-      const active = loadedLists.find((l) => l.id === activeId);
-      if (active) return 'main';
-    }
-    return 'selection';
-  });
-  const [settingsSource, setSettingsSource] = useState<'selection' | 'main'>('selection');
-  const [editingListId, setEditingListId] = useState<string | null>(null);
-  const [isSiblingMode, setIsSiblingMode] = useState<boolean>(false);
-  const [activeLists, setActiveLists] = useState<TodoList[]>(() => {
-    const loadedLists = loadTodoLists();
-    const activeId = loadActiveListId();
-    if (activeId) {
-      const active = loadedLists.find((l) => l.id === activeId);
-      if (active) {
-        return [
-          {
-            ...active,
-            tasks: migrateTasksWithDefaultIcons(active.tasks),
-          },
-        ];
-      }
-    }
-    return [];
-  });
+  const {
+    backFromSettings,
+    backToSelection,
+    currentScreen,
+    editingListId,
+    setCurrentScreen,
+    setEditingListId,
+    setSettingsSource,
+    showSettings,
+  } = useAppScreen();
+  const {
+    activeLists,
+    addNewList,
+    clearActiveList,
+    copyList,
+    deleteList,
+    getAllUniqueIcons,
+    isSiblingMode,
+    saveList,
+    selectList,
+    selectSiblingLists,
+    todoLists,
+  } = useTodoLists();
 
   const handleSelectList = (listId: string) => {
-    const list = todoLists.find((l) => l.id === listId);
-    if (list) {
-      setActiveLists([list]);
-      saveActiveListId(listId);
-      setCurrentScreen('main');
-      setIsSiblingMode(false);
-    }
+    selectList(listId);
+    setCurrentScreen('main');
   };
 
   const handleSelectSiblingLists = (id1: string, id2: string) => {
-    const list1 = todoLists.find((l) => l.id === id1);
-    const list2 = todoLists.find((l) => l.id === id2);
-    if (list1 && list2) {
-      setActiveLists([list1, list2]);
-      setCurrentScreen('main');
-      setIsSiblingMode(true);
-    }
-  };
-
-  const handleEditList = (listId: string) => {
-    setEditingListId(listId);
-    setSettingsSource('selection');
-    setCurrentScreen('settings');
+    selectSiblingLists(id1, id2);
+    setCurrentScreen('main');
   };
 
   const handleAddNewList = () => {
-    const newList: TodoList = {
-      id: uuid_v4(),
-      title: 'あたらしいやることリスト',
-      tasks: migrateTasksWithDefaultIcons([
-        {
-          id: uuid_v4(),
-          name: 'トイレ',
-          icon: '',
-          plannedSeconds: 5 * 60,
-          kind: 'todo',
-          status: 'todo',
-          elapsedSeconds: 0,
-          actualSeconds: 0,
-        },
-        {
-          id: 'reward-task',
-          name: 'あそぶ',
-          icon: '',
-          plannedSeconds: 15 * 60,
-          kind: 'reward',
-          status: 'todo',
-          elapsedSeconds: 0,
-          actualSeconds: 0,
-        },
-      ]),
-      targetTimeSettings: {
-        mode: 'duration',
-        targetHour: 7,
-        targetMinute: 55,
-      },
-    };
-    const updated = [...todoLists, newList];
-    setTodoLists(updated);
-    saveTodoLists(updated);
+    const newList = addNewList();
     setEditingListId(newList.id);
     setSettingsSource('selection');
     setCurrentScreen('settings');
   };
 
-  const handleDeleteList = (listId: string) => {
-    const updated = todoLists.filter((l) => l.id !== listId);
-    setTodoLists(updated);
-    saveTodoLists(updated);
-  };
-
   const handleSaveList = (updatedList: TodoList) => {
-    const updatedLists = todoLists.map((l: TodoList) =>
-      l.id === updatedList.id ? updatedList : l
-    );
-    setTodoLists(updatedLists);
-    saveTodoLists(updatedLists);
-
-    // 更新されたリストを表示中なら反映
-    setActiveLists((prev) => prev.map((l) => (l.id === updatedList.id ? updatedList : l)));
-
-    setCurrentScreen(settingsSource);
-    setEditingListId(null);
+    saveList(updatedList);
+    backFromSettings();
   };
 
   const handleBackToSelection = () => {
-    setCurrentScreen('selection');
-    setEditingListId(null);
-    saveActiveListId(null);
-  };
-
-  const handleCopyList = (listId: string) => {
-    const original = todoLists.find((l) => l.id === listId);
-    if (original) {
-      const copy: TodoList = {
-        ...original,
-        id: uuid_v4(),
-        title: `${original.title} (コピー)`,
-        tasks: original.tasks.map((task) => ({
-          ...task,
-          id: task.kind === 'reward' ? 'reward-task' : uuid_v4(),
-          status: 'todo',
-          elapsedSeconds: 0,
-          actualSeconds: 0,
-        })),
-      };
-      const updated = [...todoLists, copy];
-      setTodoLists(updated);
-      saveTodoLists(updated);
-    }
+    clearActiveList();
+    backToSelection();
   };
 
   if (currentScreen === 'selection') {
@@ -172,31 +64,25 @@ function App() {
         lists={todoLists}
         onSelect={handleSelectList}
         onSelectSibling={handleSelectSiblingLists}
-        onEdit={handleEditList}
-        onCopy={handleCopyList}
+        onEdit={(listId) => {
+          showSettings(listId, 'selection');
+        }}
+        onCopy={copyList}
         onAdd={handleAddNewList}
-        onDelete={handleDeleteList}
+        onDelete={deleteList}
       />
     );
   }
 
   if (currentScreen === 'settings' && editingListId) {
-    const listToEdit = todoLists.find((l) => l.id === editingListId);
+    const listToEdit = todoLists.find((list) => list.id === editingListId);
     if (listToEdit) {
-      // すべてのリストからユニークなアイコンURLを抽出（プリセット画像も含む）
-      const allUniqueIcons = Array.from(
-        new Set([...PRESET_IMAGES, ...todoLists.flatMap((l) => l.tasks.map((t) => t.icon))])
-      ).filter((icon) => icon !== '');
-
       return (
         <TodoListSettings
           list={listToEdit}
-          allExistingIcons={allUniqueIcons}
+          allExistingIcons={getAllUniqueIcons()}
           onSave={handleSaveList}
-          onBack={() => {
-            setCurrentScreen(settingsSource);
-            setEditingListId(null);
-          }}
+          onBack={backFromSettings}
         />
       );
     }
@@ -212,9 +98,7 @@ function App() {
               initialList={activeLists[0]}
               onBackToSelection={handleBackToSelection}
               onEditSettings={(id) => {
-                setEditingListId(id);
-                setSettingsSource('main');
-                setCurrentScreen('settings');
+                showSettings(id, 'main');
               }}
               isSiblingMode={true}
               timerMode="sibling-0"
@@ -226,9 +110,7 @@ function App() {
               initialList={activeLists[1]}
               onBackToSelection={handleBackToSelection}
               onEditSettings={(id) => {
-                setEditingListId(id);
-                setSettingsSource('main');
-                setCurrentScreen('settings');
+                showSettings(id, 'main');
               }}
               showSelectionButton={false}
               isSiblingMode={true}
@@ -241,9 +123,7 @@ function App() {
           initialList={activeLists[0]}
           onBackToSelection={handleBackToSelection}
           onEditSettings={(id) => {
-            setEditingListId(id);
-            setSettingsSource('main');
-            setCurrentScreen('settings');
+            showSettings(id, 'main');
           }}
           timerMode="single"
         />

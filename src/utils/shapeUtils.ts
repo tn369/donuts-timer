@@ -2,7 +2,6 @@
  * 形状計算のためのクラスとユーティリティ
  */
 import { approximateHeartPerimeter, getHeartPath, HEART_PERIMETER_FACTOR } from './heartPath';
-
 import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils';
 
 export type { Point } from './polygonUtils';
