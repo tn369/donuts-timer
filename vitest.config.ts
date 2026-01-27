@@ -1,4 +1,5 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/globals" />
+/// <reference types="@testing-library/jest-dom" />
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
@@ -7,5 +8,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
+    setupFiles: ['./src/vitest.setup.ts'],
   },
 });
