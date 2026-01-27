@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils';
 
+// 多角形・星形の頂点生成
 describe('getShapePoints', () => {
   it('creates the expected number of points for polygons', () => {
     const points = getShapePoints(10, 5, 4, 0, false);
@@ -18,6 +19,7 @@ describe('getShapePoints', () => {
   });
 });
 
+// SVG パス変換
 describe('pointsToPath', () => {
   it('returns a path string for given points', () => {
     expect(
@@ -29,6 +31,7 @@ describe('pointsToPath', () => {
   });
 });
 
+// 周長計算
 describe('calculatePerimeter', () => {
   it('calculates the perimeter of a square', () => {
     const square = [

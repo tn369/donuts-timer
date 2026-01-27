@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { approximateHeartPerimeter, getHeartPath, HEART_PERIMETER_FACTOR } from './heartPath';
 
+// ハートパス生成
 describe('getHeartPath', () => {
   it('returns the expected path for the base size', () => {
     const expected =
@@ -11,6 +12,7 @@ describe('getHeartPath', () => {
   });
 });
 
+// ハート周長の近似計算
 describe('approximateHeartPerimeter', () => {
   it('uses the default factor', () => {
     expect(approximateHeartPerimeter(10)).toBeCloseTo(2 * Math.PI * 10 * HEART_PERIMETER_FACTOR, 5);

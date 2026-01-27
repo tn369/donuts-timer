@@ -9,6 +9,7 @@ import {
   SquareRenderer,
 } from './shapeUtils';
 
+// 図形レンダラーの生成と計算結果
 describe('createRenderer', () => {
   it('creates a circle renderer with the correct perimeter', () => {
     const renderer = createRenderer('circle', 100, 10);

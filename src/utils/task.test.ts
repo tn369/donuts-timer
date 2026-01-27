@@ -7,6 +7,7 @@ import {
   calculateRewardSecondsFromTargetTime,
 } from './task';
 
+// テスト用のタスクを作成するヘルパー
 const createTask = (overrides: Partial<Task>): Task => ({
   id: 'task',
   name: 'Task',
@@ -19,6 +20,7 @@ const createTask = (overrides: Partial<Task>): Task => ({
   ...overrides,
 });
 
+// ごほうび時間の計算ロジック
 describe('calculateRewardSeconds', () => {
   it('adds saved time and subtracts overruns for todo tasks', () => {
     const tasks: Task[] = [
@@ -49,6 +51,7 @@ describe('calculateRewardSeconds', () => {
   });
 });
 
+// 全体進捗の計算ロジック
 describe('calculateOverallProgress', () => {
   it('calculates progress using actual and elapsed seconds', () => {
     const tasks: Task[] = [
@@ -65,6 +68,7 @@ describe('calculateOverallProgress', () => {
   });
 });
 
+// 目標時刻モードのごほうび時間計算
 describe('calculateRewardSecondsFromTargetTime', () => {
   it('subtracts todo time from available seconds before target time', () => {
     const current = new Date(2024, 0, 1, 10, 0, 0);

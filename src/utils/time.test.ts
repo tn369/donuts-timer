@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { formatTime } from './time';
 
+// 時間表示のフォーマット
 describe('formatTime', () => {
   it('formats positive seconds as MM:SS', () => {
     expect(formatTime(90)).toBe('1:30');
