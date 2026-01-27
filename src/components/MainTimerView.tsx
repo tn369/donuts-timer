@@ -12,12 +12,15 @@ import { useTaskTimer } from '../useTaskTimer';
 import type { TodoList, Task, TimerShape, TimerColor } from '../types';
 import { playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound } from '../utils/audio';
 
+import { clearExecutionState, type TimerMode } from '../storage';
+
 interface MainTimerViewProps {
   initialList: TodoList;
   onBackToSelection: () => void;
   onEditSettings: (listId: string) => void;
   showSelectionButton?: boolean;
   isSiblingMode?: boolean;
+  timerMode?: TimerMode;
 }
 
 const TIMER_COLORS: Record<string, string> = {
@@ -201,6 +204,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   onEditSettings,
   showSelectionButton = true,
   isSiblingMode = false,
+  timerMode = 'single',
 }) => {
   const {
     tasks,
@@ -215,7 +219,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     timerSettings,
     setTimerSettings,
     fastForward,
-  } = useTaskTimer();
+  } = useTaskTimer(timerMode);
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 

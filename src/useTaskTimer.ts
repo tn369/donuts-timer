@@ -1,6 +1,6 @@
 import { useReducer, useCallback } from 'react';
 import type { Task, TargetTimeSettings, TodoList, TimerSettings } from './types';
-import { clearExecutionState } from './storage';
+import { clearExecutionState, type TimerMode } from './storage';
 import { timerReducer } from './useTaskTimer/reducer';
 import { useTimerInterval } from './useTaskTimer/useTimerInterval';
 import { useTimerPersistence } from './useTaskTimer/useTimerPersistence';
@@ -16,14 +16,14 @@ const initialState: State = {
   lastTickTimestamp: null,
 };
 
-export function useTaskTimer() {
+export function useTaskTimer(mode: TimerMode = 'single') {
   const [state, dispatch] = useReducer(timerReducer, initialState);
 
   // 外部委託: インターバルと可視性変更の監視
   useTimerInterval(state, dispatch);
 
   // 外部委託: 永続化
-  useTimerPersistence(state, dispatch);
+  useTimerPersistence(state, dispatch, mode);
 
   const selectTask = useCallback((taskId: string) => {
     dispatch({ type: 'SELECT_TASK', taskId, now: Date.now() });
@@ -40,11 +40,11 @@ export function useTaskTimer() {
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });
     if (state.activeList?.id) {
-      clearExecutionState(state.activeList.id);
+      clearExecutionState(state.activeList.id, mode);
     } else {
-      clearExecutionState();
+      clearExecutionState(undefined, mode);
     }
-  }, [state.activeList]);
+  }, [state.activeList, mode]);
 
   const isTaskSelectable = useCallback(
     (taskId: string): boolean => {
