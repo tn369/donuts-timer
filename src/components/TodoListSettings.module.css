@@ -595,8 +595,11 @@
   flex-shrink: 0;
   width: 72px;
   height: 72px;
+  padding: 0;
   overflow: visible;
   cursor: pointer;
+  background: none;
+  border: none;
   border-radius: var(--radius-sm);
   transition: var(--transition-smooth);
 }

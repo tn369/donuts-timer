@@ -1,11 +1,12 @@
+import { AnimatePresence, motion, Reorder } from 'framer-motion';
+import { ArrowLeft, Camera, GripVertical, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Trash2, Camera, Save, GripVertical } from 'lucide-react';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import type { TodoList, Task, TargetTimeSettings } from '../types';
-import styles from './TodoListSettings.module.css';
-import { ShapeIcon } from './ShapeIcon';
 import { v4 as uuidv4 } from 'uuid';
+
+import type { TargetTimeSettings, Task, TodoList } from '../types';
 import { resizeImage } from '../utils/image';
+import { ShapeIcon } from './ShapeIcon';
+import styles from './TodoListSettings.module.css';
 
 interface TodoListSettingsProps {
   list: TodoList;
@@ -164,7 +165,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           <span>やることリスト の せってい</span>
         </div>
         <button
-          onClick={() => onSave(editedList)}
+          onClick={() => {
+            onSave(editedList);
+          }}
           className={`${styles.confirmButton} ${styles.hasChanges}`}
           style={{ marginLeft: 'auto' }}
         >
@@ -181,9 +184,13 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               type="text"
               className={styles.titleInputPrefix}
               value={currentPrefix}
-              onChange={(e) => handleTitleChange(e.target.value + TITLE_SUFFIX)}
+              onChange={(e) => {
+                handleTitleChange(e.target.value + TITLE_SUFFIX);
+              }}
               placeholder="なまえ"
-              onFocus={(e) => e.target.select()}
+              onFocus={(e) => {
+                e.target.select();
+              }}
             />
             <span className={styles.titleSuffix}>{TITLE_SUFFIX}</span>
           </div>
@@ -192,7 +199,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               <button
                 key={preset}
                 className={`${styles.presetChip} ${currentPrefix === preset ? styles.active : ''}`}
-                onClick={() => handlePresetClick(preset)}
+                onClick={() => {
+                  handlePresetClick(preset);
+                }}
               >
                 {preset}
               </button>
@@ -206,15 +215,15 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               <button
                 key={s}
                 className={`${styles.modeButton} ${editedList.timerSettings?.shape === s || (!editedList.timerSettings?.shape && s === 'circle') ? styles.active : ''}`}
-                onClick={() =>
+                onClick={() => {
                   setEditedList({
                     ...editedList,
                     timerSettings: {
                       shape: s,
-                      color: editedList.timerSettings?.color || 'blue',
+                      color: editedList.timerSettings?.color ?? 'blue',
                     },
-                  })
-                }
+                  });
+                }}
                 aria-label={`${s}のかたち`}
               >
                 <div className={styles.modeIcon}>
@@ -231,15 +240,15 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               <button
                 key={c}
                 className={`${styles.colorButton} ${editedList.timerSettings?.color === c || (!editedList.timerSettings?.color && c === 'blue') ? styles.active : ''}`}
-                onClick={() =>
+                onClick={() => {
                   setEditedList({
                     ...editedList,
                     timerSettings: {
-                      shape: editedList.timerSettings?.shape || 'circle',
+                      shape: editedList.timerSettings?.shape ?? 'circle',
                       color: c,
                     },
-                  })
-                }
+                  });
+                }}
                 style={{ color: COLOR_VALUES[c] }}
               >
                 <div className={styles.colorCircle} style={{ background: COLOR_VALUES[c] }} />
@@ -254,7 +263,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           <div className={styles.modeSelection}>
             <button
               className={`${styles.modeButton} ${editedList.targetTimeSettings.mode === 'duration' ? styles.active : ''}`}
-              onClick={() => handleTargetTimeChange({ mode: 'duration' })}
+              onClick={() => {
+                handleTargetTimeChange({ mode: 'duration' });
+              }}
             >
               <div className={styles.modeIcon}>⏳</div>
               <div className={styles.modeLabel}>きまった時間</div>
@@ -262,7 +273,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
             </button>
             <button
               className={`${styles.modeButton} ${editedList.targetTimeSettings.mode === 'target-time' ? styles.active : ''}`}
-              onClick={() => handleTargetTimeChange({ mode: 'target-time' })}
+              onClick={() => {
+                handleTargetTimeChange({ mode: 'target-time' });
+              }}
             >
               <div className={styles.modeIcon}>⏰</div>
               <div className={styles.modeLabel}>おわる時刻</div>
@@ -369,7 +382,7 @@ const TimeStepper: React.FC<{
         type="button"
         className={styles.stepperBtn}
         onClick={handleDecrement}
-        disabled={disabled || value <= 0}
+        disabled={(disabled ?? false) || value <= 0}
       >
         -
       </button>
@@ -378,7 +391,9 @@ const TimeStepper: React.FC<{
           type="number"
           className={styles.stepperInput}
           value={value}
-          onChange={(e) => onChange(parseInt(e.target.value || '0'))}
+          onChange={(e) => {
+            onChange(parseInt(e.target.value || '0'));
+          }}
           disabled={disabled}
         />
         <span className={styles.stepperUnit}>{unit}</span>
@@ -387,7 +402,7 @@ const TimeStepper: React.FC<{
         type="button"
         className={styles.stepperBtn}
         onClick={handleIncrement}
-        disabled={disabled || (max !== undefined && value >= max)}
+        disabled={(disabled ?? false) || (max !== undefined && value >= max)}
       >
         +
       </button>
@@ -408,7 +423,9 @@ const TaskEditorTimeInput: React.FC<{
       <div className={styles.taskTargetTimeInputs}>
         <TimeStepper
           value={targetHour}
-          onChange={(val) => onTargetTimeChange({ targetHour: val % 24 })}
+          onChange={(val) => {
+            onTargetTimeChange({ targetHour: val % 24 });
+          }}
           unit="じ"
           step={1}
           max={23}
@@ -416,7 +433,9 @@ const TaskEditorTimeInput: React.FC<{
         <span className={styles.timeSeparatorSmall}>:</span>
         <TimeStepper
           value={targetMinute}
-          onChange={(val) => onTargetTimeChange({ targetMinute: val % 60 })}
+          onChange={(val) => {
+            onTargetTimeChange({ targetMinute: val % 60 });
+          }}
           unit="ふん"
           step={1}
           max={59}
@@ -430,7 +449,9 @@ const TaskEditorTimeInput: React.FC<{
     <div className={styles.taskTimeInputGroup}>
       <TimeStepper
         value={Math.floor(task.plannedSeconds / 60)}
-        onChange={(val) => onTaskChange(task.id, { plannedSeconds: val * 60 })}
+        onChange={(val) => {
+          onTaskChange(task.id, { plannedSeconds: val * 60 });
+        }}
         unit="ぷん"
         disabled={task.kind === 'reward' && mode === 'target-time'}
       />
@@ -453,7 +474,7 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
   const [popupDirection, setPopupDirection] = useState<'bottom' | 'top'>('bottom');
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLButtonElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -508,10 +529,13 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           <GripVertical size={20} />
         </div>
       )}
-      <div
+      <button
+        type="button"
         className={styles.taskEditorImage}
         ref={containerRef}
-        onClick={() => setShowIconSelector(!showIconSelector)}
+        onClick={() => {
+          setShowIconSelector(!showIconSelector);
+        }}
       >
         {task.icon ? (
           <img src={task.icon} alt={task.name} draggable={false} />
@@ -546,7 +570,9 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className={styles.popupBackdrop}
-                onClick={() => setShowIconSelector(false)}
+                onClick={() => {
+                  setShowIconSelector(false);
+                }}
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: popupDirection === 'bottom' ? 10 : -10 }}
@@ -558,7 +584,9 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                   <span>がぞうをえらぶ</span>
                   <button
                     className={styles.closeSelectorBtn}
-                    onClick={() => setShowIconSelector(false)}
+                    onClick={() => {
+                      setShowIconSelector(false);
+                    }}
                   >
                     ×
                   </button>
@@ -587,14 +615,16 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             </>
           )}
         </AnimatePresence>
-      </div>
+      </button>
 
       <div className={styles.taskEditorInfo}>
         <input
           type="text"
           className={styles.taskNameInput}
           value={task.name}
-          onChange={(e) => onTaskChange(task.id, { name: e.target.value })}
+          onChange={(e) => {
+            onTaskChange(task.id, { name: e.target.value });
+          }}
         />
         <div className={styles.taskTimeInputGroup}>
           <TaskEditorTimeInput
@@ -609,7 +639,13 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       </div>
 
       {task.kind === 'todo' && (
-        <button className={styles.deleteTaskBtn} onClick={() => onRemoveTask(task.id)} title="削除">
+        <button
+          className={styles.deleteTaskBtn}
+          onClick={() => {
+            onRemoveTask(task.id);
+          }}
+          title="削除"
+        >
           <Trash2 size={20} />
         </button>
       )}

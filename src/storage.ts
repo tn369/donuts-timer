@@ -1,5 +1,5 @@
-import type { TodoList, Task } from './types';
 import { DEFAULT_TODO_LISTS } from './constants';
+import type { Task, TodoList } from './types';
 
 const LISTS_STORAGE_KEY = 'task-timer-lists';
 const ACTIVE_LIST_ID_KEY = 'task-timer-active-id';
@@ -67,7 +67,7 @@ export const saveActiveListId = (id: string | null): void => {
 
 export const saveExecutionState = (state: ExecutionState): void => {
   try {
-    const mode = state.mode || 'single';
+    const mode = state.mode ?? 'single';
     localStorage.setItem(getExecutionStateKey(state.listId, mode), JSON.stringify(state));
   } catch (error) {
     console.error('Failed to save execution state:', error);

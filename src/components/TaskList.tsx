@@ -1,4 +1,4 @@
-import type { Task, TimerShape, TimerColor } from '../types';
+import type { Task, TimerColor, TimerShape } from '../types';
 import { TaskCard } from './TaskCard';
 import styles from './TaskList.module.css';
 

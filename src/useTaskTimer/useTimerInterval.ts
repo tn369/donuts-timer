@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import type { Action, State } from './types';
 
 export function useTimerInterval(state: State, dispatch: React.Dispatch<Action>) {

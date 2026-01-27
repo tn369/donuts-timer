@@ -1,6 +1,6 @@
-import type { Task, TodoList, TargetTimeSettings } from '../types';
+import type { TargetTimeSettings, Task, TodoList } from '../types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from '../utils/task';
-import type { State, Action } from './types';
+import type { Action, State } from './types';
 
 export function getBaseRewardSeconds(list: TodoList | null): number {
   const rewardTask = list?.tasks.find((t) => t.kind === 'reward');
@@ -85,11 +85,7 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
 
   // ごほうびタスクが時間切れになった場合の自動終了処理
   const updatedTask = updatedTasks.find((t) => t.id === state.selectedTaskId);
-  if (
-    updatedTask &&
-    updatedTask.kind === 'reward' &&
-    updatedTask.elapsedSeconds >= updatedTask.plannedSeconds
-  ) {
+  if (updatedTask?.kind === 'reward' && updatedTask.elapsedSeconds >= updatedTask.plannedSeconds) {
     updatedTasks = updatedTasks.map((t) =>
       t.id === state.selectedTaskId ? { ...t, status: 'done', actualSeconds: t.elapsedSeconds } : t
     );
@@ -354,7 +350,7 @@ function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
     isTimerRunning: false,
     lastTickTimestamp: null,
     targetTimeSettings: list.targetTimeSettings,
-    timerSettings: list.timerSettings || { shape: 'circle', color: 'blue' },
+    timerSettings: list.timerSettings ?? { shape: 'circle', color: 'blue' },
   };
 }
 
@@ -429,8 +425,5 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
 
 export function timerReducer(state: State, action: Action): State {
   const handler = handlers[action.type] as Handler<Action['type']>;
-  if (handler) {
-    return handler(state, action);
-  }
-  return state;
+  return handler(state, action);
 }

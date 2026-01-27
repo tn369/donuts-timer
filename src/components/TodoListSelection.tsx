@@ -1,6 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion';
+import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, ListChecks, Users, Copy } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import type { TodoList } from '../types';
 import styles from './TodoListSelection.module.css';
 
@@ -61,7 +62,9 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           </button>
           <button
             className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
-            onClick={() => setIsSiblingModeSelect(true)}
+            onClick={() => {
+              setIsSiblingModeSelect(true);
+            }}
             aria-label="ふたりで つかう"
           >
             <Users size={18} /> ふたりで
@@ -100,7 +103,9 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               className={`${styles.listCard} ${isSelected ? styles.selected : ''}`}
               whileHover={{ y: -5, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => handleCardClick(list.id)}
+              onClick={() => {
+                handleCardClick(list.id);
+              }}
               aria-label={`${list.title} リストをえらぶ`}
             >
               <div className="list-card-content">

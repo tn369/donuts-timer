@@ -1,9 +1,10 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, Camera } from 'lucide-react';
-import { DonutTimer } from './DonutTimer';
-import type { Task, TimerShape, TimerColor } from '../types';
+import { Camera, Check } from 'lucide-react';
+import React from 'react';
+
+import type { Task, TimerColor, TimerShape } from '../types';
 import { formatTime } from '../utils/time';
+import { DonutTimer } from './DonutTimer';
 import styles from './TaskCard.module.css';
 
 interface TaskCardProps {
@@ -130,7 +131,8 @@ const getCardClassName = (
   isSelected: boolean,
   isDone: boolean,
   isOverdue: boolean,
-  isCompact: boolean
+  isCompact: boolean,
+  isReward: boolean
 ) => {
   return [
     styles.taskCard,
@@ -138,6 +140,7 @@ const getCardClassName = (
     isDone && styles.done,
     isOverdue && styles.overdue,
     isCompact && styles.compact,
+    isReward && styles.reward,
   ]
     .filter(Boolean)
     .join(' ');
@@ -162,8 +165,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
   const isOverdue = !isDone && task.elapsedSeconds > task.plannedSeconds;
+  const isReward = task.kind === 'reward';
 
-  const cardClassName = getCardClassName(isSelected, isDone, isOverdue, isCompact);
+  const cardClassName = getCardClassName(isSelected, isDone, isOverdue, isCompact, isReward);
   const flexGrow = getFlexGrow(
     task.status,
     task.elapsedSeconds,
@@ -197,7 +201,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       whileTap={isSelectable && !isDone ? { scale: 0.95 } : {}}
       className={cardClassName}
       style={{ flexGrow }}
-      onClick={() => isSelectable && onSelect(task.id)}
+      onClick={() => {
+        if (isSelectable) onSelect(task.id);
+      }}
     >
       {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardNormal {...viewProps} />}
     </motion.div>

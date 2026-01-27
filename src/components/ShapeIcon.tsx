@@ -1,4 +1,5 @@
 import React from 'react';
+
 import type { TimerShape } from '../types';
 
 interface ShapeIconProps {

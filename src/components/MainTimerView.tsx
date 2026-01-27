@@ -1,18 +1,23 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Settings, Palette, ChevronLeft, Zap } from 'lucide-react';
+import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import styles from '../App.module.css';
-import { ShapeIcon } from './ShapeIcon';
-
-import { TaskList } from './TaskList';
-import { Controls } from './Controls';
-import { SiblingControls } from './SiblingControls';
-import { ResetModal } from './ResetModal';
-import { useTaskTimer } from '../useTaskTimer';
-import type { TodoList, Task, TimerShape, TimerColor } from '../types';
-import { playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound } from '../utils/audio';
-
 import { type TimerMode } from '../storage';
+import type { Task, TimerColor, TimerShape, TodoList } from '../types';
+import { useTaskTimer } from '../useTaskTimer';
+import {
+  playCelebrationSound,
+  playGentleAlarm,
+  playTaskCompletionSound,
+  playTaskIncompleteSound,
+} from '../utils/audio';
+import { Controls } from './Controls';
+import { ResetModal } from './ResetModal';
+import { ShapeIcon } from './ShapeIcon';
+import { SiblingControls } from './SiblingControls';
+import { TaskList } from './TaskList';
 
 interface MainTimerViewProps {
   initialList: TodoList;
@@ -135,7 +140,9 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
           isRunning={isRunning}
           onStart={startTimer}
           onStop={stopTimer}
-          onReset={() => setShowResetConfirm(true)}
+          onReset={() => {
+            setShowResetConfirm(true);
+          }}
           canStartOrStop={canStartOrStop}
           isCompact={true}
         />
@@ -189,7 +196,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
             onEditSettings(activeList.id);
           }
         }}
-        className={`${styles.settingsButton}`}
+        className={styles.settingsButton}
         aria-label="リストのせってい"
       >
         <Settings size={isSiblingMode ? 20 : 24} />
@@ -236,7 +243,23 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   // 効果音の再生ロジック
   const prevCompletedIdsRef = React.useRef<Set<string>>(new Set());
 
+  // 祝いの演出
+  const triggerCelebration = () => {
+    playCelebrationSound();
+    void confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#ff6b6b', '#4facfe', '#fabe66', '#10b981', '#ff6a95'],
+    });
+  };
+
+  const wasAllTodosDoneRef = React.useRef<boolean>(false);
+
   useEffect(() => {
+    const todoTasks = tasks.filter((t) => t.kind !== 'reward');
+    const isAllTodosDoneNow = todoTasks.length > 0 && todoTasks.every((t) => t.status === 'done');
+
     const currentCompletedTasks = tasks.filter((t) => t.status === 'done');
     const currentCompletedIds = new Set(currentCompletedTasks.map((t) => t.id));
 
@@ -247,21 +270,35 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
 
     if (newlyIncompleteTask) {
       playTaskIncompleteSound();
+      // もし未完了に戻ったら、祝いフラグも戻す
+      if (!isAllTodosDoneNow) {
+        wasAllTodosDoneRef.current = false;
+      }
     } else {
       // 前回いなかった（＝新しく完了した）タスクを探す
-      const newlyCompletedTask = currentCompletedTasks.find(
-        (t) => !prevCompletedIdsRef.current.has(t.id)
+      const newlyCompletedTask = tasks.find(
+        (t) => t.status === 'done' && !prevCompletedIdsRef.current.has(t.id)
       );
 
       if (newlyCompletedTask) {
         if (newlyCompletedTask.kind === 'reward') {
+          // ごほうびタスクそのものの完了は既存仕様（優しいアラーム）
           playGentleAlarm();
         } else {
-          playTaskCompletionSound();
+          // 通常タスクの完了
+          if (isAllTodosDoneNow && !wasAllTodosDoneRef.current) {
+            // すべてのTODOが終わった瞬間のみ豪華にお祝い
+            triggerCelebration();
+          } else {
+            playTaskCompletionSound();
+          }
         }
       }
     }
 
+    if (isAllTodosDoneNow) {
+      wasAllTodosDoneRef.current = true;
+    }
     prevCompletedIdsRef.current = currentCompletedIds;
   }, [tasks]);
 
@@ -310,7 +347,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
               isRunning={isRunning}
               onStart={startTimer}
               onStop={stopTimer}
-              onReset={() => setShowResetConfirm(true)}
+              onReset={() => {
+                setShowResetConfirm(true);
+              }}
               canStartOrStop={canStartOrStop}
             />
           </div>
@@ -320,7 +359,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
       <AnimatePresence>
         {showResetConfirm && (
           <ResetModal
-            onCancel={() => setShowResetConfirm(false)}
+            onCancel={() => {
+              setShowResetConfirm(false);
+            }}
             onConfirm={() => {
               reset();
               setShowResetConfirm(false);

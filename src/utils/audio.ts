@@ -2,11 +2,7 @@
  * 優しいチャイム音を再生する（Web Audio API）
  */
 export const playGentleAlarm = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
@@ -45,11 +41,7 @@ export const playGentleAlarm = () => {
  * 短い効果音を再生する（タスク完了時など）
  */
 export const playTaskCompletionSound = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
@@ -75,11 +67,7 @@ export const playTaskCompletionSound = () => {
  * タスクが未完了に戻ったときの効果音を再生する
  */
 export const playTaskIncompleteSound = () => {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
+  const AudioContextClass = window.AudioContext;
   const ctx = new AudioContextClass();
   const now = ctx.currentTime;
 
@@ -99,4 +87,44 @@ export const playTaskIncompleteSound = () => {
 
   osc.start(now);
   osc.stop(now + 0.3);
+};
+
+/**
+ * お祝いの豪華な効果音を再生する
+ */
+export const playCelebrationSound = () => {
+  const AudioContextClass = window.AudioContext;
+  const ctx = new AudioContextClass();
+  const now = ctx.currentTime;
+
+  const playFestiveNote = (
+    freq: number,
+    startTime: number,
+    duration: number,
+    type: OscillatorType = 'sine'
+  ) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.05, startTime + duration);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+
+  // 華やかなアルペジオ (C5, E5, G5, C6) - ドミソド↑
+  const tempo = 0.12;
+  playFestiveNote(523.25, now, 0.4, 'triangle'); // C5
+  playFestiveNote(659.25, now + tempo, 0.4, 'triangle'); // E5
+  playFestiveNote(783.99, now + tempo * 2, 0.4, 'triangle'); // G5
+  playFestiveNote(1046.5, now + tempo * 3, 0.8, 'triangle'); // C6
 };

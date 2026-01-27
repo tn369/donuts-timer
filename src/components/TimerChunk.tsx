@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import React, { useMemo } from 'react';
+
+import type { TimerColor, TimerShape } from '../types';
+import type { ShapeRenderer, SVGRenderProps } from '../utils/shapeUtils';
+import { createRenderer } from '../utils/shapeUtils';
 import styles from './DonutTimer.module.css';
-import type { TimerShape, TimerColor } from '../types';
-import { createRenderer, ShapeRenderer } from '../utils/shapeUtils';
-import type { SVGRenderProps } from '../utils/shapeUtils';
 
 interface TimerChunkProps {
   capacity: number;
@@ -163,7 +164,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
           />
         )}
         {capacity >= 60 &&
-          [...Array(ticksCount)].map((_, j) => (
+          Array.from({ length: ticksCount }).map((_, j) => (
             <line
               key={j}
               {...renderer.getTickProps(j, rotationDegree)}

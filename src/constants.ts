@@ -1,14 +1,14 @@
-import type { Task, TargetTimeSettings, TodoList } from './types';
-import toiletIcon from './assets/toilet_boy.png';
-import changeIcon from './assets/kid_kigae_boy.png';
-import mealIcon from './assets/syokuji_boy.png';
-import playIcon from './assets/omochabako.png';
-import hamigakiIcon from './assets/hamigaki_boy.png';
-import ofuroIcon from './assets/ofuro_kurage.png';
-import studyIcon from './assets/study_wakaru_boy.png';
-import kidIcon from './assets/kid_seikaku_kachiki_boy.png';
-import familyIcon from './assets/syokuji_family_tanoshisou.png';
 import womanIcon from './assets/futon_derenai_woman.png';
+import hamigakiIcon from './assets/hamigaki_boy.png';
+import changeIcon from './assets/kid_kigae_boy.png';
+import kidIcon from './assets/kid_seikaku_kachiki_boy.png';
+import ofuroIcon from './assets/ofuro_kurage.png';
+import playIcon from './assets/omochabako.png';
+import studyIcon from './assets/study_wakaru_boy.png';
+import mealIcon from './assets/syokuji_boy.png';
+import familyIcon from './assets/syokuji_family_tanoshisou.png';
+import toiletIcon from './assets/toilet_boy.png';
+import type { TargetTimeSettings, Task, TodoList } from './types';
 
 /**
  * プリセット画像の一覧
