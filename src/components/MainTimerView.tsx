@@ -12,7 +12,7 @@ import { useTaskTimer } from '../useTaskTimer';
 import type { TodoList, Task, TimerShape, TimerColor } from '../types';
 import { playGentleAlarm, playTaskCompletionSound, playTaskIncompleteSound } from '../utils/audio';
 
-import { clearExecutionState, type TimerMode } from '../storage';
+import { type TimerMode } from '../storage';
 
 interface MainTimerViewProps {
   initialList: TodoList;
