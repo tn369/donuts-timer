@@ -1,4 +1,3 @@
-import { DEFAULT_TODO_LISTS } from './constants';
 import type { Task, TodoList } from './types';
 
 const LISTS_STORAGE_KEY = 'task-timer-lists';
@@ -22,17 +21,17 @@ export interface ExecutionState {
 /**
  * localStorageからすべてのやることリストを読み込み
  */
-export const loadTodoLists = (): TodoList[] => {
+export const loadTodoLists = (fallbackLists: TodoList[] = []): TodoList[] => {
   try {
     const stored = localStorage.getItem(LISTS_STORAGE_KEY);
     if (!stored) {
-      return DEFAULT_TODO_LISTS;
+      return fallbackLists;
     }
 
     return JSON.parse(stored) as TodoList[];
   } catch (error) {
     console.error('Failed to load todo lists:', error);
-    return DEFAULT_TODO_LISTS;
+    return fallbackLists;
   }
 };
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { v4 as uuid_v4 } from 'uuid';
 
-import { migrateTasksWithDefaultIcons, PRESET_IMAGES } from '../constants';
+import { DEFAULT_TODO_LISTS, migrateTasksWithDefaultIcons, PRESET_IMAGES } from '../constants';
 import { loadActiveListId, loadTodoLists, saveActiveListId, saveTodoLists } from '../storage';
 import type { TodoList } from '../types';
 
@@ -57,7 +57,7 @@ const copyTodoList = (list: TodoList): TodoList => ({
 
 export const useTodoLists = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
-    const loaded = loadTodoLists();
+    const loaded = loadTodoLists(DEFAULT_TODO_LISTS);
     const migrated = loaded.map(migrateTodoList);
 
     if (JSON.stringify(migrated) !== JSON.stringify(loaded)) {
@@ -67,7 +67,7 @@ export const useTodoLists = () => {
     return migrated;
   });
   const [activeLists, setActiveLists] = useState<TodoList[]>(() => {
-    const loadedLists = loadTodoLists();
+    const loadedLists = loadTodoLists(DEFAULT_TODO_LISTS);
     const activeId = loadActiveListId();
     if (activeId) {
       const active = loadedLists.find((list) => list.id === activeId);
