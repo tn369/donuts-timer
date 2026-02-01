@@ -11,6 +11,7 @@ import { useTaskTimer } from '../useTaskTimer';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
 import { ResetModal } from './ResetModal';
+import { ResumeModal } from './ResumeModal';
 import { SiblingControls } from './SiblingControls';
 import { TaskList } from './TaskList';
 
@@ -50,6 +51,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     timerSettings,
     setTimerSettings,
     fastForward,
+    resumeSession,
+    cancelResume,
+    pendingRestorableState,
   } = useTaskTimer(timerMode);
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
@@ -129,6 +133,16 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
             onConfirm={() => {
               reset();
               setShowResetConfirm(false);
+            }}
+          />
+        )}
+        {pendingRestorableState && (
+          <ResumeModal
+            onCancel={() => {
+              cancelResume();
+            }}
+            onConfirm={() => {
+              resumeSession();
             }}
           />
         )}

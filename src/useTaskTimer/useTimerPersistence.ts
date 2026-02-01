@@ -33,7 +33,7 @@ export function useTimerPersistence(
           clearExecutionState(state.activeList.id, mode);
         } else {
           dispatch({
-            type: 'RESTORE_SESSION',
+            type: 'RESTORE_AVAILABLE',
             tasks: saved.tasks,
             selectedTaskId: saved.selectedTaskId,
             isTimerRunning: saved.isTimerRunning,

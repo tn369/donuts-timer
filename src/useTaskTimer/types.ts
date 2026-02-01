@@ -4,6 +4,16 @@
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from '../types';
 
 /**
+ * 復元待ちの状態データ
+ */
+export interface RestorableState {
+  tasks: Task[];
+  selectedTaskId: string | null;
+  isTimerRunning: boolean;
+  lastTickTimestamp: number | null;
+}
+
+/**
  * タイマーの内部状態
  */
 export interface State {
@@ -14,6 +24,7 @@ export interface State {
   activeList: TodoList | null; // 現在アクティブなリストの全体定義
   timerSettings: TimerSettings; // タイマーの見た目設定
   lastTickTimestamp: number | null; // 前回の時刻更新時のタイムスタンプ
+  pendingRestorableState: RestorableState | null; // 確認待ちの復元データ
 }
 
 /**
@@ -32,10 +43,12 @@ export type Action =
   | { type: 'INIT_LIST'; list: TodoList }
   | { type: 'SET_TIMER_SETTINGS'; settings: TimerSettings }
   | {
-      type: 'RESTORE_SESSION';
+      type: 'RESTORE_AVAILABLE';
       tasks: Task[];
       selectedTaskId: string | null;
       isTimerRunning: boolean;
       lastTickTimestamp: number | null;
     }
+  | { type: 'RESTORE_SESSION' }
+  | { type: 'CANCEL_RESTORE' }
   | { type: 'FAST_FORWARD' };

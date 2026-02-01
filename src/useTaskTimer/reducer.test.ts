@@ -26,6 +26,7 @@ const initialState: State = {
   activeList: null,
   timerSettings: { shape: 'circle', color: 'blue' },
   lastTickTimestamp: null,
+  pendingRestorableState: null,
 };
 
 describe('timerReducer', () => {
@@ -53,9 +54,8 @@ describe('timerReducer', () => {
     expect(newState.tasks).toEqual(newTasks);
   });
 
-  it('should merge progress with existing definitions when RESTORE_SESSION action is dispatched', () => {
+  it('should store restorable state when RESTORE_AVAILABLE action is dispatched', () => {
     // Arrange
-    // initialState uses 'Test Task' and 300s
     const restoredTasks: Task[] = [
       {
         ...mockTask,
@@ -66,7 +66,7 @@ describe('timerReducer', () => {
       },
     ];
     const action: Action = {
-      type: 'RESTORE_SESSION',
+      type: 'RESTORE_AVAILABLE',
       tasks: restoredTasks,
       selectedTaskId: '1',
       isTimerRunning: true,
@@ -75,6 +75,40 @@ describe('timerReducer', () => {
 
     // Act
     const newState = timerReducer(initialState, action);
+
+    // Assert
+    expect(newState.pendingRestorableState).toEqual({
+      tasks: restoredTasks,
+      selectedTaskId: '1',
+      isTimerRunning: true,
+      lastTickTimestamp: 123456789,
+    });
+  });
+
+  it('should merge progress from pending state when RESTORE_SESSION action is dispatched', () => {
+    // Arrange
+    const restoredTasks: Task[] = [
+      {
+        ...mockTask,
+        name: 'Old Task Name',
+        plannedSeconds: 10,
+        status: 'running',
+        elapsedSeconds: 100,
+      },
+    ];
+    const intermediateState: State = {
+      ...initialState,
+      pendingRestorableState: {
+        tasks: restoredTasks,
+        selectedTaskId: '1',
+        isTimerRunning: true,
+        lastTickTimestamp: 123456789,
+      },
+    };
+    const action: Action = { type: 'RESTORE_SESSION' };
+
+    // Act
+    const newState = timerReducer(intermediateState, action);
 
     // Assert
     // Should keep current definition (name, plannedSeconds) but restore progress
@@ -86,6 +120,7 @@ describe('timerReducer', () => {
     expect(newState.selectedTaskId).toBe('1');
     expect(newState.isTimerRunning).toBe(true);
     expect(newState.lastTickTimestamp).toBe(123456789);
+    expect(newState.pendingRestorableState).toBeNull();
   });
 
   it('should update target time settings when SET_TARGET_TIME_SETTINGS action is dispatched', () => {

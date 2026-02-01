@@ -21,6 +21,7 @@ const initialState: State = {
   activeList: null,
   timerSettings: { shape: 'circle', color: 'blue' },
   lastTickTimestamp: null,
+  pendingRestorableState: null,
 };
 
 /**
@@ -129,6 +130,17 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     }
   }, []);
 
+  const resumeSession = useCallback(() => {
+    dispatch({ type: 'RESTORE_SESSION' });
+  }, []);
+
+  const cancelResume = useCallback(() => {
+    dispatch({ type: 'CANCEL_RESTORE' });
+    if (state.activeList?.id) {
+      clearExecutionState(state.activeList.id, mode);
+    }
+  }, [state.activeList, mode]);
+
   return {
     ...state,
     isTaskSelectable,
@@ -142,5 +154,7 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     updateActiveList,
     setTimerSettings,
     fastForward,
+    resumeSession,
+    cancelResume,
   };
 }
