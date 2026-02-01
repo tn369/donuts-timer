@@ -30,20 +30,31 @@ const initialState: State = {
 
 describe('timerReducer', () => {
   it('should handle SET_TIMER_SETTINGS', () => {
+    // Arrange
     const newSettings: TimerSettings = { shape: 'star', color: 'pink' };
     const action: Action = { type: 'SET_TIMER_SETTINGS', settings: newSettings };
+
+    // Act
     const newState = timerReducer(initialState, action);
+
+    // Assert
     expect(newState.timerSettings).toEqual(newSettings);
   });
 
   it('should handle SET_TASKS', () => {
+    // Arrange
     const newTasks: Task[] = [{ ...mockTask, id: '2', name: 'New Task' }];
     const action: Action = { type: 'SET_TASKS', tasks: newTasks };
+
+    // Act
     const newState = timerReducer(initialState, action);
+
+    // Assert
     expect(newState.tasks).toEqual(newTasks);
   });
 
   it('should handle RESTORE_SESSION by merging progress with existing definitions', () => {
+    // Arrange
     // initialState uses 'Test Task' and 300s
     const restoredTasks: Task[] = [
       {
@@ -61,8 +72,11 @@ describe('timerReducer', () => {
       isTimerRunning: true,
       lastTickTimestamp: 123456789,
     };
+
+    // Act
     const newState = timerReducer(initialState, action);
 
+    // Assert
     // Should keep current definition (name, plannedSeconds) but restore progress
     expect(newState.tasks[0].name).toBe('Test Task');
     expect(newState.tasks[0].plannedSeconds).toBe(300);
@@ -75,13 +89,18 @@ describe('timerReducer', () => {
   });
 
   it('should handle SET_TARGET_TIME_SETTINGS', () => {
+    // Arrange
     const newTargetSettings: TargetTimeSettings = {
       mode: 'target-time',
       targetHour: 20,
       targetMinute: 30,
     };
     const action: Action = { type: 'SET_TARGET_TIME_SETTINGS', settings: newTargetSettings };
+
+    // Act
     const newState = timerReducer(initialState, action);
+
+    // Assert
     expect(newState.targetTimeSettings).toEqual(newTargetSettings);
     // updateRewardTime is called inside, so we check if it doesn't crash and updates state
     expect(newState.tasks).toBeDefined();

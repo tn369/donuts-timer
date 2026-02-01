@@ -8,14 +8,35 @@ import { formatTime } from './time';
 // 時間表示のフォーマット
 describe('formatTime', () => {
   it('formats positive seconds as MM:SS', () => {
-    expect(formatTime(90)).toBe('1:30');
+    // Arrange
+    const seconds = 90;
+
+    // Act
+    const result = formatTime(seconds);
+
+    // Assert
+    expect(result).toBe('1:30');
   });
 
   it('formats negative seconds with a minus sign', () => {
-    expect(formatTime(-45)).toBe('-0:45');
+    // Arrange
+    const seconds = -45;
+
+    // Act
+    const result = formatTime(seconds);
+
+    // Assert
+    expect(result).toBe('-0:45');
   });
 
   it('formats zero seconds', () => {
-    expect(formatTime(0)).toBe('0:00');
+    // Arrange
+    const seconds = 0;
+
+    // Act
+    const result = formatTime(seconds);
+
+    // Assert
+    expect(result).toBe('0:00');
   });
 });
