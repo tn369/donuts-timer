@@ -7,7 +7,7 @@ import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils
 
 // 多角形・星形の頂点生成
 describe('getShapePoints', () => {
-  it('creates the expected number of points for polygons', () => {
+  it('should create the expected number of points when shape is a polygon', () => {
     // Arrange
     const center = 10;
     const radius = 5;
@@ -24,7 +24,7 @@ describe('getShapePoints', () => {
     expect(points[0].y).toBeCloseTo(10, 5);
   });
 
-  it('creates inner points for star shapes', () => {
+  it('should create inner points when shape is a star', () => {
     // Arrange
     const center = 10;
     const radius = 10;
@@ -44,7 +44,7 @@ describe('getShapePoints', () => {
 
 // SVG パス変換
 describe('pointsToPath', () => {
-  it('returns a path string for given points', () => {
+  it('should return a path string when points are given', () => {
     // Arrange
     const points = [
       { x: 0, y: 0 },
@@ -61,7 +61,7 @@ describe('pointsToPath', () => {
 
 // 周長計算
 describe('calculatePerimeter', () => {
-  it('calculates the perimeter of a square', () => {
+  it('should calculate the perimeter when points of a square are given', () => {
     // Arrange
     const square = [
       { x: 0, y: 0 },

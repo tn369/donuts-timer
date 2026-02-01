@@ -25,7 +25,7 @@ const createTask = (overrides: Partial<Task>): Task => ({
 
 // ごほうび時間の計算ロジック
 describe('calculateRewardSeconds', () => {
-  it('adds saved time and subtracts overruns for todo tasks', () => {
+  it('should add saved time and subtract overruns when todo tasks are processed', () => {
     // Arrange
     const tasks: Task[] = [
       createTask({ id: 'done', status: 'done', plannedSeconds: 300, actualSeconds: 240 }),
@@ -46,7 +46,7 @@ describe('calculateRewardSeconds', () => {
     expect(result).toBe(560);
   });
 
-  it('never returns less than zero', () => {
+  it('should return 0 when the calculated reward seconds would be negative', () => {
     // Arrange
     const tasks: Task[] = [
       createTask({
@@ -68,7 +68,7 @@ describe('calculateRewardSeconds', () => {
 
 // 全体進捗の計算ロジック
 describe('calculateOverallProgress', () => {
-  it('calculates progress using actual and elapsed seconds', () => {
+  it('should calculate progress using actual and elapsed seconds when tasks are provided', () => {
     // Arrange
     const tasks: Task[] = [
       createTask({ id: 'done', status: 'done', plannedSeconds: 300, actualSeconds: 200 }),
@@ -83,7 +83,7 @@ describe('calculateOverallProgress', () => {
     expect(result).toBeCloseTo((350 / 600) * 100, 5);
   });
 
-  it('returns 0 when there is no planned time', () => {
+  it('should return 0 when there are no tasks', () => {
     // Arrange
     const tasks: Task[] = [];
 
@@ -97,7 +97,7 @@ describe('calculateOverallProgress', () => {
 
 // 目標時刻モードのごほうび時間計算
 describe('calculateRewardSecondsFromTargetTime', () => {
-  it('subtracts todo time from available seconds before target time', () => {
+  it('should subtract todo time from available seconds when target time is given', () => {
     // Arrange
     const current = new Date(2024, 0, 1, 10, 0, 0);
     const targetHour = 11;
@@ -111,7 +111,7 @@ describe('calculateRewardSecondsFromTargetTime', () => {
     expect(result).toBe(3000);
   });
 
-  it('treats earlier target time as next day', () => {
+  it('should treat the target time as the next day when it is earlier than the current time', () => {
     // Arrange
     const current = new Date(2024, 0, 1, 10, 0, 0);
     const targetHour = 9;

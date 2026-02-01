@@ -29,7 +29,7 @@ const initialState: State = {
 };
 
 describe('timerReducer', () => {
-  it('should handle SET_TIMER_SETTINGS', () => {
+  it('should update timer settings when SET_TIMER_SETTINGS action is dispatched', () => {
     // Arrange
     const newSettings: TimerSettings = { shape: 'star', color: 'pink' };
     const action: Action = { type: 'SET_TIMER_SETTINGS', settings: newSettings };
@@ -41,7 +41,7 @@ describe('timerReducer', () => {
     expect(newState.timerSettings).toEqual(newSettings);
   });
 
-  it('should handle SET_TASKS', () => {
+  it('should update tasks when SET_TASKS action is dispatched', () => {
     // Arrange
     const newTasks: Task[] = [{ ...mockTask, id: '2', name: 'New Task' }];
     const action: Action = { type: 'SET_TASKS', tasks: newTasks };
@@ -53,7 +53,7 @@ describe('timerReducer', () => {
     expect(newState.tasks).toEqual(newTasks);
   });
 
-  it('should handle RESTORE_SESSION by merging progress with existing definitions', () => {
+  it('should merge progress with existing definitions when RESTORE_SESSION action is dispatched', () => {
     // Arrange
     // initialState uses 'Test Task' and 300s
     const restoredTasks: Task[] = [
@@ -88,7 +88,7 @@ describe('timerReducer', () => {
     expect(newState.lastTickTimestamp).toBe(123456789);
   });
 
-  it('should handle SET_TARGET_TIME_SETTINGS', () => {
+  it('should update target time settings when SET_TARGET_TIME_SETTINGS action is dispatched', () => {
     // Arrange
     const newTargetSettings: TargetTimeSettings = {
       mode: 'target-time',

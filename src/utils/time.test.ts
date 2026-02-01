@@ -7,7 +7,7 @@ import { formatTime } from './time';
 
 // 時間表示のフォーマット
 describe('formatTime', () => {
-  it('formats positive seconds as MM:SS', () => {
+  it('should format as MM:SS when positive seconds are given', () => {
     // Arrange
     const seconds = 90;
 
@@ -18,7 +18,7 @@ describe('formatTime', () => {
     expect(result).toBe('1:30');
   });
 
-  it('formats negative seconds with a minus sign', () => {
+  it('should format with a minus sign when negative seconds are given', () => {
     // Arrange
     const seconds = -45;
 
@@ -29,7 +29,7 @@ describe('formatTime', () => {
     expect(result).toBe('-0:45');
   });
 
-  it('formats zero seconds', () => {
+  it('should format as 0:00 when zero seconds are given', () => {
     // Arrange
     const seconds = 0;
 
