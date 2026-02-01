@@ -122,7 +122,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
             >
               <div className="list-card-content">
                 <div className={styles.listIconBg}>
-                  <ListChecks size={40} className={styles.listIcon} />
+                  <ListChecks size={56} className={styles.listIcon} />
                   {isSelected && (
                     <div className={styles.selectionBadge}>{selectionIndex === 0 ? '1' : '2'}</div>
                   )}
@@ -143,7 +143,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                     }}
                     aria-label="リストをコピーする"
                   >
-                    <Copy size={18} />
+                    <Copy size={24} />
                   </button>
                   <button
                     className={`${styles.actionBtn} ${styles.edit}`}
@@ -153,7 +153,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                     }}
                     aria-label="リストを編集する"
                   >
-                    <Edit2 size={18} />
+                    <Edit2 size={24} />
                   </button>
                   <button
                     className={`${styles.actionBtn} ${styles.delete}`}
@@ -163,7 +163,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                     }}
                     aria-label="リストを削除する"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={24} />
                   </button>
                 </div>
               )}
@@ -180,7 +180,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           >
             <div className="list-card-content">
               <div className={styles.addIconContainer}>
-                <Plus size={48} />
+                <Plus size={64} />
               </div>
               <h3 className={styles.listName}>新しくつくる</h3>
             </div>
