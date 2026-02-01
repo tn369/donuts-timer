@@ -380,21 +380,50 @@ interface TaskEditorItemProps {
 /**
  * 数値を増減させるためのステッパーコンポーネント
  */
-const TimeStepper: React.FC<{
+export const TimeStepper: React.FC<{
   value: number;
   onChange: (val: number) => void;
   unit: string;
   disabled?: boolean;
   step?: number;
   max?: number;
-}> = ({ value, onChange, unit, disabled, step = 5, max }) => {
+  options?: number[];
+}> = ({ value, onChange, unit, disabled, step = 5, max, options }) => {
   const handleDecrement = () => {
+    if (options) {
+      const currentIndex = options.indexOf(value);
+      if (currentIndex > 0) {
+        onChange(options[currentIndex - 1]);
+      } else if (currentIndex === -1) {
+        // 現在の値がオプションにない場合は、最も近い小さい値を探す
+        const smallerOptions = options.filter((o) => o < value);
+        if (smallerOptions.length > 0) {
+          onChange(Math.max(...smallerOptions));
+        }
+      }
+      return;
+    }
+
     let newValue = value - step;
     if (newValue < 0) newValue = 0;
     onChange(newValue);
   };
 
   const handleIncrement = () => {
+    if (options) {
+      const currentIndex = options.indexOf(value);
+      if (currentIndex !== -1 && currentIndex < options.length - 1) {
+        onChange(options[currentIndex + 1]);
+      } else if (currentIndex === -1) {
+        // 現在の値がオプションにない場合は、最も近い大きい値を探す
+        const largerOptions = options.filter((o) => o > value);
+        if (largerOptions.length > 0) {
+          onChange(Math.min(...largerOptions));
+        }
+      }
+      return;
+    }
+
     let newValue = value + step;
     if (max !== undefined && newValue > max) newValue = max;
     onChange(newValue);
@@ -406,27 +435,51 @@ const TimeStepper: React.FC<{
         type="button"
         className={styles.stepperBtn}
         onClick={handleDecrement}
-        disabled={(disabled ?? false) || value <= 0}
+        disabled={
+          (disabled ?? false) ||
+          (options ? options.indexOf(value) <= 0 && options.indexOf(value) !== -1 : value <= 0)
+        }
       >
         -
       </button>
       <div className={styles.stepperValueContainer}>
-        <input
-          type="number"
-          className={styles.stepperInput}
-          value={value}
-          onChange={(e) => {
-            onChange(parseInt(e.target.value || '0'));
-          }}
-          disabled={disabled}
-        />
+        {options ? (
+          <select
+            className={styles.stepperInput}
+            value={value}
+            onChange={(e) => onChange(parseInt(e.target.value))}
+            disabled={disabled}
+            style={{ appearance: 'none', background: 'transparent', textAlign: 'center' }}
+          >
+            {options.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        ) : (
+            <input
+              type="number"
+              className={styles.stepperInput}
+              value={value}
+              onChange={(e) => {
+                onChange(parseInt(e.target.value || '0'));
+              }}
+              disabled={disabled}
+            />
+        )}
         <span className={styles.stepperUnit}>{unit}</span>
       </div>
       <button
         type="button"
         className={styles.stepperBtn}
         onClick={handleIncrement}
-        disabled={(disabled ?? false) || (max !== undefined && value >= max)}
+        disabled={
+          (disabled ?? false) ||
+          (options
+            ? options.indexOf(value) >= options.length - 1 && options.indexOf(value) !== -1
+            : max !== undefined && value >= max)
+        }
       >
         +
       </button>
@@ -456,6 +509,7 @@ const TaskEditorTimeInput: React.FC<{
           unit="じ"
           step={1}
           max={23}
+          options={Array.from({ length: 24 }, (_, i) => i)}
         />
         <span className={styles.timeSeparatorSmall}>:</span>
         <TimeStepper
@@ -464,10 +518,11 @@ const TaskEditorTimeInput: React.FC<{
             onTargetTimeChange({ targetMinute: val % 60 });
           }}
           unit="ふん"
-          step={1}
-          max={59}
+          step={5}
+          max={55}
+          options={Array.from({ length: 12 }, (_, i) => i * 5)}
         />
-        <span className={styles.timeLabelSmall}>におわる</span>
+        <span className={styles.timeLabelSmall}> におわる</span>
       </div>
     );
   }
