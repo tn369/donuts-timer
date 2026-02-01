@@ -13,14 +13,14 @@ import type { Task } from '../types';
 export const calculateRewardSeconds = (tasks: Task[], baseRewardSeconds: number): number => {
   let totalDelta = 0;
   tasks.forEach((t) => {
-    if (t.kind === 'todo') {
-      if (t.status === 'done') {
-        totalDelta += t.plannedSeconds - t.actualSeconds;
-      } else if (t.status === 'running' || t.status === 'paused') {
-        // 固定タスクが予定時間を超過している場合、超過分を減らす
-        if (t.elapsedSeconds > t.plannedSeconds) {
-          totalDelta += t.plannedSeconds - t.elapsedSeconds;
-        }
+    if (t.kind !== 'todo') return;
+
+    if (t.status === 'done') {
+      totalDelta += t.plannedSeconds - t.actualSeconds;
+    } else if (t.status === 'running' || t.status === 'paused') {
+      // 固定タスクが予定時間を超過している場合、超過分を減らす
+      if (t.elapsedSeconds > t.plannedSeconds) {
+        totalDelta += t.plannedSeconds - t.elapsedSeconds;
       }
     }
   });
@@ -67,17 +67,6 @@ export const calculateRewardSecondsFromTargetTime = (
   // 目標時刻が現在時刻より前の場合は翌日とみなす
   if (target <= currentTime) {
     target.setDate(target.getDate() + 1);
-    // ただし、12時間以上先になる場合は、おそらくすでに目標時刻を過ぎている（当日）と判断する
-    // 例：目標 8:00 で現在 8:01 の場合、翌日 8:00 になると 23時間後になってしまう。
-    // ここでは単純化のため、目標時刻の前後12時間は当日のものとして扱う、といったロジックも検討できるが
-    // 現状は単純に「目標時刻を過ぎたら負の値になる」ようにしたいので、
-    // 「今から12時間以上前」なら翌日、「12時間以内」なら当日（＝負の値）とする。
-    const diff = target.getTime() - currentTime.getTime();
-    if (diff < -12 * 60 * 60 * 1000) {
-      target.setDate(target.getDate() + 1);
-    } else {
-      // 当日の目標時刻を過ぎた状態（負の値になる）
-    }
   }
 
   // 利用可能な時間（秒）

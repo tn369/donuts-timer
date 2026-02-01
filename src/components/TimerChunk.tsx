@@ -94,13 +94,8 @@ const BgShape: React.FC<{
   };
 
   const ElementType = renderer.svgElementType;
-  if (ElementType === 'circle') {
-    return <circle {...props} />;
-  } else if (ElementType === 'rect') {
-    return <rect {...props} />;
-  } else {
-    return <path {...props} />;
-  }
+  const Component = ElementType as React.ElementType;
+  return <Component {...props} />;
 };
 
 /**
@@ -116,13 +111,8 @@ const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
   const props = renderer.getOuterProps();
 
   const ElementType = renderer.svgElementType;
-  if (ElementType === 'circle') {
-    return <circle {...props} {...common} />;
-  } else if (ElementType === 'rect') {
-    return <rect {...props} {...common} />;
-  } else {
-    return <path {...props} {...common} />;
-  }
+  const Component = ElementType as React.ElementType;
+  return <Component {...props} {...common} />;
 };
 
 /**

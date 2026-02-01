@@ -27,41 +27,44 @@ export function updateRewardTime(
   let newRewardSeconds: number;
 
   if (targetTimeSettings.mode === 'target-time') {
-    // 目標時刻モード: 目標時刻から逆算
-    const currentTime = new Date();
-
-    // 「やること」(固定タスク)の合計時間を計算（未完了タスクのみ）
-    let todoTasksSeconds = 0;
-
-    tasks.forEach((t) => {
-      if (t.kind === 'todo') {
-        if (t.status === 'todo') {
-          // 未開始の「やること」
-          todoTasksSeconds += t.plannedSeconds;
-        } else if (t.status === 'running' || t.status === 'paused') {
-          // 実行中の「やること」
-          const remaining = t.plannedSeconds - t.elapsedSeconds;
-          if (remaining > 0) {
-            todoTasksSeconds += remaining;
-          }
-        }
-      }
-    });
-
-    // 遊び時間は「今から終了時までに残っている時間」＋「すでに遊んだ時間」
     newRewardSeconds =
-      calculateRewardSecondsFromTargetTime(
-        targetTimeSettings.targetHour,
-        targetTimeSettings.targetMinute,
-        currentTime,
-        todoTasksSeconds
-      ) + rewardElapsed;
+      calculateRewardTimeFromTarget(tasks, targetTimeSettings, new Date()) + rewardElapsed;
   } else {
-    // 所要時間モード: 従来の計算方法
     newRewardSeconds = calculateRewardSeconds(tasks, baseRewardSeconds);
   }
 
   return tasks.map((t) => (t.kind === 'reward' ? { ...t, plannedSeconds: newRewardSeconds } : t));
+}
+
+/**
+ * 目標時刻モードでのごほうび時間計算
+ */
+function calculateRewardTimeFromTarget(
+  tasks: Task[],
+  settings: TargetTimeSettings,
+  now: Date
+): number {
+  let todoTasksSeconds = 0;
+
+  tasks.forEach((t) => {
+    if (t.kind !== 'todo') return;
+
+    if (t.status === 'todo') {
+      todoTasksSeconds += t.plannedSeconds;
+    } else if (t.status === 'running' || t.status === 'paused') {
+      const remaining = t.plannedSeconds - t.elapsedSeconds;
+      if (remaining > 0) {
+        todoTasksSeconds += remaining;
+      }
+    }
+  });
+
+  return calculateRewardSecondsFromTargetTime(
+    settings.targetHour,
+    settings.targetMinute,
+    now,
+    todoTasksSeconds
+  );
 }
 
 /**
@@ -79,10 +82,9 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
   if (deltaSeconds < 1) return state;
 
   const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
-  if (currentIndex === -1) return state;
-
   const task = state.tasks[currentIndex];
-  if (task.status !== 'running') return state;
+
+  if (currentIndex === -1 || task.status !== 'running') return state;
 
   const newElapsed = task.elapsedSeconds + deltaSeconds;
   let updatedTasks = state.tasks.map((t) =>
@@ -274,19 +276,15 @@ function handleSelectTask(
  */
 function handleStart(state: State, action: { type: 'START'; now: number }): State {
   let targetTaskId = state.selectedTaskId;
-  let updatedTasks = state.tasks;
 
   // もしタスクが選択されていない場合は、最初の未完了タスクを探す
   if (!targetTaskId) {
     const firstIncomplete = state.tasks.find((t) => t.status !== 'done');
-    if (firstIncomplete) {
-      targetTaskId = firstIncomplete.id;
-    } else {
-      return state;
-    }
+    if (!firstIncomplete) return state;
+    targetTaskId = firstIncomplete.id;
   }
 
-  updatedTasks = updatedTasks.map((task) => {
+  const updatedTasks = state.tasks.map((task) => {
     if (task.id === targetTaskId && task.status !== 'done') {
       return { ...task, status: 'running' as const };
     }
