@@ -140,4 +140,44 @@ describe('timerReducer', () => {
     // updateRewardTime is called inside, so we check if it doesn't crash and updates state
     expect(newState.tasks).toBeDefined();
   });
+
+  it('should maintain isTimerRunning: true when selecting a done task while running', () => {
+    // Arrange
+    const doneTask: Task = { ...mockTask, id: 'done-1', status: 'done', actualSeconds: 100 };
+    const runningState: State = {
+      ...initialState,
+      tasks: [doneTask, { ...mockTask, id: 'running-reward', kind: 'reward', status: 'running' }],
+      selectedTaskId: 'running-reward',
+      isTimerRunning: true,
+    };
+    const action: Action = { type: 'SELECT_TASK', taskId: 'done-1', now: Date.now() };
+
+    // Act
+    const newState = timerReducer(runningState, action);
+
+    // Assert
+    expect(newState.selectedTaskId).toBe('done-1');
+    expect(newState.isTimerRunning).toBe(true);
+    expect(newState.tasks.find((t) => t.id === 'done-1')?.status).toBe('running');
+  });
+
+  it('should maintain isTimerRunning: false when selecting a done task while stopped', () => {
+    // Arrange
+    const doneTask: Task = { ...mockTask, id: 'done-1', status: 'done', actualSeconds: 100 };
+    const stoppedState: State = {
+      ...initialState,
+      tasks: [doneTask, { ...mockTask, id: 'idle-reward', kind: 'reward', status: 'todo' }],
+      selectedTaskId: 'idle-reward',
+      isTimerRunning: false,
+    };
+    const action: Action = { type: 'SELECT_TASK', taskId: 'done-1', now: Date.now() };
+
+    // Act
+    const newState = timerReducer(stoppedState, action);
+
+    // Assert
+    expect(newState.selectedTaskId).toBe('done-1');
+    expect(newState.isTimerRunning).toBe(false);
+    expect(newState.tasks.find((t) => t.id === 'done-1')?.status).toBe('todo');
+  });
 });

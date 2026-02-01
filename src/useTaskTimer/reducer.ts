@@ -134,7 +134,7 @@ function handleDoneTaskClick(
   updatedTasks = updatedTasks.map((t) =>
     t.id === taskId ? { ...t, status: 'todo' as const, actualSeconds: 0 } : t
   );
-  return { updatedTasks, nextTaskIdToSelect: taskId, nextIsTimerRunning: false };
+  return { updatedTasks, nextTaskIdToSelect: taskId, nextIsTimerRunning: state.isTimerRunning };
 }
 
 /**

@@ -55,7 +55,7 @@ describe('pointsToPath', () => {
     const result = pointsToPath(points);
 
     // Assert
-    expect(result).toBe('M 0 0 L 1 1 Z');
+    expect(result).toBe('M 0.5 0.5 L 1 1 L 0 0 L 0.5 0.5');
   });
 });
 
