@@ -39,11 +39,27 @@ export const getShapePoints = (
 
 /**
  * 頂点座標の配列をSVGパス文字列に変換する
+ * 最初の辺の中央から開始し、全ての頂点を経由して戻る
+ * これにより butt linecap でも角が切れない
  * @param pts 頂点座標の配列
  * @returns SVGパス文字列
  */
 export const pointsToPath = (pts: Point[]): string => {
-  return pts.map((p, j) => `${j === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+  if (pts.length < 2) return '';
+
+  // 最初の辺の中点から開始（頂点ではなく辺の中央から）
+  const midX = (pts[0].x + pts[1].x) / 2;
+  const midY = (pts[0].y + pts[1].y) / 2;
+
+  // 中点から開始 → 2番目の頂点から順に全頂点を経由 → 最初の頂点 → 中点に戻る
+  let path = `M ${midX} ${midY}`;
+  for (let j = 1; j < pts.length; j++) {
+    path += ` L ${pts[j].x} ${pts[j].y}`;
+  }
+  path += ` L ${pts[0].x} ${pts[0].y}`;
+  path += ` L ${midX} ${midY}`;
+
+  return path;
 };
 
 /**

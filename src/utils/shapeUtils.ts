@@ -107,7 +107,31 @@ export class CircleRenderer extends ShapeRenderer {
 }
 
 export class SquareRenderer extends ShapeRenderer {
-  readonly type = 'rect';
+  readonly type = 'path';
+  private path: string;
+  private outerPath: string;
+
+  constructor(size: number, strokeWidth: number) {
+    super(size, strokeWidth);
+    // 上辺中央から時計回りに描画するパスを生成
+    this.path = this.createSquarePath(this.strokeWidth / 2, this.side);
+    this.outerPath = this.createSquarePath(this.strokeWidth / 2 - 1, this.side + 2);
+  }
+
+  /**
+   * 上辺中央から時計回りに四角形を描画するパスを生成
+   * これにより butt linecap でも角が切れない
+   */
+  private createSquarePath(offset: number, side: number): string {
+    const cx = this.center;
+    const top = offset;
+    const right = offset + side;
+    const bottom = offset + side;
+    const left = offset;
+    // 上辺中央 → 右上 → 右下 → 左下 → 左上 → 上辺中央（閉じる）
+    return `M ${cx} ${top} L ${right} ${top} L ${right} ${bottom} L ${left} ${bottom} L ${left} ${top} Z`;
+  }
+
   getPerimeter() {
     return 4 * this.side;
   }
@@ -116,34 +140,13 @@ export class SquareRenderer extends ShapeRenderer {
   }
 
   getBackgroundProps(): SVGRenderProps {
-    return {
-      x: this.strokeWidth / 2,
-      y: this.strokeWidth / 2,
-      width: this.side,
-      height: this.side,
-      rx: 2,
-      ry: 2,
-    };
+    return { d: this.path };
   }
   getProgressProps(): SVGRenderProps {
-    return {
-      x: this.strokeWidth / 2,
-      y: this.strokeWidth / 2,
-      width: this.side,
-      height: this.side,
-      rx: 2,
-      ry: 2,
-    };
+    return { d: this.path };
   }
   getOuterProps(): SVGRenderProps {
-    return {
-      x: this.strokeWidth / 2 - 1,
-      y: this.strokeWidth / 2 - 1,
-      width: this.side + 2,
-      height: this.side + 2,
-      rx: 4,
-      ry: 4,
-    };
+    return { d: this.outerPath };
   }
   getTickProps(index: number, rotationDegree: number): SVGRenderProps {
     return {

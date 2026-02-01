@@ -44,7 +44,41 @@ const getColorClass = (color: TimerColor) => {
 };
 
 /**
+ * プログレスの開始点に丸いキャップを描画するコンポーネント
+ * 円形のみ必要（butt linecap使用のため開始点に丸みを追加）
+ * その他の図形はround linecapを使用するため不要
+ */
+const StartCap: React.FC<{
+  renderer: ShapeRenderer;
+  size: number;
+  strokeWidth: number;
+  className: string;
+  progress: number;
+}> = ({ renderer, size, strokeWidth, className, progress }) => {
+  // 円形以外、またはプログレスがほぼ0/完全な場合はキャップ不要
+  if (renderer.type !== 'circle') return null;
+  if (progress <= 0.001 || progress >= 0.999) return null;
+
+  const center = size / 2;
+  const radius = (size - strokeWidth) / 2;
+
+  // 12時の位置に小さな円を描画
+  return (
+    <circle
+      cx={center}
+      cy={center - radius}
+      r={strokeWidth / 2}
+      className={className}
+      fill="currentColor"
+      style={{ stroke: 'none' }}
+    />
+  );
+};
+
+/**
  * プログレス表示部分の形状を描画する内部コンポーネント
+ * ほとんどの図形で butt linecap を使用（視認性向上）
+ * ハートのみ round linecap を使用（下部尖端の保護）
  */
 const ProgressShape: React.FC<{
   renderer: ShapeRenderer;
@@ -53,13 +87,17 @@ const ProgressShape: React.FC<{
   offset: number;
   size: number;
   strokeWidth: number;
-}> = ({ renderer, commonProps, perimeter, offset, size, strokeWidth }) => {
+  shape: string;
+}> = ({ renderer, commonProps, perimeter, offset, size, strokeWidth, shape }) => {
+  // ハートのみ round linecap（下部尖端保護）、その他は butt（視認性向上）
+  const linecap = shape === 'heart' ? ('round' as const) : ('butt' as const);
+
   const motionProps = {
     strokeDasharray: perimeter,
     initial: { strokeDashoffset: 0 },
     animate: { strokeDashoffset: offset },
     transition: { duration: 0.5, ease: 'linear' as const },
-    strokeLinecap: 'butt' as const,
+    strokeLinecap: linecap,
     ...(renderer.type === 'circle'
       ? { transform: `rotate(-90 ${size / 2} ${size / 2})` }
       : { pathLength: perimeter }),
@@ -175,14 +213,24 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
           strokeWidth={strokeWidth}
         />
         {progress > 0 && (
-          <ProgressShape
-            renderer={renderer}
-            commonProps={{ className: fillClassName, fill: 'none', ...renderer.getProgressProps() }}
-            perimeter={perimeter}
-            offset={offset}
-            size={size}
-            strokeWidth={strokeWidth}
-          />
+          <>
+            <ProgressShape
+              renderer={renderer}
+              commonProps={{ className: fillClassName, fill: 'none', ...renderer.getProgressProps() }}
+              perimeter={perimeter}
+              offset={offset}
+              size={size}
+              strokeWidth={strokeWidth}
+              shape={shape}
+            />
+            <StartCap
+              renderer={renderer}
+              size={size}
+              strokeWidth={strokeWidth}
+              className={fillClassName}
+              progress={progress}
+            />
+          </>
         )}
         {capacity >= 60 &&
           Array.from({ length: ticksCount }).map((_, j) => (
