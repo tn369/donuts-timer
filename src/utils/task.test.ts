@@ -8,6 +8,7 @@ import {
   calculateOverallProgress,
   calculateRewardSeconds,
   calculateRewardSecondsFromTargetTime,
+  hasTaskProgress,
 } from './task';
 
 // テスト用のタスクを作成するヘルパー
@@ -105,7 +106,12 @@ describe('calculateRewardSecondsFromTargetTime', () => {
     const todoSeconds = 600;
 
     // Act
-    const result = calculateRewardSecondsFromTargetTime(targetHour, targetMinute, current, todoSeconds);
+    const result = calculateRewardSecondsFromTargetTime(
+      targetHour,
+      targetMinute,
+      current,
+      todoSeconds
+    );
 
     // Assert
     expect(result).toBe(3000);
@@ -119,9 +125,69 @@ describe('calculateRewardSecondsFromTargetTime', () => {
     const todoSeconds = 3600;
 
     // Act
-    const result = calculateRewardSecondsFromTargetTime(targetHour, targetMinute, current, todoSeconds);
+    const result = calculateRewardSecondsFromTargetTime(
+      targetHour,
+      targetMinute,
+      current,
+      todoSeconds
+    );
 
     // Assert
     expect(result).toBe(79200);
+  });
+});
+
+describe('hasTaskProgress', () => {
+  it('should return true when at least one task is done', () => {
+    // Arrange
+    const tasks: Task[] = [
+      createTask({ id: '1', status: 'done' }),
+      createTask({ id: '2', status: 'todo' }),
+    ];
+
+    // Act
+    const result = hasTaskProgress(tasks);
+
+    // Assert
+    expect(result).toBe(true);
+  });
+
+  it('should return true when at least one task has elapsed time', () => {
+    // Arrange
+    const tasks: Task[] = [
+      createTask({ id: '1', status: 'paused', elapsedSeconds: 10 }),
+      createTask({ id: '2', status: 'todo', elapsedSeconds: 0 }),
+    ];
+
+    // Act
+    const result = hasTaskProgress(tasks);
+
+    // Assert
+    expect(result).toBe(true);
+  });
+
+  it('should return false when no tasks have progress', () => {
+    // Arrange
+    const tasks: Task[] = [
+      createTask({ id: '1', status: 'todo', elapsedSeconds: 0 }),
+      createTask({ id: '2', status: 'todo', elapsedSeconds: 0 }),
+    ];
+
+    // Act
+    const result = hasTaskProgress(tasks);
+
+    // Assert
+    expect(result).toBe(false);
+  });
+
+  it('should return false for empty task list', () => {
+    // Arrange
+    const tasks: Task[] = [];
+
+    // Act
+    const result = hasTaskProgress(tasks);
+
+    // Assert
+    expect(result).toBe(false);
   });
 });

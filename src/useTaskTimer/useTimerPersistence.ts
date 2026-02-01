@@ -9,6 +9,7 @@ import {
   saveExecutionState,
   type TimerMode,
 } from '../storage';
+import { hasTaskProgress } from '../utils/task';
 import type { Action, State } from './types';
 
 /**
@@ -21,27 +22,33 @@ export function useTimerPersistence(
 ) {
   // 保存されたステートの復元
   useEffect(() => {
-    if (state.activeList) {
-      const saved = loadExecutionState(state.activeList.id, mode);
-      if (saved?.listId === state.activeList.id) {
-        // すべてのタスクが完了済みかどうかをチェック
-        const allCompleted =
-          saved.tasks.length > 0 && saved.tasks.every((t) => t.status === 'done');
+    if (!state.activeList) return;
 
-        if (allCompleted) {
-          // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
-          clearExecutionState(state.activeList.id, mode);
-        } else {
-          dispatch({
-            type: 'RESTORE_AVAILABLE',
-            tasks: saved.tasks,
-            selectedTaskId: saved.selectedTaskId,
-            isTimerRunning: saved.isTimerRunning,
-            lastTickTimestamp: saved.lastTickTimestamp,
-          });
-        }
-      }
+    const saved = loadExecutionState(state.activeList.id, mode);
+    if (saved?.listId !== state.activeList.id) return;
+
+    // すべてのタスクが完了済みかどうかをチェック
+    const allCompleted = saved.tasks.length > 0 && saved.tasks.every((t) => t.status === 'done');
+    if (allCompleted) {
+      // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
+      clearExecutionState(state.activeList.id, mode);
+      return;
     }
+
+    // 進捗（経過時間がある、または完了しているタスクがある）がある場合のみ復元を提案する
+    if (!hasTaskProgress(saved.tasks)) {
+      // 進捗がない場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
+      clearExecutionState(state.activeList.id, mode);
+      return;
+    }
+
+    dispatch({
+      type: 'RESTORE_AVAILABLE',
+      tasks: saved.tasks,
+      selectedTaskId: saved.selectedTaskId,
+      isTimerRunning: saved.isTimerRunning,
+      lastTickTimestamp: saved.lastTickTimestamp,
+    });
   }, [state.activeList, dispatch, mode]);
 
   useEffect(() => {

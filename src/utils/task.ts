@@ -86,3 +86,12 @@ export const calculateRewardSecondsFromTargetTime = (
   // ごほうびの時間 = 利用可能時間 - やることの時間
   return Math.floor(availableSeconds - todoTasksSeconds);
 };
+
+/**
+ * タスク一覧に進捗（経過時間がある、または完了している）が含まれているか判定する
+ * @param tasks タスク一覧
+ * @returns 進捗があればtrue
+ */
+export const hasTaskProgress = (tasks: Task[]): boolean => {
+  return tasks.some((t) => t.elapsedSeconds > 0 || t.status === 'done');
+};
