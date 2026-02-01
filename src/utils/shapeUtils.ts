@@ -53,7 +53,10 @@ export abstract class ShapeRenderer {
     return this.size - this.strokeWidth;
   }
 
-  abstract readonly type: 'circle' | 'rect' | 'path';
+  /**
+   * SVG要素のタイプ ('circle' | 'rect' | 'path')
+   */
+  abstract readonly svgElementType: 'circle' | 'rect' | 'path';
   abstract getPerimeter(): number;
   abstract getTicksCount(): number;
 
@@ -75,15 +78,47 @@ export abstract class ShapeRenderer {
    * @param rotationDegree 1目盛りあたりの回転角度
    */
   abstract getTickProps(index: number, rotationDegree: number): SVGRenderProps;
+
+  /**
+   * stroke-linecapの値を取得する
+   */
+  getLinecap(): 'butt' | 'round' {
+    return 'butt';
+  }
+
+  /**
+   * プログレス描画時の追加transform値を取得する
+   */
+  getProgressTransform(): string | undefined {
+    return undefined;
+  }
+
+  /**
+   * pathLength属性の値を取得する（path要素用）
+   */
+  getPathLength(): number | undefined {
+    return undefined;
+  }
+
+  /**
+   * strokeLinejoin属性が必要かどうか
+   */
+  needsStrokeLinejoin(): boolean {
+    return false;
+  }
 }
 
 export class CircleRenderer extends ShapeRenderer {
-  readonly type = 'circle';
+  readonly svgElementType = 'circle' as const;
   getPerimeter() {
     return 2 * Math.PI * this.radius;
   }
   getTicksCount() {
     return 4;
+  }
+
+  override getProgressTransform(): string {
+    return `rotate(-90 ${this.center} ${this.center})`;
   }
 
   getBackgroundProps(): SVGRenderProps {
@@ -107,7 +142,7 @@ export class CircleRenderer extends ShapeRenderer {
 }
 
 export class SquareRenderer extends ShapeRenderer {
-  readonly type = 'path';
+  readonly svgElementType = 'path' as const;
   private path: string;
   private outerPath: string;
 
@@ -130,6 +165,14 @@ export class SquareRenderer extends ShapeRenderer {
     const left = offset;
     // 上辺中央 → 右上 → 右下 → 左下 → 左上 → 上辺中央（閉じる）
     return `M ${cx} ${top} L ${right} ${top} L ${right} ${bottom} L ${left} ${bottom} L ${left} ${top} Z`;
+  }
+
+  override getPathLength(): number {
+    return this.getPerimeter();
+  }
+
+  override needsStrokeLinejoin(): boolean {
+    return true;
   }
 
   getPerimeter() {
@@ -160,11 +203,19 @@ export class SquareRenderer extends ShapeRenderer {
 }
 
 export class PathRenderer extends ShapeRenderer {
-  readonly type = 'path';
+  readonly svgElementType = 'path' as const;
   protected path = '';
   protected outerPath = '';
   protected perimeter = 0;
   protected ticksCount = 5;
+
+  override getPathLength(): number {
+    return this.perimeter;
+  }
+
+  override needsStrokeLinejoin(): boolean {
+    return true;
+  }
 
   getPerimeter() {
     return this.perimeter;
@@ -213,6 +264,13 @@ export class HeartRenderer extends PathRenderer {
     this.path = getHeartPath(size);
     this.outerPath = getHeartPath(size + 2);
     this.perimeter = approximateHeartPerimeter(this.radius, HEART_PERIMETER_FACTOR);
+  }
+
+  /**
+   * ハート形状は下部尖端保護のため round linecap を使用
+   */
+  override getLinecap(): 'butt' | 'round' {
+    return 'round';
   }
 }
 

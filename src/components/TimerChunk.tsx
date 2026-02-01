@@ -44,38 +44,6 @@ const getColorClass = (color: TimerColor) => {
 };
 
 /**
- * プログレスの開始点に丸いキャップを描画するコンポーネント
- * 円形のみ必要（butt linecap使用のため開始点に丸みを追加）
- * その他の図形はround linecapを使用するため不要
- */
-const StartCap: React.FC<{
-  renderer: ShapeRenderer;
-  size: number;
-  strokeWidth: number;
-  className: string;
-  progress: number;
-}> = ({ renderer, size, strokeWidth, className, progress }) => {
-  // 円形以外、またはプログレスがほぼ0/完全な場合はキャップ不要
-  if (renderer.type !== 'circle') return null;
-  if (progress <= 0.001 || progress >= 0.999) return null;
-
-  const center = size / 2;
-  const radius = (size - strokeWidth) / 2;
-
-  // 12時の位置に小さな円を描画
-  return (
-    <circle
-      cx={center}
-      cy={center - radius}
-      r={strokeWidth / 2}
-      className={className}
-      fill="currentColor"
-      style={{ stroke: 'none' }}
-    />
-  );
-};
-
-/**
  * プログレス表示部分の形状を描画する内部コンポーネント
  * ほとんどの図形で butt linecap を使用（視認性向上）
  * ハートのみ round linecap を使用（下部尖端の保護）
@@ -85,12 +53,12 @@ const ProgressShape: React.FC<{
   commonProps: SVGRenderProps;
   perimeter: number;
   offset: number;
-  size: number;
   strokeWidth: number;
-  shape: string;
-}> = ({ renderer, commonProps, perimeter, offset, size, strokeWidth, shape }) => {
-  // ハートのみ round linecap（下部尖端保護）、その他は butt（視認性向上）
-  const linecap = shape === 'heart' ? ('round' as const) : ('butt' as const);
+}> = ({ renderer, commonProps, perimeter, offset, strokeWidth }) => {
+  const linecap = renderer.getLinecap();
+  const transform = renderer.getProgressTransform();
+  const pathLength = renderer.getPathLength();
+  const needsLinejoin = renderer.needsStrokeLinejoin();
 
   const motionProps = {
     strokeDasharray: perimeter,
@@ -98,28 +66,17 @@ const ProgressShape: React.FC<{
     animate: { strokeDashoffset: offset },
     transition: { duration: 0.5, ease: 'linear' as const },
     strokeLinecap: linecap,
-    ...(renderer.type === 'circle'
-      ? { transform: `rotate(-90 ${size / 2} ${size / 2})` }
-      : { pathLength: perimeter }),
+    ...(transform && { transform }),
+    ...(pathLength !== undefined && { pathLength }),
+    ...(needsLinejoin && { strokeLinejoin: 'round' as const }),
+    strokeWidth,
   };
 
-  switch (renderer.type) {
-    case 'circle':
-      return <motion.circle {...commonProps} {...motionProps} strokeWidth={strokeWidth} />;
-    case 'rect':
-      return <motion.rect {...commonProps} {...motionProps} strokeWidth={strokeWidth} />;
-    case 'path':
-      return (
-        <motion.path
-          {...commonProps}
-          {...motionProps}
-          strokeLinejoin="round"
-          strokeWidth={strokeWidth}
-        />
-      );
-    default:
-      return null;
-  }
+  const MotionElement = motion[
+    renderer.svgElementType as keyof typeof motion
+  ] as React.ComponentType<typeof commonProps & typeof motionProps>;
+
+  return <MotionElement {...commonProps} {...motionProps} />;
 };
 
 /**
@@ -130,16 +87,19 @@ const BgShape: React.FC<{
   commonProps: SVGRenderProps;
   strokeWidth: number;
 }> = ({ renderer, commonProps, strokeWidth }) => {
-  const props = { ...commonProps, strokeWidth: strokeWidth * 1.1 };
-  switch (renderer.type) {
-    case 'circle':
-      return <circle {...props} />;
-    case 'rect':
-      return <rect {...props} />;
-    case 'path':
-      return <path {...props} strokeLinejoin="round" />;
-    default:
-      return null;
+  const props = {
+    ...commonProps,
+    strokeWidth: strokeWidth * 1.1,
+    ...(renderer.needsStrokeLinejoin() && { strokeLinejoin: 'round' as const }),
+  };
+
+  const ElementType = renderer.svgElementType;
+  if (ElementType === 'circle') {
+    return <circle {...props} />;
+  } else if (ElementType === 'rect') {
+    return <rect {...props} />;
+  } else {
+    return <path {...props} />;
   }
 };
 
@@ -151,17 +111,17 @@ const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
     fill: 'none',
     stroke: 'rgba(0,0,0,0.03)',
     strokeWidth: '1',
+    ...(renderer.needsStrokeLinejoin() && { strokeLinejoin: 'round' as const }),
   } as SVGRenderProps;
   const props = renderer.getOuterProps();
-  switch (renderer.type) {
-    case 'circle':
-      return <circle {...props} {...common} />;
-    case 'rect':
-      return <rect {...props} {...common} />;
-    case 'path':
-      return <path {...props} {...common} strokeLinejoin="round" />;
-    default:
-      return null;
+
+  const ElementType = renderer.svgElementType;
+  if (ElementType === 'circle') {
+    return <circle {...props} {...common} />;
+  } else if (ElementType === 'rect') {
+    return <rect {...props} {...common} />;
+  } else {
+    return <path {...props} {...common} />;
   }
 };
 
@@ -216,19 +176,14 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
           <>
             <ProgressShape
               renderer={renderer}
-              commonProps={{ className: fillClassName, fill: 'none', ...renderer.getProgressProps() }}
+              commonProps={{
+                className: fillClassName,
+                fill: 'none',
+                ...renderer.getProgressProps(),
+              }}
               perimeter={perimeter}
               offset={offset}
-              size={size}
               strokeWidth={strokeWidth}
-              shape={shape}
-            />
-            <StartCap
-              renderer={renderer}
-              size={size}
-              strokeWidth={strokeWidth}
-              className={fillClassName}
-              progress={progress}
             />
           </>
         )}
