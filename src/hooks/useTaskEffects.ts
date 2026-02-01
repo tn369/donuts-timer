@@ -1,3 +1,6 @@
+/**
+ * タスクの状態変化（完了、未完了への戻しなど）に応じた効果音やアニメーション（紙吹雪）を制御するカスタムフック
+ */
 import confetti from 'canvas-confetti';
 import { useEffect, useRef } from 'react';
 
@@ -9,10 +12,17 @@ import {
   playTaskIncompleteSound,
 } from '../utils/audio';
 
+/**
+ * タスクの状態変化を監視し、エフェクトを発火させるフック
+ * @param tasks タスク一覧
+ */
 export const useTaskEffects = (tasks: Task[]) => {
   const prevCompletedIdsRef = useRef<Set<string>>(new Set());
   const wasAllTodosDoneRef = useRef<boolean>(false);
 
+  /**
+   * お祝いのエフェクト（音と紙吹雪）を実行する
+   */
   const triggerCelebration = () => {
     playCelebrationSound();
     void confetti({

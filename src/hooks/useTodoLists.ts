@@ -1,3 +1,6 @@
+/**
+ * やることリストの一覧管理、保存、選択状態を管理するカスタムフック
+ */
 import { useState } from 'react';
 import { v4 as uuid_v4 } from 'uuid';
 
@@ -5,11 +8,17 @@ import { DEFAULT_TODO_LISTS, migrateTasksWithDefaultIcons, PRESET_IMAGES } from 
 import { loadActiveListId, loadTodoLists, saveActiveListId, saveTodoLists } from '../storage';
 import type { TodoList } from '../types';
 
+/**
+ * リスト内のタスクをマイグレーションする（アイコンの補完など）
+ */
 const migrateTodoList = (list: TodoList): TodoList => ({
   ...list,
   tasks: migrateTasksWithDefaultIcons(list.tasks),
 });
 
+/**
+ * 新規作成時のデフォルトリストを生成する
+ */
 const createDefaultList = (): TodoList => ({
   id: uuid_v4(),
   title: 'あたらしいやることリスト',
@@ -42,6 +51,9 @@ const createDefaultList = (): TodoList => ({
   },
 });
 
+/**
+ * リストをコピーする
+ */
 const copyTodoList = (list: TodoList): TodoList => ({
   ...list,
   id: uuid_v4(),
@@ -55,6 +67,9 @@ const copyTodoList = (list: TodoList): TodoList => ({
   })),
 });
 
+/**
+ * やることリストのデータ操作と選択状態を管理するフック
+ */
 export const useTodoLists = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
     const loaded = loadTodoLists(DEFAULT_TODO_LISTS);
@@ -79,6 +94,9 @@ export const useTodoLists = () => {
   });
   const [isSiblingMode, setIsSiblingMode] = useState(false);
 
+  /**
+   * リストを選択する（1人モード）
+   */
   const selectList = (listId: string) => {
     const list = todoLists.find((item) => item.id === listId);
     if (list) {
@@ -88,6 +106,9 @@ export const useTodoLists = () => {
     }
   };
 
+  /**
+   * 2つのリストを選択する（2人モード）
+   */
   const selectSiblingLists = (id1: string, id2: string) => {
     const list1 = todoLists.find((item) => item.id === id1);
     const list2 = todoLists.find((item) => item.id === id2);
@@ -97,6 +118,9 @@ export const useTodoLists = () => {
     }
   };
 
+  /**
+   * 新しいリストを追加する
+   */
   const addNewList = () => {
     const newList = createDefaultList();
     const updated = [...todoLists, newList];
@@ -105,12 +129,18 @@ export const useTodoLists = () => {
     return newList;
   };
 
+  /**
+   * リストを削除する
+   */
   const deleteList = (listId: string) => {
     const updated = todoLists.filter((list) => list.id !== listId);
     setTodoLists(updated);
     saveTodoLists(updated);
   };
 
+  /**
+   * リストをコピーして追加する
+   */
   const copyList = (listId: string) => {
     const original = todoLists.find((list) => list.id === listId);
     if (original) {
@@ -120,6 +150,9 @@ export const useTodoLists = () => {
     }
   };
 
+  /**
+   * リストの内容を保存する
+   */
   const saveList = (updatedList: TodoList) => {
     const updatedLists = todoLists.map((list) => (list.id === updatedList.id ? updatedList : list));
     setTodoLists(updatedLists);
@@ -127,12 +160,18 @@ export const useTodoLists = () => {
     setActiveLists((prev) => prev.map((list) => (list.id === updatedList.id ? updatedList : list)));
   };
 
+  /**
+   * 選択状態を解除する
+   */
   const clearActiveList = () => {
     saveActiveListId(null);
     setActiveLists([]);
     setIsSiblingMode(false);
   };
 
+  /**
+   * 全リストで使用されているユニークなアイコン一覧を取得する
+   */
   const getAllUniqueIcons = () =>
     Array.from(
       new Set([...PRESET_IMAGES, ...todoLists.flatMap((list) => list.tasks.map((t) => t.icon))])

@@ -1,3 +1,6 @@
+/**
+ * やることリストを選択、追加、編集、削除するための選択画面コンポーネント。1人モードと2人モードの切り替えが可能。
+ */
 import { AnimatePresence, motion } from 'framer-motion';
 import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
@@ -5,16 +8,22 @@ import React, { useState } from 'react';
 import type { TodoList } from '../types';
 import styles from './TodoListSelection.module.css';
 
+/**
+ * TodoListSelectionのプロパティ
+ */
 interface TodoListSelectionProps {
-  lists: TodoList[];
-  onSelect: (listId: string) => void;
-  onSelectSibling: (id1: string, id2: string) => void;
-  onEdit: (listId: string) => void;
-  onCopy: (listId: string) => void;
-  onAdd: () => void;
-  onDelete: (listId: string) => void;
+  lists: TodoList[]; // 表示するリスト一覧
+  onSelect: (listId: string) => void; // リストが選択された時のコールバック
+  onSelectSibling: (id1: string, id2: string) => void; // 2画面モードで2つのリストが選択された時のコールバック
+  onEdit: (listId: string) => void; // リスト編集ボタンが押された時のコールバック
+  onCopy: (listId: string) => void; // リストコピーボタンが押された時のコールバック
+  onAdd: () => void; // 新規作成ボタンが押された時のコールバック
+  onDelete: (listId: string) => void; // リスト削除ボタンが押された時のコールバック
 }
 
+/**
+ * やることリストの選択画面コンポーネント
+ */
 export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   lists,
   onSelect,
@@ -27,6 +36,9 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  /**
+   * カードがクリックされた際のハンドラ
+   */
   const handleCardClick = (listId: string) => {
     if (isSiblingModeSelect) {
       if (selectedIds.length < 2) {

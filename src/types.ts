@@ -1,24 +1,34 @@
 /**
- * タスクタイマーアプリの型定義
+ * タスクタイマーアプリ全体で使用される型定義
  */
 
-// タスクの種類（やること: todo | ごほうび: reward）
+/**
+ * タスクの種類（やること: todo | ごほうび: reward）
+ */
 export type TaskKind = 'todo' | 'reward';
 
-// タスクの状態
+/**
+ * タスクの状態
+ */
 export type TaskStatus = 'todo' | 'running' | 'paused' | 'done';
 
-// ごほうび（可変タスク）のモード
+/**
+ * ごほうび（可変タスク）のモード
+ */
 export type VariableTaskMode = 'duration' | 'target-time';
 
-// 目標時刻設定
+/**
+ * 目標時刻設定
+ */
 export interface TargetTimeSettings {
   mode: VariableTaskMode;
   targetHour: number; // 0-23
   targetMinute: number; // 0-59
 }
 
-// タスク型定義（やること / ごほうび）
+/**
+ * タスク型定義（やること / ごほうび）
+ */
 export interface Task {
   id: string; // タスクID
   name: string; // タスク名（トイレ、おきがえ等）
@@ -30,7 +40,9 @@ export interface Task {
   actualSeconds: number; // 実績時間（秒、完了時に確定）
 }
 
-// タイマーの見た目設定
+/**
+ * タイマーの形状
+ */
 export type TimerShape =
   | 'circle'
   | 'square'
@@ -41,6 +53,10 @@ export type TimerShape =
   | 'star'
   | 'heart'
   | 'octagon';
+
+/**
+ * タイマーのカラー
+ */
 export type TimerColor =
   | 'red'
   | 'blue'
@@ -54,12 +70,17 @@ export type TimerColor =
   | 'cyan'
   | 'lime';
 
+/**
+ * タイマーの見た目設定
+ */
 export interface TimerSettings {
   shape: TimerShape;
   color: TimerColor;
 }
 
-// やることリスト型定義
+/**
+ * やることリスト型定義
+ */
 export interface TodoList {
   id: string;
   title: string;

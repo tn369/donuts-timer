@@ -1,3 +1,6 @@
+/**
+ * タイマー画面の上部に表示される、設定や操作のためのコントロールバーコンポーネント
+ */
 import { motion } from 'framer-motion';
 import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
 import React, { useCallback } from 'react';
@@ -7,6 +10,9 @@ import { Controls } from './Controls';
 import styles from './MainTimerView.module.css';
 import { ShapeIcon } from './ShapeIcon';
 
+/**
+ * タイマーのカラーコード定義
+ */
 const TIMER_COLORS: Record<string, string> = {
   red: '#ff6b6b',
   blue: '#4facfe',
@@ -69,22 +75,28 @@ const COLORS: (
   'lime',
 ];
 
+/**
+ * MainTimerHeaderControlsのプロパティ
+ */
 interface HeaderControlsProps {
-  showSelectionButton: boolean;
-  onBackToSelection: () => void;
-  isSiblingMode: boolean;
-  isRunning: boolean;
-  startTimer: () => void;
-  stopTimer: () => void;
-  setShowResetConfirm: (show: boolean) => void;
-  canStartOrStop: boolean;
-  fastForward: () => void;
-  timerSettings: { shape: TimerShape; color: TimerColor };
-  setTimerSettings: (s: { shape: TimerShape; color: TimerColor }) => void;
-  activeList: TodoList | null;
-  onEditSettings: (id: string) => void;
+  showSelectionButton: boolean; // リスト選択に戻るボタンを表示するか
+  onBackToSelection: () => void; // リスト選択に戻る際のコールバック
+  isSiblingMode: boolean; // 2画面モードかどうか
+  isRunning: boolean; // タイマーが動作中かどうか
+  startTimer: () => void; // スタートボタンのコールバック
+  stopTimer: () => void; // ストップボタンのコールバック
+  setShowResetConfirm: (show: boolean) => void; // リセット確認ダイアログの表示制御
+  canStartOrStop: boolean; // スタート/ストップが可能か
+  fastForward: () => void; // 早送り（デバッグ用）のコールバック
+  timerSettings: { shape: TimerShape; color: TimerColor }; // タイマーの見た目設定
+  setTimerSettings: (s: { shape: TimerShape; color: TimerColor }) => void; // 設定変更用の関数
+  activeList: TodoList | null; // 現在アクティブなリスト
+  onEditSettings: (id: string) => void; // 設定画面を開くコールバック
 }
 
+/**
+ * タイマー画面上部のヘッダーコントロールコンポーネント
+ */
 export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   showSelectionButton,
   onBackToSelection,

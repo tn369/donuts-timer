@@ -1,5 +1,11 @@
 /**
- * 時間を MM:SS 形式にフォーマットする
+ * 時間のフォーマットなどのユーティリティ
+ */
+
+/**
+ * 秒数を MM:SS 形式にフォーマットする（負の値にも対応）
+ * @param seconds 秒数
+ * @returns フォーマットされた文字列
  */
 export const formatTime = (seconds: number): string => {
   const isNegative = seconds < 0;

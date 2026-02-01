@@ -1,5 +1,9 @@
 /**
- * 優しいチャイム音を再生する（Web Audio API）
+ * Web Audio APIを使用した効果音再生ユーティリティ
+ */
+
+/**
+ * 優しいチャイム音を再生する
  */
 export const playGentleAlarm = () => {
   const AudioContextClass = window.AudioContext;

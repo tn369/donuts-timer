@@ -1,3 +1,6 @@
+/**
+ * 各種図形（円、正方形、多角形、ハート）のレンダラーのテスト
+ */
 import { describe, expect, it } from 'vitest';
 
 import { approximateHeartPerimeter } from './heartPath';

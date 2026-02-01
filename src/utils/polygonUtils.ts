@@ -1,8 +1,21 @@
+/**
+ * 多角形や星型の計算とSVGパス生成のためのユーティリティ
+ */
+
 export interface Point {
   x: number;
   y: number;
 }
 
+/**
+ * 多角形または星型の頂点座標を取得する
+ * @param center 中心座標
+ * @param radius 半径
+ * @param sides 頂点（角）の数
+ * @param rotation 回転角度
+ * @param isStarShape 星型にするかどうか
+ * @returns 頂点座標の配列
+ */
 export const getShapePoints = (
   center: number,
   radius: number,
@@ -24,10 +37,20 @@ export const getShapePoints = (
   return pts;
 };
 
+/**
+ * 頂点座標の配列をSVGパス文字列に変換する
+ * @param pts 頂点座標の配列
+ * @returns SVGパス文字列
+ */
 export const pointsToPath = (pts: Point[]): string => {
   return pts.map((p, j) => `${j === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
 };
 
+/**
+ * 頂点座標の配列から外周の長さを計算する
+ * @param pts 頂点座標の配列
+ * @returns 外周の長さ
+ */
 export const calculatePerimeter = (pts: Point[]): number => {
   let perimeter = 0;
   for (let j = 0; j < pts.length; j++) {

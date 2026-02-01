@@ -1,14 +1,23 @@
+/**
+ * タイマーのリセットを確認するためのモーダルダイアログコンポーネント
+ */
 import { motion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 import React from 'react';
 
 import styles from './ResetModal.module.css';
 
+/**
+ * ResetModalのプロパティ
+ */
 interface ResetModalProps {
-  onCancel: () => void;
-  onConfirm: () => void;
+  onCancel: () => void; // キャンセル時のコールバック
+  onConfirm: () => void; // 確定時のコールバック
 }
 
+/**
+ * リセット確認モーダルコンポーネント
+ */
 export const ResetModal: React.FC<ResetModalProps> = ({ onCancel, onConfirm }) => {
   return (
     <motion.div

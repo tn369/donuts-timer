@@ -1,3 +1,6 @@
+/**
+ * タイマーの実行状態（どのタスクがどれくらい進んだか）をローカルストレージに保存・復元するカスタムフック
+ */
 import { useEffect } from 'react';
 
 import {
@@ -8,6 +11,9 @@ import {
 } from '../storage';
 import type { Action, State } from './types';
 
+/**
+ * タイマーの状態を永続化するためのフック
+ */
 export function useTimerPersistence(
   state: State,
   dispatch: React.Dispatch<Action>,

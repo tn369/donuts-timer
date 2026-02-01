@@ -1,3 +1,6 @@
+/**
+ * アプリケーションのエントリーポイントコンポーネント。画面遷移やグローバルな状態管理を行う。
+ */
 import styles from './App.module.css';
 import { MainTimerView } from './components/MainTimerView';
 import { TodoListSelection } from './components/TodoListSelection';
@@ -6,6 +9,9 @@ import { useAppScreen } from './hooks/useAppScreen';
 import { useTodoLists } from './hooks/useTodoLists';
 import type { TodoList } from './types';
 
+/**
+ * アプリケーションのメインコンポーネント
+ */
 function App() {
   const {
     backFromSettings,

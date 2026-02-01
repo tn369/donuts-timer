@@ -1,3 +1,6 @@
+/**
+ * timerReducerの動作を確認するためのユニットテスト
+ */
 import { describe, expect, it } from 'vitest';
 
 import type { TargetTimeSettings, Task, TimerSettings } from '../types';

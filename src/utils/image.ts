@@ -1,5 +1,13 @@
 /**
- * 画像をリサイズする
+ * 画像処理に関連するユーティリティ
+ */
+
+/**
+ * 画像を指定された最大幅と高さにリサイズする
+ * @param dataUrl 画像のData URL
+ * @param maxWidth 最大幅
+ * @param maxHeight 最大高さ
+ * @returns リサイズされた画像のData URLを解決するPromise
  */
 export const resizeImage = (dataUrl: string, maxWidth = 200, maxHeight = 200): Promise<string> => {
   return new Promise((resolve) => {

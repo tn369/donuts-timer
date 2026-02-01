@@ -1,3 +1,6 @@
+/**
+ * アプリケーションで使用される定数と初期データ
+ */
 import womanIcon from './assets/futon_derenai_woman.png';
 import hamigakiIcon from './assets/hamigaki_boy.png';
 import changeIcon from './assets/kid_kigae_boy.png';
@@ -51,6 +54,8 @@ export const TASK_NAME_TO_ICON: Record<string, string> = {
 
 /**
  * タスクのアイコンが空の場合、名前から推測してアイコンを設定する
+ * @param tasks タスク一覧
+ * @returns アイコンが補完されたタスク一覧
  */
 export const migrateTasksWithDefaultIcons = (tasks: Task[]): Task[] => {
   return tasks.map((task) => {
@@ -109,14 +114,23 @@ export const INITIAL_TASKS: Task[] = [
   },
 ];
 
-export const BASE_REWARD_SECONDS = 15 * 60; // ごほうびの基本時間（15分）
+/**
+ * ごほうびの基本時間（15分）
+ */
+export const BASE_REWARD_SECONDS = 15 * 60;
 
+/**
+ * デフォルトの目標時刻設定
+ */
 export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
   mode: 'duration', // デフォルトは所要時間モード
   targetHour: 7,
   targetMinute: 55,
 };
 
+/**
+ * 初期表示用のやることリスト一覧
+ */
 export const DEFAULT_TODO_LISTS: TodoList[] = [
   {
     id: 'default-morning',

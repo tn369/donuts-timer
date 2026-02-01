@@ -1,3 +1,6 @@
+/**
+ * 多角形や星型の頂点計算、パス生成、周長計算のテスト
+ */
 import { describe, expect, it } from 'vitest';
 
 import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils';

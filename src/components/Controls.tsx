@@ -1,18 +1,27 @@
+/**
+ * タイマーのスタート、ストップ、リセットを行うコントロールコンポーネント
+ */
 import { Pause, Play, RotateCcw } from 'lucide-react';
 import React from 'react';
 
 import { ControlButton } from './ControlButton';
 import styles from './Controls.module.css';
 
+/**
+ * Controlsのプロパティ
+ */
 interface ControlsProps {
-  isRunning: boolean;
-  onStart: () => void;
-  onStop: () => void;
-  onReset: () => void;
-  canStartOrStop: boolean;
-  isCompact?: boolean;
+  isRunning: boolean; // タイマーが動作中かどうか
+  onStart: () => void; // スタートボタンクリック時のコールバック
+  onStop: () => void; // ストップボタンクリック時のコールバック
+  onReset: () => void; // リセットボタンクリック時のコールバック
+  canStartOrStop: boolean; // スタート/ストップ操作が可能かどうか
+  isCompact?: boolean; // コンパクト表示にするかどうか
 }
 
+/**
+ * タイマー操作用のボタン群を表示するコンポーネント
+ */
 export const Controls: React.FC<ControlsProps> = ({
   isRunning,
   onStart,

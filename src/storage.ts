@@ -1,14 +1,29 @@
+/**
+ * localStorageを使用したデータの保存と読み込みに関連するユーティリティ
+ */
 import type { Task, TodoList } from './types';
 
 const LISTS_STORAGE_KEY = 'task-timer-lists';
 const ACTIVE_LIST_ID_KEY = 'task-timer-active-id';
 const EXECUTION_STATE_KEY = 'task-timer-execution-state';
 
+/**
+ * タイマーの表示モード
+ */
 export type TimerMode = 'single' | 'sibling-0' | 'sibling-1';
 
+/**
+ * 実行状態を保存するためのキーを取得する
+ * @param listId リストID
+ * @param mode タイマーモード
+ * @returns localStorageのキー
+ */
 const getExecutionStateKey = (listId: string, mode: TimerMode): string =>
   `${EXECUTION_STATE_KEY}-${mode}-${listId}`;
 
+/**
+ * 実行状態の型定義
+ */
 export interface ExecutionState {
   tasks: Task[];
   selectedTaskId: string | null;
@@ -20,6 +35,8 @@ export interface ExecutionState {
 
 /**
  * localStorageからすべてのやることリストを読み込み
+ * @param fallbackLists 読み込み失敗時のデフォルト値
+ * @returns 読み込まれたリスト
  */
 export const loadTodoLists = (fallbackLists: TodoList[] = []): TodoList[] => {
   try {
@@ -37,6 +54,7 @@ export const loadTodoLists = (fallbackLists: TodoList[] = []): TodoList[] => {
 
 /**
  * localStorageにすべてのやることリストを保存
+ * @param lists リスト一覧
  */
 export const saveTodoLists = (lists: TodoList[]): void => {
   try {
@@ -48,6 +66,7 @@ export const saveTodoLists = (lists: TodoList[]): void => {
 
 /**
  * 現在選択されているリストIDを読み込み
+ * @returns リストIDまたはnull
  */
 export const loadActiveListId = (): string | null => {
   return localStorage.getItem(ACTIVE_LIST_ID_KEY);
@@ -55,6 +74,7 @@ export const loadActiveListId = (): string | null => {
 
 /**
  * 現在選択されているリストIDを保存
+ * @param id リストID
  */
 export const saveActiveListId = (id: string | null): void => {
   if (id) {
@@ -64,6 +84,10 @@ export const saveActiveListId = (id: string | null): void => {
   }
 };
 
+/**
+ * 実行状態を保存する
+ * @param state 実行状態
+ */
 export const saveExecutionState = (state: ExecutionState): void => {
   try {
     const mode = state.mode ?? 'single';
@@ -73,6 +97,12 @@ export const saveExecutionState = (state: ExecutionState): void => {
   }
 };
 
+/**
+ * 実行状態を読み込む
+ * @param listId リストID
+ * @param mode タイマーモード
+ * @returns 実行状態またはnull
+ */
 export const loadExecutionState = (listId: string, mode: TimerMode): ExecutionState | null => {
   try {
     const stored = localStorage.getItem(getExecutionStateKey(listId, mode));
@@ -108,6 +138,11 @@ export const loadExecutionState = (listId: string, mode: TimerMode): ExecutionSt
   }
 };
 
+/**
+ * 実行状態を消去する
+ * @param listId リストID（任意）
+ * @param mode タイマーモード（任意）
+ */
 export const clearExecutionState = (listId?: string, mode?: TimerMode): void => {
   if (listId && mode) {
     localStorage.removeItem(getExecutionStateKey(listId, mode));

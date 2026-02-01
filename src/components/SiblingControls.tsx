@@ -1,9 +1,15 @@
+/**
+ * 2画面モード（Siblingモード）用のコンパクトなコントロールコンポーネント
+ */
 import { Pause, Play, RotateCcw } from 'lucide-react';
 import React from 'react';
 
 import { ControlButton } from './ControlButton';
 import styles from './SiblingControls.module.css';
 
+/**
+ * SiblingControlsのプロパティ
+ */
 interface SiblingControlsProps {
   isRunning: boolean;
   onStart: () => void;
@@ -12,6 +18,9 @@ interface SiblingControlsProps {
   canStartOrStop: boolean;
 }
 
+/**
+ * 2画面モード専用のタイマー操作ボタンコンポーネント
+ */
 export const SiblingControls: React.FC<SiblingControlsProps> = ({
   isRunning,
   onStart,

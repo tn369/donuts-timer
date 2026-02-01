@@ -1,3 +1,6 @@
+/**
+ * タイマー実行画面のメインコンポーネント。タスク一覧とタイマー操作を統合する。
+ */
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -11,15 +14,21 @@ import { ResetModal } from './ResetModal';
 import { SiblingControls } from './SiblingControls';
 import { TaskList } from './TaskList';
 
+/**
+ * MainTimerViewのプロパティ
+ */
 interface MainTimerViewProps {
-  initialList: TodoList;
-  onBackToSelection: () => void;
-  onEditSettings: (listId: string) => void;
-  showSelectionButton?: boolean;
-  isSiblingMode?: boolean;
-  timerMode?: TimerMode;
+  initialList: TodoList; // 表示する初期リスト
+  onBackToSelection: () => void; // リスト選択に戻るコールバック
+  onEditSettings: (listId: string) => void; // 設定画面を開くコールバック
+  showSelectionButton?: boolean; // リスト選択に戻るボタンを表示するか
+  isSiblingMode?: boolean; // 2画面モードかどうか
+  timerMode?: TimerMode; // タイマーのモード（single/sibling-0/sibling-1）
 }
 
+/**
+ * タイマー実行画面のメインコンポーネント
+ */
 export const MainTimerView: React.FC<MainTimerViewProps> = ({
   initialList,
   onBackToSelection,

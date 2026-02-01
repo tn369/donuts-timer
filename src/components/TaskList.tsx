@@ -1,17 +1,26 @@
+/**
+ * タスクの一覧を表示するコンポーネント
+ */
 import type { Task, TimerColor, TimerShape } from '../types';
 import { TaskCard } from './TaskCard';
 import styles from './TaskList.module.css';
 
+/**
+ * TaskListのプロパティ
+ */
 interface TaskListProps {
-  tasks: Task[];
-  selectedTaskId: string | null;
-  isTaskSelectable: (taskId: string) => boolean;
-  onSelectTask: (taskId: string) => void;
-  shape?: TimerShape;
-  color?: TimerColor;
-  isCompact?: boolean;
+  tasks: Task[]; // タスク一覧
+  selectedTaskId: string | null; // 選択中のタスクID
+  isTaskSelectable: (taskId: string) => boolean; // タスクが選択可能かどうかの判定関数
+  onSelectTask: (taskId: string) => void; // タスクが選択された時のコールバック
+  shape?: TimerShape; // タイマーの形状
+  color?: TimerColor; // タイマーの色
+  isCompact?: boolean; // コンパクト表示にするかどうか
 }
 
+/**
+ * タスクカードを並べて表示するリストコンポーネント
+ */
 export const TaskList: React.FC<TaskListProps> = ({
   tasks,
   selectedTaskId,

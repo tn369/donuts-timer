@@ -1,14 +1,23 @@
+/**
+ * タイマーの形状を表すSVGアイコンコンポーネント
+ */
 import React from 'react';
 
 import type { TimerShape } from '../types';
 
+/**
+ * ShapeIconのプロパティ
+ */
 interface ShapeIconProps {
-  shape: TimerShape;
-  size?: number;
-  color?: string;
-  className?: string;
+  shape: TimerShape; // 表示する形状
+  size?: number; // サイズ
+  color?: string; // 色
+  className?: string; // クラス名
 }
 
+/**
+ * 形状アイコンを表示するコンポーネント。設定画面やコントロールバーで使用される。
+ */
 export const ShapeIcon: React.FC<ShapeIconProps> = ({
   shape,
   size = 24,
@@ -18,6 +27,9 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
   const center = 12;
   const radius = 9;
 
+  /**
+   * 形状の頂点座標を計算する
+   */
   const getPoints = (sides: number, rotation: number = -Math.PI / 2, isStar = false) => {
     const pts: string[] = [];
     const totalPoints = isStar ? sides * 2 : sides;
@@ -34,6 +46,9 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
     return pts.join(' ');
   };
 
+  /**
+   * 形状に応じたSVG要素をレンダリングする
+   */
   const renderShape = () => {
     switch (shape) {
       case 'circle':

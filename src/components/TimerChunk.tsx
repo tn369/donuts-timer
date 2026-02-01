@@ -1,3 +1,6 @@
+/**
+ * タイマーの「破片（チャンク）」を描画するコンポーネント。SVGを使用して様々な形状を描画する。
+ */
 import { motion } from 'framer-motion';
 import React, { useMemo } from 'react';
 
@@ -6,17 +9,23 @@ import type { ShapeRenderer, SVGRenderProps } from '../utils/shapeUtils';
 import { createRenderer } from '../utils/shapeUtils';
 import styles from './DonutTimer.module.css';
 
+/**
+ * TimerChunkのプロパティ
+ */
 interface TimerChunkProps {
-  capacity: number;
-  currentRemaining: number;
-  size: number;
-  strokeWidth: number;
-  shape: TimerShape;
-  color: TimerColor;
-  isOverdue: boolean;
-  children?: React.ReactNode;
+  capacity: number; // このチャンクの最大秒数
+  currentRemaining: number; // このチャンクの残り秒数
+  size: number; // 表示サイズ
+  strokeWidth: number; // 線の太さ
+  shape: TimerShape; // 形状
+  color: TimerColor; // カラー
+  isOverdue: boolean; // 時間超過しているかどうか
+  children?: React.ReactNode; // 中央に表示する要素
 }
 
+/**
+ * カラー名からCSSクラス名を取得する
+ */
 const getColorClass = (color: TimerColor) => {
   const colorMap: Record<TimerColor, string> = {
     red: styles.colorRed,
@@ -34,6 +43,9 @@ const getColorClass = (color: TimerColor) => {
   return colorMap[color] || styles.colorBlue;
 };
 
+/**
+ * プログレス表示部分の形状を描画する内部コンポーネント
+ */
 const ProgressShape: React.FC<{
   renderer: ShapeRenderer;
   commonProps: SVGRenderProps;
@@ -72,6 +84,9 @@ const ProgressShape: React.FC<{
   }
 };
 
+/**
+ * 背景部分の形状を描画する内部コンポーネント
+ */
 const BgShape: React.FC<{
   renderer: ShapeRenderer;
   commonProps: SVGRenderProps;
@@ -90,6 +105,9 @@ const BgShape: React.FC<{
   }
 };
 
+/**
+ * 外枠の境界線を描画する内部コンポーネント
+ */
 const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
   const common = {
     fill: 'none',
@@ -109,6 +127,9 @@ const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
   }
 };
 
+/**
+ * タイマーの1つのチャンク（5分単位など）を表示するコンポーネント
+ */
 export const TimerChunk: React.FC<TimerChunkProps> = ({
   capacity,
   currentRemaining,

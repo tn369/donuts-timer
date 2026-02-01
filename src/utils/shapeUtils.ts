@@ -1,11 +1,14 @@
 /**
- * 形状計算のためのクラスとユーティリティ
+ * 形状描画のためのクラスとユーティリティ
  */
 import { approximateHeartPerimeter, getHeartPath, HEART_PERIMETER_FACTOR } from './heartPath';
 import { calculatePerimeter, getShapePoints, pointsToPath } from './polygonUtils';
 
 export type { Point } from './polygonUtils';
 
+/**
+ * SVG属性のプロパティ
+ */
 export interface SVGRenderProps {
   d?: string;
   cx?: number;
@@ -28,6 +31,9 @@ export interface SVGRenderProps {
   className?: string;
 }
 
+/**
+ * 形状描画の抽象基底クラス
+ */
 export abstract class ShapeRenderer {
   protected size: number;
   protected strokeWidth: number;
@@ -51,10 +57,23 @@ export abstract class ShapeRenderer {
   abstract getPerimeter(): number;
   abstract getTicksCount(): number;
 
-  // SVG要素の属性を取得するメソッド
+  /**
+   * 背景用のSVG属性を取得する
+   */
   abstract getBackgroundProps(): SVGRenderProps;
+  /**
+   * プログレス表示用のSVG属性を取得する
+   */
   abstract getProgressProps(): SVGRenderProps;
+  /**
+   * 外枠用のSVG属性を取得する
+   */
   abstract getOuterProps(): SVGRenderProps;
+  /**
+   * 目盛り用のSVG属性を取得する
+   * @param index 目盛りのインデックス
+   * @param rotationDegree 1目盛りあたりの回転角度
+   */
   abstract getTickProps(index: number, rotationDegree: number): SVGRenderProps;
 }
 
@@ -194,6 +213,13 @@ export class HeartRenderer extends PathRenderer {
   }
 }
 
+/**
+ * 形状名に基づいて適切なレンダラーを作成する
+ * @param shape 形状名 ('circle', 'square', 'star', 'heart' など)
+ * @param size サイズ
+ * @param strokeWidth 線の太さ
+ * @returns ShapeRendererのインスタンス
+ */
 export const createRenderer = (shape: string, size: number, strokeWidth: number): ShapeRenderer => {
   switch (shape) {
     case 'circle':

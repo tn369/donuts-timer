@@ -1,3 +1,6 @@
+/*
+ * アプリケーションのメインレイアウト（1人モード/2人モード）のスタイル定義
+ */
 .app {
   position: relative;
   box-sizing: border-box;

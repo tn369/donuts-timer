@@ -1,3 +1,6 @@
+/**
+ * 個別のタスクを表示するカードコンポーネント。タイマー表示や進捗、完了状態を表示する。
+ */
 import { motion } from 'framer-motion';
 import { Camera, Check } from 'lucide-react';
 import React from 'react';
@@ -7,22 +10,31 @@ import { formatTime } from '../utils/time';
 import { DonutTimer } from './DonutTimer';
 import styles from './TaskCard.module.css';
 
+/**
+ * TaskCardのプロパティ
+ */
 interface TaskCardProps {
-  task: Task;
-  isSelected: boolean;
-  isSelectable: boolean;
-  onSelect: (taskId: string) => void;
-  shape?: TimerShape;
-  color?: TimerColor;
-  isCompact?: boolean;
+  task: Task; // 表示対象のタスク
+  isSelected: boolean; // 選択中かどうか
+  isSelectable: boolean; // 選択可能かどうか
+  onSelect: (taskId: string) => void; // 選択された時のコールバック
+  shape?: TimerShape; // タイマーの形状
+  color?: TimerColor; // タイマーの色
+  isCompact?: boolean; // コンパクト表示にするかどうか
 }
 
+/**
+ * 内部表示用のプロパティ
+ */
 interface TaskCardViewProps extends TaskCardProps {
-  remaining: number;
-  isDone: boolean;
-  isOverdue: boolean;
+  remaining: number; // 残り時間
+  isDone: boolean; // 完了しているか
+  isOverdue: boolean; // 時間超過しているか
 }
 
+/**
+ * コンパクト表示用のレイアウト
+ */
 const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   task,
   shape,
@@ -63,6 +75,9 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   </div>
 );
 
+/**
+ * 通常表示用のレイアウト
+ */
 const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   task,
   isSelected,
@@ -127,6 +142,9 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   </>
 );
 
+/**
+ * カードのCSSクラス名を生成する
+ */
 const getCardClassName = (
   isSelected: boolean,
   isDone: boolean,
@@ -146,6 +164,9 @@ const getCardClassName = (
     .join(' ');
 };
 
+/**
+ * タスクの重要度（時間）に応じたflex-grow値を計算する
+ */
 const getFlexGrow = (status: string, elapsed: number, planned: number, actual: number) => {
   return Math.min(
     2.5,
@@ -153,6 +174,9 @@ const getFlexGrow = (status: string, elapsed: number, planned: number, actual: n
   );
 };
 
+/**
+ * タスクカードコンポーネント
+ */
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   isSelected,

@@ -1,23 +1,32 @@
+/**
+ * 複数の「チャンク」を組み合わせて時間を視覚化するタイマーコンポーネント
+ */
 import React from 'react';
 
 import type { TimerColor, TimerShape } from '../types';
 import styles from './DonutTimer.module.css';
 import { TimerChunk } from './TimerChunk';
 
+/**
+ * DonutTimerのプロパティ
+ */
 interface DonutTimerProps {
-  totalSeconds: number;
-  elapsedSeconds: number;
-  size?: number;
-  strokeWidth?: number;
-  isOverdue?: boolean;
-  shape?: TimerShape;
-  color?: TimerColor;
-  children?: React.ReactNode;
+  totalSeconds: number; // 合計秒数
+  elapsedSeconds: number; // 経過秒数
+  size?: number; // 基本サイズ
+  strokeWidth?: number; // 線の太さ
+  isOverdue?: boolean; // 時間超過しているかどうか
+  shape?: TimerShape; // 形状
+  color?: TimerColor; // 色
+  children?: React.ReactNode; // 中央に表示する要素
 }
 
 const CHUNK_MAX = 300; // 5分 = 300秒
 const MAX_DISPLAY_CHUNKS = 10; // 最大表示チャンク数
 
+/**
+ * チャンク数に基づいて基本メトリクスを計算する
+ */
 const getBaseMetrics = (count: number, size: number, strokeWidth: number) => {
   if (count === 1) return { size, stroke: strokeWidth };
   if (count === 2) return { size: size * 0.85, stroke: strokeWidth * 0.9 };
@@ -26,6 +35,9 @@ const getBaseMetrics = (count: number, size: number, strokeWidth: number) => {
   return { size: size * 0.48, stroke: strokeWidth * 0.6 };
 };
 
+/**
+ * 合計秒数をチャンクに分割する
+ */
 const calculateChunks = (totalSeconds: number) => {
   const chunks: number[] = [];
   let remainingPlanned = totalSeconds;
@@ -38,6 +50,9 @@ const calculateChunks = (totalSeconds: number) => {
   return chunks;
 };
 
+/**
+ * 各チャンクの残り時間を計算する
+ */
 const calculateChunkRemaining = (
   chunks: number[],
   elapsedSeconds: number,
@@ -54,6 +69,9 @@ const calculateChunkRemaining = (
   return chunkRemaining;
 };
 
+/**
+ * ドーナツ型（または多角形）のタイマーを表示するコンポーネント
+ */
 export const DonutTimer: React.FC<DonutTimerProps> = ({
   totalSeconds,
   elapsedSeconds,

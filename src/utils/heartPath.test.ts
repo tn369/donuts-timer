@@ -1,3 +1,6 @@
+/**
+ * ハート型のSVGパス生成と外周近似計算のテスト
+ */
 import { describe, expect, it } from 'vitest';
 
 import { approximateHeartPerimeter, getHeartPath, HEART_PERIMETER_FACTOR } from './heartPath';

@@ -1,3 +1,6 @@
+/**
+ * タスク進捗管理やごほうび時間の計算ロジックのテスト
+ */
 import { describe, expect, it } from 'vitest';
 
 import type { Task } from '../types';

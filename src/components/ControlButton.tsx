@@ -1,5 +1,11 @@
+/**
+ * アニメーション付きのコントロールボタンコンポーネント
+ */
 import { motion } from 'framer-motion';
 
+/**
+ * ControlButtonのプロパティ
+ */
 interface ControlButtonProps {
   onClick: () => void;
   disabled?: boolean;
@@ -10,6 +16,9 @@ interface ControlButtonProps {
   children: React.ReactNode;
 }
 
+/**
+ * カスタムボタンコンポーネント。クリック時のアニメーションなどを共通化する。
+ */
 export const ControlButton: React.FC<ControlButtonProps> = ({
   onClick,
   disabled = false,

@@ -1,7 +1,14 @@
+/**
+ * タスクの計算に関連するユーティリティ
+ */
 import type { Task } from '../types';
 
 /**
  * 「ごほうび」の時間を計算する
+ * 予定より早く終わった分の時間を加算し、超過した分の時間を減算する
+ * @param tasks タスク一覧
+ * @param baseRewardSeconds 基本となるごほうび時間
+ * @returns 計算後のごほうび時間（秒）
  */
 export const calculateRewardSeconds = (tasks: Task[], baseRewardSeconds: number): number => {
   let totalDelta = 0;
@@ -22,6 +29,8 @@ export const calculateRewardSeconds = (tasks: Task[], baseRewardSeconds: number)
 
 /**
  * 全体の進捗（%）を計算する
+ * @param tasks タスク一覧
+ * @returns 進捗率（0-100）
  */
 export const calculateOverallProgress = (tasks: Task[]): number => {
   const totalPlanned = tasks.reduce((sum, task) => sum + task.plannedSeconds, 0);

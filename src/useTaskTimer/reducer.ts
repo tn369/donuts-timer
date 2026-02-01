@@ -1,12 +1,21 @@
+/**
+ * タイマーの各種状態遷移（時間更新、タスク選択、開始/停止など）を管理するリデューサー
+ */
 import type { TargetTimeSettings, Task, TodoList } from '../types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from '../utils/task';
 import type { Action, State } from './types';
 
+/**
+ * リストの設定から基本のごほうび時間を取得する
+ */
 export function getBaseRewardSeconds(list: TodoList | null): number {
   const rewardTask = list?.tasks.find((t) => t.kind === 'reward');
   return rewardTask ? rewardTask.plannedSeconds : 15 * 60; // fallback to 15 mins
 }
 
+/**
+ * 現在のモード（所要時間/目標時刻）に基づいてごほうび時間を再計算する
+ */
 export function updateRewardTime(
   tasks: Task[],
   targetTimeSettings: TargetTimeSettings,
@@ -55,6 +64,9 @@ export function updateRewardTime(
   return tasks.map((t) => (t.kind === 'reward' ? { ...t, plannedSeconds: newRewardSeconds } : t));
 }
 
+/**
+ * 1秒ごとの時間経過処理
+ */
 function handleTick(state: State, action: { type: 'TICK'; now: number }): State {
   if (!state.isTimerRunning || !state.selectedTaskId || state.lastTickTimestamp === null) {
     return state;
@@ -104,6 +116,9 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
   };
 }
 
+/**
+ * すでに完了しているタスクがクリックされた時の処理（未完了に戻す）
+ */
 function handleDoneTaskClick(
   state: State,
   taskId: string
@@ -122,6 +137,9 @@ function handleDoneTaskClick(
   return { updatedTasks, nextTaskIdToSelect: taskId, nextIsTimerRunning: false };
 }
 
+/**
+ * 現在のタスクが完了した次に選択すべきタスクIDを取得する
+ */
 function getNextIncompleteTaskId(tasks: Task[], currentIndex: number): string | null {
   const nextIncomplete = tasks.slice(currentIndex + 1).find((t) => t.status !== 'done');
   const allIncomplete = tasks.filter((t) => t.status !== 'done');
@@ -138,6 +156,9 @@ function getNextIncompleteTaskId(tasks: Task[], currentIndex: number): string | 
   return allIncomplete.length > 0 ? allIncomplete[0].id : null;
 }
 
+/**
+ * 現在選択中のタスクがクリックされた時の処理（完了にする）
+ */
 function handleActiveTaskClick(
   state: State,
   tappedIndex: number
@@ -165,6 +186,9 @@ function handleActiveTaskClick(
   return { updatedTasks, nextTaskIdToSelect, nextIsTimerRunning };
 }
 
+/**
+ * 未完了の（未選択の）タスクがクリックされた時の処理（選択を切り替える）
+ */
 function handleTodoTaskClick(
   state: State,
   taskId: string,
@@ -191,6 +215,9 @@ function handleTodoTaskClick(
   return { updatedTasks, nextTaskIdToSelect: taskId, nextIsTimerRunning: true };
 }
 
+/**
+ * タスク選択アクションのメインハンドラ
+ */
 function handleSelectTask(
   state: State,
   action: { type: 'SELECT_TASK'; taskId: string; now: number }
@@ -242,6 +269,9 @@ function handleSelectTask(
   };
 }
 
+/**
+ * タイマー開始の処理
+ */
 function handleStart(state: State, action: { type: 'START'; now: number }): State {
   let targetTaskId = state.selectedTaskId;
   let updatedTasks = state.tasks;
@@ -272,6 +302,9 @@ function handleStart(state: State, action: { type: 'START'; now: number }): Stat
   };
 }
 
+/**
+ * タイマー停止の処理
+ */
 function handleStop(state: State): State {
   const updatedTasks = state.tasks.map((task) =>
     task.status === 'running' ? { ...task, status: 'paused' as const } : task
@@ -284,6 +317,9 @@ function handleStop(state: State): State {
   };
 }
 
+/**
+ * タイマーリセットの処理
+ */
 function handleReset(state: State): State {
   if (!state.activeList) return state;
   const resetTasks = state.activeList.tasks.map((task: Task) => ({
@@ -305,6 +341,9 @@ function handleReset(state: State): State {
   };
 }
 
+/**
+ * アクティブなリストが更新された時の処理（設定変更の反映など）
+ */
 function handleUpdateActiveList(
   state: State,
   action: { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
@@ -335,6 +374,9 @@ function handleUpdateActiveList(
   };
 }
 
+/**
+ * リストの初期化処理
+ */
 function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
   const { list } = action;
   const initializedTasks = list.tasks.map((t: Task) => ({
@@ -354,6 +396,9 @@ function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
   };
 }
 
+/**
+ * デバッグ用：早送りの処理
+ */
 function handleFastForward(state: State): State {
   if (!state.selectedTaskId) return state;
   const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
@@ -453,6 +498,9 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   FAST_FORWARD: handleFastForward as unknown as Handler<'FAST_FORWARD'>,
 };
 
+/**
+ * 状態遷移を分岐するメインのリデューサー関数
+ */
 export function timerReducer(state: State, action: Action): State {
   const handler = handlers[action.type] as Handler<Action['type']>;
   return handler(state, action);

@@ -1,7 +1,13 @@
+/**
+ * タイマーのカウントアップ（TICK）や、バックグラウンドからの復帰時の同期を制御するカスタムフック
+ */
 import { useEffect } from 'react';
 
 import type { Action, State } from './types';
 
+/**
+ * 1秒ごとの更新処理と、ブラウザの可視性変更を監視するフック
+ */
 export function useTimerInterval(state: State, dispatch: React.Dispatch<Action>) {
   useEffect(() => {
     // タイマーが動いている場合は TICK を送る

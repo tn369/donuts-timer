@@ -1,3 +1,6 @@
+/**
+ * やることリストの詳細設定（名前、形状、色、タスク構成、目標時刻）を行うコンポーネント
+ */
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 import { ArrowLeft, Camera, GripVertical, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -8,13 +11,19 @@ import { resizeImage } from '../utils/image';
 import { ShapeIcon } from './ShapeIcon';
 import styles from './TodoListSettings.module.css';
 
+/**
+ * TodoListSettingsのプロパティ
+ */
 interface TodoListSettingsProps {
-  list: TodoList;
-  allExistingIcons?: string[];
-  onSave: (list: TodoList) => void;
-  onBack: () => void;
+  list: TodoList; // 編集対象のリスト
+  allExistingIcons?: string[]; // 既存のすべてのアイコン（再利用のため）
+  onSave: (list: TodoList) => void; // 保存時のコールバック
+  onBack: () => void; // 戻るボタンのコールバック
 }
 
+/**
+ * カラー設定の定数
+ */
 const COLOR_VALUES: Record<string, string> = {
   red: '#ef4444',
   blue: '#3b82f6',
@@ -29,6 +38,9 @@ const COLOR_VALUES: Record<string, string> = {
   lime: '#84cc16',
 };
 
+/**
+ * カラーの日本語名
+ */
 const COLOR_NAMES: Record<string, string> = {
   red: 'あか',
   blue: 'あお',
@@ -43,6 +55,9 @@ const COLOR_NAMES: Record<string, string> = {
   lime: 'らいむ',
 };
 
+/**
+ * 形状の日本語名
+ */
 const SHAPE_NAMES: Record<string, string> = {
   circle: 'まる',
   square: 'しかく',
@@ -83,6 +98,9 @@ const COLORS = [
 const TITLE_SUFFIX = 'のやることリスト';
 const PRESET_TITLES = ['あさ', 'おひる', 'ゆうがた', 'よる', 'しゅくだい', 'おけいこ'];
 
+/**
+ * やることリストの設定画面コンポーネント
+ */
 export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   list,
   allExistingIcons = [],
@@ -345,6 +363,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   );
 };
 
+/**
+ * 個別のタスク編集アイテムのプロパティ
+ */
 interface TaskEditorItemProps {
   task: Task;
   mode: 'duration' | 'target-time';
@@ -356,6 +377,9 @@ interface TaskEditorItemProps {
   allExistingIcons: string[];
 }
 
+/**
+ * 数値を増減させるためのステッパーコンポーネント
+ */
 const TimeStepper: React.FC<{
   value: number;
   onChange: (val: number) => void;
@@ -410,6 +434,9 @@ const TimeStepper: React.FC<{
   );
 };
 
+/**
+ * タスクの時間入力部分を制御するコンポーネント
+ */
 const TaskEditorTimeInput: React.FC<{
   task: Task;
   mode: 'duration' | 'target-time';
@@ -462,6 +489,9 @@ const TaskEditorTimeInput: React.FC<{
   );
 };
 
+/**
+ * 個別のタスク（または目標時刻）を編集するためのコンポーネント
+ */
 const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   task,
   mode,
