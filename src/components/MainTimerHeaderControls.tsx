@@ -272,7 +272,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
                   aria-label="リセットする"
                 >
                   <RotateCcw size={20} />
-                  <span>さいしょから（リセット）</span>
+                  <span>さいしょから</span>
                 </button>
                 <button
                   onClick={() => {
