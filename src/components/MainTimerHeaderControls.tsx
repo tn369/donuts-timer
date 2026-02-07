@@ -195,16 +195,6 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         >
           <Palette size={isSiblingMode ? 20 : 24} color={TIMER_COLORS[timerSettings.color]} />
         </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05, rotate: 15 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleEditSettings}
-          className={styles.settingsButton}
-          aria-label="リストのせってい"
-        >
-          <Settings size={isSiblingMode ? 20 : 24} />
-        </motion.button>
-
         {isSiblingMode ? (
           onExitSiblingMode && (
             <motion.button
@@ -230,6 +220,15 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
             </motion.button>
           )
         )}
+        <motion.button
+          whileHover={{ scale: 1.05, translateY: -2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleEditSettings}
+          className={styles.settingsButton}
+          aria-label="リストのせってい"
+        >
+          <Settings size={isSiblingMode ? 20 : 24} />
+        </motion.button>
       </div>
     </div>
   );
