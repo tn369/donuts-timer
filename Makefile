@@ -1,25 +1,55 @@
-.PHONY: install dev build lint format test preview clean
+NPM = npm
+TSC = npx tsc
+VITE = npx vite
+VITEST = npx vitest
+PRETTIER = npx prettier
+ESLINT = npx eslint
+STYLELINT = npx stylelint
 
-install:
-	npm install
+.PHONY: help install dev build lint format fix test tdd coverage preview clean type-check ci
 
-dev:
-	npm run dev
+# Default target
+.DEFAULT_GOAL := help
 
-build:
-	npm run build
+help: ## Show this help message
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-lint:
-	npm run lint
+install: ## Install dependencies
+	$(NPM) install
 
-format:
-	npm run format
+dev: ## Start development server
+	$(VITE)
 
-test:
-	npm run test
+build: ## Build for production
+	$(NPM) run build
 
-preview:
-	npm run preview
+type-check: ## Run type check
+	$(TSC) -b
 
-clean:
+lint: ## Run linting (JS and CSS)
+	$(NPM) run lint
+
+format: ## Format code with Prettier
+	$(PRETTIER) --write .
+
+fix: ## Automatically fix linting and formatting issues
+	$(PRETTIER) --write .
+	$(ESLINT) . --fix
+	$(STYLELINT) "src/**/*.css" --fix
+
+test: ## Run tests
+	$(VITEST) run
+
+tdd: ## Run tests in watch mode
+	$(VITEST)
+
+coverage: ## Run tests with coverage report
+	$(VITEST) run --coverage
+
+ci: lint type-check test ## Run all checks for CI (lint, type-check, test)
+
+preview: ## Preview production build
+	$(VITE) preview
+
+clean: ## Remove build artifacts and dependencies
 	rm -rf node_modules dist

@@ -60,7 +60,6 @@ describe('useTodoLists', () => {
 
     // ひとりモードに戻す
     act(() => {
-      // @ts-expect-error - exitSiblingMode might be missing in some states or still being implemented
       result.current.exitSiblingMode();
     });
 
