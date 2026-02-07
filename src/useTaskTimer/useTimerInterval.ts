@@ -15,7 +15,7 @@ export function useTimerInterval(state: State, dispatch: React.Dispatch<Action>)
     const interval = setInterval(() => {
       if (state.isTimerRunning && state.selectedTaskId) {
         dispatch({ type: 'TICK', now: Date.now() });
-      } else if (state.targetTimeSettings.mode === 'target-time') {
+      } else if (state.targetTimeSettings?.mode === 'target-time') {
         dispatch({ type: 'REFRESH_REWARD_TIME' });
       }
     }, 1000);
@@ -32,5 +32,5 @@ export function useTimerInterval(state: State, dispatch: React.Dispatch<Action>)
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [state.isTimerRunning, state.selectedTaskId, state.targetTimeSettings.mode, dispatch]);
+  }, [state.isTimerRunning, state.selectedTaskId, state.targetTimeSettings?.mode, dispatch]);
 }
