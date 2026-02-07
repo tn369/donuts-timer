@@ -131,6 +131,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
   const [popupDirection, setPopupDirection] = useState<'bottom' | 'top'>('bottom');
+  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const containerRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -176,6 +177,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
         onClick={() => {
           if (!showIconSelector && containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect();
+            setTriggerRect(rect);
             const viewportHeight = window.innerHeight;
             const popupHeight = 350;
 
@@ -219,6 +221,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
         <IconSelectorPopup
           show={showIconSelector}
           direction={popupDirection}
+          triggerRect={triggerRect}
           task={task}
           allExistingIcons={allExistingIcons}
           onClose={() => {
