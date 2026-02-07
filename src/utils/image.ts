@@ -61,7 +61,9 @@ export const resizeImage = (
       // アイコンサイズなら JPEG 0.8 程度で十分軽量
       resolve(canvas.toDataURL('image/jpeg', quality));
     };
-    img.onerror = () => { reject(new Error('Failed to load image')); };
+    img.onerror = () => {
+      reject(new Error('Failed to load image'));
+    };
     img.src = dataUrl;
   });
 };

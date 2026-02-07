@@ -76,7 +76,7 @@ export const IconSelectorPopup: React.FC<IconSelectorPopupProps> = ({
             <div className={styles.iconSelectorContent}>
               <button className={styles.uploadNewBtn} onClick={onImageUpload}>
                 <Plus size={20} />
-                <span>新しくアップロード</span>
+                <span>あたらしく アップロード</span>
               </button>
               <div className={styles.existingIconsGrid}>
                 {allExistingIcons.map((icon, index) => (

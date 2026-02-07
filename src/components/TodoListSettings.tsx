@@ -185,6 +185,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <div className={styles.settingsTitle}>
           <span>やることリスト の せってい</span>
         </div>
+
         <button
           onClick={() => {
             onSave(editedList);
@@ -193,7 +194,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           style={{ marginLeft: 'auto' }}
         >
           <Save size={20} />
-          <span>保存する</span>
+          <span>ほぞんする</span>
         </button>
       </div>
 
@@ -281,6 +282,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
 
         <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>やること の せってい</h2>
+
           <div className={styles.taskEditorList}>
             <Reorder.Group
               axis="x"

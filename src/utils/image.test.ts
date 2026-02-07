@@ -11,13 +11,19 @@ describe('resizeImage', () => {
     // Image のモック
     const originalImage = global.Image;
     global.Image = class {
-      onload: () => void = () => { /* mock */ };
-      onerror: () => void = () => { /* mock */ };
+      onload: () => void = () => {
+        /* mock */
+      };
+      onerror: () => void = () => {
+        /* mock */
+      };
       src = '';
       width = 100;
       height = 100;
       constructor() {
-        setTimeout(() => { this.onload(); }, 0);
+        setTimeout(() => {
+          this.onload();
+        }, 0);
       }
     } as unknown as typeof Image;
 
@@ -32,11 +38,17 @@ describe('resizeImage', () => {
   it('不正な画像データの場合にエラーをスローすること', async () => {
     const originalImage = global.Image;
     global.Image = class {
-      onload: () => void = () => { /* mock */ };
-      onerror: () => void = () => { /* mock */ };
+      onload: () => void = () => {
+        /* mock */
+      };
+      onerror: () => void = () => {
+        /* mock */
+      };
       src = '';
       constructor() {
-        setTimeout(() => { this.onerror(); }, 0);
+        setTimeout(() => {
+          this.onerror();
+        }, 0);
       }
     } as unknown as typeof Image;
 

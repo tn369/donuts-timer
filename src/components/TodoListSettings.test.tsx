@@ -21,6 +21,6 @@ describe('TodoListSettings', () => {
   it('保存ボタンが表示されること', () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
-    expect(screen.getByText('保存する')).toBeInTheDocument();
+    expect(screen.getByText('ほぞんする')).toBeInTheDocument();
   });
 });

@@ -6,7 +6,7 @@ import { TimeStepper } from './TimeStepper';
 describe('TimeStepper', () => {
   it('数値入力時、値を表示すること', () => {
     const onChange = vi.fn();
-      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+    render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
 
     const input = screen.getByDisplayValue('10');
     expect(input).toBeInTheDocument();
@@ -14,7 +14,7 @@ describe('TimeStepper', () => {
 
   it('+ボタンをクリックした時、値を増やすこと', () => {
     const onChange = vi.fn();
-      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+    render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
 
     const plusButton = screen.getByText('+');
     fireEvent.click(plusButton);
@@ -24,7 +24,7 @@ describe('TimeStepper', () => {
 
   it('-ボタンをクリックした時、値を減らすこと', () => {
     const onChange = vi.fn();
-      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+    render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
 
     const minusButton = screen.getByText('-');
     fireEvent.click(minusButton);

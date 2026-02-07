@@ -97,9 +97,6 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                 ? 'ひとりめ の リストを えらんでね'
                 : 'ふたりめ の リストを えらんでね'}
             </div>
-            <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '4px' }}>
-              ※おなじ リストを 2つ えらんでも いいよ
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -141,7 +138,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                       e.stopPropagation();
                       onCopy(list.id);
                     }}
-                    aria-label="リストをコピーする"
+                    aria-label="リストを コピーする"
                   >
                     <Copy size={24} />
                   </button>
@@ -151,7 +148,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                       e.stopPropagation();
                       onEdit(list.id);
                     }}
-                    aria-label="リストを編集する"
+                    aria-label="リストを なおす"
                   >
                     <Edit2 size={24} />
                   </button>
@@ -161,7 +158,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                       e.stopPropagation();
                       onDelete(list.id);
                     }}
-                    aria-label="リストを削除する"
+                    aria-label="リストを けす"
                   >
                     <Trash2 size={24} />
                   </button>
@@ -182,7 +179,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               <div className={styles.addIconContainer}>
                 <Plus size={64} />
               </div>
-              <h3 className={styles.listName}>新しくつくる</h3>
+              <h3 className={styles.listName}>あたらしく つくる</h3>
             </div>
           </motion.div>
         )}

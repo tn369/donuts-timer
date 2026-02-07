@@ -36,7 +36,7 @@ const DurationModeEditor: React.FC<{
           onRewardSettingsChange(task.id, { mode: 'duration' });
         }}
       />
-      <span className={styles.rewardModeLabel}>きまった時間</span>
+      <span className={styles.rewardModeLabel}>きまった じかん</span>
       <div className={styles.rewardModeInput}>
         <TimeStepper
           value={Math.floor(task.plannedSeconds / 60)}
@@ -71,7 +71,7 @@ const TargetTimeModeEditor: React.FC<{
           onRewardSettingsChange(task.id, { mode: 'target-time' });
         }}
       />
-      <span className={styles.rewardModeLabel}>おわる時刻</span>
+      <span className={styles.rewardModeLabel}>おわる じかん</span>
       <div className={styles.rewardModeInput}>
         <TimeStepper
           value={task.rewardSettings?.targetHour ?? 9}
@@ -270,7 +270,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           onClick={() => {
             onRemoveTask(task.id);
           }}
-          title="削除"
+          title="けす"
         >
           <Trash2 size={20} />
         </button>
