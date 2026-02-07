@@ -33,7 +33,7 @@ describe('useTodoLists', () => {
 
   it('should select single list when selectList is called', () => {
     const { result } = renderHook(() => useTodoLists());
-    
+
     act(() => {
       result.current.selectList('list-1');
     });
@@ -46,8 +46,18 @@ describe('useTodoLists', () => {
 
   it('should select two lists when selectSiblingLists is called', () => {
     vi.mocked(storage.loadTodoLists).mockReturnValue([
-      { id: 'list-1', title: 'L1', tasks: [], targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 } },
-      { id: 'list-2', title: 'L2', tasks: [], targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 } },
+      {
+        id: 'list-1',
+        title: 'L1',
+        tasks: [],
+        targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
+      },
+      {
+        id: 'list-2',
+        title: 'L2',
+        tasks: [],
+        targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
+      },
     ]);
     const { result } = renderHook(() => useTodoLists());
 
@@ -65,7 +75,7 @@ describe('useTodoLists', () => {
     const { result } = renderHook(() => useTodoLists());
     let newList;
     act(() => {
-        newList = result.current.addNewList();
+      newList = result.current.addNewList();
     });
 
     expect(result.current.todoLists).toContainEqual(newList);
@@ -75,17 +85,17 @@ describe('useTodoLists', () => {
   it('should delete list and save when deleteList is called', () => {
     const { result } = renderHook(() => useTodoLists());
     act(() => {
-        result.current.deleteList('list-1');
+      result.current.deleteList('list-1');
     });
 
-    expect(result.current.todoLists.find(l => l.id === 'list-1')).toBeUndefined();
+    expect(result.current.todoLists.find((l) => l.id === 'list-1')).toBeUndefined();
     expect(storage.saveTodoLists).toHaveBeenCalled();
   });
 
   it('should copy list and save when copyList is called', () => {
     const { result } = renderHook(() => useTodoLists());
     act(() => {
-        result.current.copyList('list-1');
+      result.current.copyList('list-1');
     });
 
     expect(result.current.todoLists.length).toBe(2);
@@ -96,9 +106,9 @@ describe('useTodoLists', () => {
   it('should update list content when saveList is called', () => {
     const { result } = renderHook(() => useTodoLists());
     const updated = { ...result.current.todoLists[0], title: 'Updated Title' };
-    
+
     act(() => {
-        result.current.saveList(updated);
+      result.current.saveList(updated);
     });
 
     expect(result.current.todoLists[0].title).toBe('Updated Title');
@@ -108,8 +118,8 @@ describe('useTodoLists', () => {
   it('should clear selection when clearActiveList is called', () => {
     const { result } = renderHook(() => useTodoLists());
     act(() => {
-        result.current.selectList('list-1');
-        result.current.clearActiveList();
+      result.current.selectList('list-1');
+      result.current.clearActiveList();
     });
 
     expect(result.current.activeLists).toEqual([]);
@@ -121,12 +131,23 @@ describe('useTodoLists', () => {
       {
         id: 'list-1',
         title: 'L1',
-        tasks: [{ id: 't1', name: 'T1', icon: 'icon-a', plannedSeconds: 0, actualSeconds: 0, elapsedSeconds: 0, kind: 'todo', status: 'todo' }],
+        tasks: [
+          {
+            id: 't1',
+            name: 'T1',
+            icon: 'icon-a',
+            plannedSeconds: 0,
+            actualSeconds: 0,
+            elapsedSeconds: 0,
+            kind: 'todo',
+            status: 'todo',
+          },
+        ],
         targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
       },
     ]);
     const { result } = renderHook(() => useTodoLists());
-    
+
     const icons = result.current.getAllUniqueIcons();
     expect(icons).toContain('icon-a');
   });
@@ -137,17 +158,27 @@ describe('useTodoLists', () => {
       result.current.selectList('list-1');
     });
 
-    const mockState = { listId: 'list-1', tasks: [], selectedTaskId: 't1', isTimerRunning: true, lastTickTimestamp: 100 };
+    const mockState = {
+      listId: 'list-1',
+      tasks: [],
+      selectedTaskId: 't1',
+      isTimerRunning: true,
+      lastTickTimestamp: 100,
+    };
     vi.mocked(storage.loadExecutionState).mockReturnValue(mockState);
 
     act(() => {
-        result.current.duplicateActiveListForSiblingMode();
+      result.current.duplicateActiveListForSiblingMode();
     });
 
     expect(result.current.isSiblingMode).toBe(true);
     expect(result.current.activeLists.length).toBe(2);
-    expect(storage.saveExecutionState).toHaveBeenCalledWith(expect.objectContaining({ mode: 'sibling-0' }));
-    expect(storage.saveExecutionState).toHaveBeenCalledWith(expect.objectContaining({ mode: 'sibling-1' }));
+    expect(storage.saveExecutionState).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'sibling-0' })
+    );
+    expect(storage.saveExecutionState).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'sibling-1' })
+    );
   });
 
   it('should exit sibling mode and copy state back to single when exitSiblingMode is called', () => {
@@ -160,7 +191,14 @@ describe('useTodoLists', () => {
       result.current.duplicateActiveListForSiblingMode();
     });
 
-    const mockState = { listId: 'list-1', tasks: [], selectedTaskId: 't1', isTimerRunning: true, lastTickTimestamp: 100, mode: 'sibling-0' as const };
+    const mockState = {
+      listId: 'list-1',
+      tasks: [],
+      selectedTaskId: 't1',
+      isTimerRunning: true,
+      lastTickTimestamp: 100,
+      mode: 'sibling-0' as const,
+    };
     vi.mocked(storage.loadExecutionState).mockReturnValue(mockState);
 
     act(() => {
@@ -169,24 +207,42 @@ describe('useTodoLists', () => {
 
     expect(result.current.isSiblingMode).toBe(false);
     expect(result.current.activeLists.length).toBe(1);
-    expect(storage.saveExecutionState).toHaveBeenCalledWith(expect.objectContaining({ mode: 'single', isAutoResume: true }));
+    expect(storage.saveExecutionState).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'single', isAutoResume: true })
+    );
   });
 
   it('should restore active list from storage on initialization', () => {
     vi.mocked(storage.loadActiveListId).mockReturnValue('list-1');
     const { result } = renderHook(() => useTodoLists());
-    
+
     expect(result.current.activeLists.length).toBe(1);
     expect(result.current.activeLists[0].id).toBe('list-1');
   });
 
   it('should perform migration and save if loaded lists need it', () => {
     // Return a list that needs migration (e.g. icon is missing and migrateTodoList would fix it)
-    const unmigrated = { id: 'l1', title: 'L1', tasks: [{ id: 't1', name: 'トイレ', icon: '', plannedSeconds: 0, actualSeconds: 0, elapsedSeconds: 0, kind: 'todo' as const, status: 'todo' as const }], targetTimeSettings: { mode: 'duration' as const, targetHour: 0, targetMinute: 0 } };
+    const unmigrated = {
+      id: 'l1',
+      title: 'L1',
+      tasks: [
+        {
+          id: 't1',
+          name: 'トイレ',
+          icon: '',
+          plannedSeconds: 0,
+          actualSeconds: 0,
+          elapsedSeconds: 0,
+          kind: 'todo' as const,
+          status: 'todo' as const,
+        },
+      ],
+      targetTimeSettings: { mode: 'duration' as const, targetHour: 0, targetMinute: 0 },
+    };
     vi.mocked(storage.loadTodoLists).mockReturnValue([unmigrated]);
-    
+
     renderHook(() => useTodoLists());
-    
+
     expect(storage.saveTodoLists).toHaveBeenCalled();
   });
 
@@ -195,16 +251,34 @@ describe('useTodoLists', () => {
       id: 'l1',
       title: 'L1',
       tasks: [
-        { id: 't1', name: 'T1', icon: 'i1', plannedSeconds: 10, actualSeconds: 0, elapsedSeconds: 0, kind: 'todo' as const, status: 'done' as const },
-        { id: 'reward-task', name: 'R1', icon: 'i2', plannedSeconds: 20, actualSeconds: 0, elapsedSeconds: 0, kind: 'reward' as const, status: 'done' as const },
+        {
+          id: 't1',
+          name: 'T1',
+          icon: 'i1',
+          plannedSeconds: 10,
+          actualSeconds: 0,
+          elapsedSeconds: 0,
+          kind: 'todo' as const,
+          status: 'done' as const,
+        },
+        {
+          id: 'reward-task',
+          name: 'R1',
+          icon: 'i2',
+          plannedSeconds: 20,
+          actualSeconds: 0,
+          elapsedSeconds: 0,
+          kind: 'reward' as const,
+          status: 'done' as const,
+        },
       ],
       targetTimeSettings: { mode: 'duration' as const, targetHour: 0, targetMinute: 0 },
     };
     vi.mocked(storage.loadTodoLists).mockReturnValue([listWithTasks]);
     const { result } = renderHook(() => useTodoLists());
-    
+
     act(() => {
-        result.current.copyList('l1');
+      result.current.copyList('l1');
     });
 
     const copied = result.current.todoLists[1];

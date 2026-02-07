@@ -36,13 +36,13 @@ const StartStopButton: React.FC<{
 
   const animation = isRunning
     ? {
-      boxShadow: [
-        '0 4px 12px rgba(239, 68, 68, 0.2)',
-        '0 4px 18px rgba(239, 68, 68, 0.4)',
-        '0 4px 12px rgba(239, 68, 68, 0.2)',
-      ],
-      transition: { repeat: Infinity, duration: 2 },
-    }
+        boxShadow: [
+          '0 4px 12px rgba(239, 68, 68, 0.2)',
+          '0 4px 18px rgba(239, 68, 68, 0.4)',
+          '0 4px 12px rgba(239, 68, 68, 0.2)',
+        ],
+        transition: { repeat: Infinity, duration: 2 },
+      }
     : {};
 
   return (

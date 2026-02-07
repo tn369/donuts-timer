@@ -245,7 +245,9 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           <motion.button
             whileHover={{ scale: 1.05, translateY: -2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => { setIsMenuOpen(!isMenuOpen); }}
+            onClick={() => {
+              setIsMenuOpen(!isMenuOpen);
+            }}
             className={`${styles.settingsButton} ${isMenuOpen ? styles.active : ''}`}
             aria-label="メニューをひらく"
           >

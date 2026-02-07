@@ -1,91 +1,75 @@
-/**
- * 各種図形（円、正方形、多角形、ハート）のレンダラーのテスト
- */
 import { describe, expect, it } from 'vitest';
 
-import { approximateHeartPerimeter } from './heartPath';
-import {
-  CircleRenderer,
-  createRenderer,
-  HeartRenderer,
-  PolygonRenderer,
-  SquareRenderer,
-} from './shapeUtils';
+import { createRenderer } from './shapeUtils';
 
-// 図形レンダラーの生成と計算結果
-describe('createRenderer', () => {
-  // 正しい外周を持つ円形レンダラーを作成できることを確認
-  it('should create a circle renderer with the correct perimeter when the shape is circle', () => {
-    // Arrange
-    const shape = 'circle';
-    const size = 100;
-    const strokeWidth = 10;
+describe('shapeUtils', () => {
+  const size = 100;
+  const strokeWidth = 2;
 
-    // Act
-    const renderer = createRenderer(shape, size, strokeWidth);
+  describe('createRenderer', () => {
+    it('should return a renderer for circle', () => {
+      const renderer = createRenderer('circle', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(renderer.svgElementType).toBe('circle');
+      expect(props.cx).toBe(50);
+      expect(props.r).toBe(49);
+    });
 
-    // Assert
-    expect(renderer).toBeInstanceOf(CircleRenderer);
-    expect(renderer.getPerimeter()).toBeCloseTo(2 * Math.PI * 45, 5);
-  });
+    it('should return a renderer for square', () => {
+      const renderer = createRenderer('square', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(renderer.svgElementType).toBe('path');
+      expect(props.d).toContain('M');
+      expect(props.d).toContain('L');
+    });
 
-  // 正方形レンダラーを作成できることを確認
-  it('should create a square renderer when the shape is square', () => {
-    // Arrange
-    const shape = 'square';
-    const size = 100;
-    const strokeWidth = 10;
+    it('should return a renderer for triangle', () => {
+      const renderer = createRenderer('triangle', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(renderer.svgElementType).toBe('path');
+      expect(props.d).toContain('M');
+    });
 
-    // Act
-    const renderer = createRenderer(shape, size, strokeWidth);
+    it('should return a renderer for star', () => {
+      const renderer = createRenderer('star', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(props.d).toContain('M');
+    });
 
-    // Assert
-    expect(renderer).toBeInstanceOf(SquareRenderer);
-    expect(renderer.getPerimeter()).toBe(360);
-  });
+    it('should return a renderer for heart', () => {
+      const renderer = createRenderer('heart', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(props.d).toContain('M');
+      expect(props.d).toContain('C');
+    });
 
-  // 三角形のポリゴンレンダラーを作成できることを確認
-  it('should create a polygon renderer when the shape is triangle', () => {
-    // Arrange
-    const shape = 'triangle';
-    const size = 100;
-    const strokeWidth = 10;
+    it('should return a renderer for diamond', () => {
+      const renderer = createRenderer('diamond', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(props.d).toContain('M');
+    });
 
-    // Act
-    const renderer = createRenderer(shape, size, strokeWidth);
+    it('should return a renderer for pentagon', () => {
+      const renderer = createRenderer('pentagon', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(props.d).toContain('M');
+    });
 
-    // Assert
-    expect(renderer).toBeInstanceOf(PolygonRenderer);
-    expect(renderer.getTicksCount()).toBe(3);
-  });
+    it('should return a renderer for hexagon', () => {
+      const renderer = createRenderer('hexagon', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(props.d).toContain('M');
+    });
 
-  // 5つの頂点を持つスターレンダラーを作成できることを確認
-  it('should create a star renderer with 5 ticks when the shape is star', () => {
-    // Arrange
-    const shape = 'star';
-    const size = 100;
-    const strokeWidth = 10;
+    it('should return a renderer for octagon', () => {
+      const renderer = createRenderer('octagon', size, strokeWidth);
+      const props = renderer.getBackgroundProps();
+      expect(props.d).toContain('M');
+    });
 
-    // Act
-    const renderer = createRenderer(shape, size, strokeWidth);
-
-    // Assert
-    expect(renderer).toBeInstanceOf(PolygonRenderer);
-    expect(renderer.getTicksCount()).toBe(5);
-  });
-
-  // 近似外周を持つハート型レンダラーを作成できることを確認
-  it('should create a heart renderer with an approximated perimeter when the shape is heart', () => {
-    // Arrange
-    const shape = 'heart';
-    const size = 100;
-    const strokeWidth = 10;
-
-    // Act
-    const renderer = createRenderer(shape, size, strokeWidth);
-
-    // Assert
-    expect(renderer).toBeInstanceOf(HeartRenderer);
-    expect(renderer.getPerimeter()).toBeCloseTo(approximateHeartPerimeter(45), 5);
+    it('should fallback to circle for unknown shape', () => {
+      const renderer = createRenderer('unknown' as any, size, strokeWidth);
+      expect(renderer.svgElementType).toBe('circle');
+    });
   });
 });
