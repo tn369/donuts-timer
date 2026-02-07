@@ -31,6 +31,7 @@ export interface ExecutionState {
   lastTickTimestamp: number | null;
   listId: string;
   mode?: TimerMode;
+  isAutoResume?: boolean;
 }
 
 /**

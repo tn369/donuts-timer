@@ -496,6 +496,43 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     ...state,
     pendingRestorableState: null,
   }),
+  AUTO_RESTORE: (state, action) => {
+    const { tasks, selectedTaskId, isTimerRunning, lastTickTimestamp } = action;
+    const mergedTasks =
+      state.tasks.length > 0
+        ? state.tasks.map((task) => {
+          const savedTask = tasks.find((t) => t.id === task.id);
+          if (savedTask) {
+            return {
+              ...task,
+              status: savedTask.status,
+              elapsedSeconds: savedTask.elapsedSeconds,
+              actualSeconds: savedTask.actualSeconds,
+            };
+          }
+          return task;
+        })
+        : tasks;
+
+    const finalSelectedTaskId = mergedTasks.some((t) => t.id === selectedTaskId)
+      ? selectedTaskId
+      : null;
+
+    const finalIsTimerRunning = !!(finalSelectedTaskId && isTimerRunning);
+
+    return {
+      ...state,
+      tasks: updateRewardTime(
+        mergedTasks,
+        state.targetTimeSettings,
+        getBaseRewardSeconds(state.activeList)
+      ),
+      selectedTaskId: finalSelectedTaskId,
+      isTimerRunning: finalIsTimerRunning,
+      lastTickTimestamp,
+      pendingRestorableState: null,
+    };
+  },
   SET_TARGET_TIME_SETTINGS: (state, action) => {
     const settings = action.settings;
     return {

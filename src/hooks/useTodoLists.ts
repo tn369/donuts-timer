@@ -193,8 +193,8 @@ export const useTodoLists = () => {
       // 1人モードの実行状態を2人モードの両方にコピーする
       const currentState = loadExecutionState(list.id, 'single');
       if (currentState) {
-        saveExecutionState({ ...currentState, mode: 'sibling-0' });
-        saveExecutionState({ ...currentState, mode: 'sibling-1' });
+        saveExecutionState({ ...currentState, mode: 'sibling-0', isAutoResume: true });
+        saveExecutionState({ ...currentState, mode: 'sibling-1', isAutoResume: true });
       }
 
       setActiveLists([list, list]);
@@ -211,7 +211,7 @@ export const useTodoLists = () => {
       // 2人モード（左側）の実行状態を1人モードに書き戻す
       const currentState = loadExecutionState(list.id, 'sibling-0');
       if (currentState) {
-        saveExecutionState({ ...currentState, mode: 'single' });
+        saveExecutionState({ ...currentState, mode: 'single', isAutoResume: true });
       }
 
       setActiveLists([list]);

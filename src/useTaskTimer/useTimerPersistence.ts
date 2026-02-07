@@ -42,13 +42,24 @@ export function useTimerPersistence(
       return;
     }
 
-    dispatch({
-      type: 'RESTORE_AVAILABLE',
-      tasks: saved.tasks,
-      selectedTaskId: saved.selectedTaskId,
-      isTimerRunning: saved.isTimerRunning,
-      lastTickTimestamp: saved.lastTickTimestamp,
-    });
+    if (saved.isAutoResume) {
+      dispatch({
+        type: 'AUTO_RESTORE',
+        tasks: saved.tasks,
+        selectedTaskId: saved.selectedTaskId,
+        isTimerRunning: saved.isTimerRunning,
+        lastTickTimestamp: saved.lastTickTimestamp,
+      });
+      // 一度適用したらフラグを消すために保存し直す必要はない（次回の保存で上書きされるため）
+    } else {
+      dispatch({
+        type: 'RESTORE_AVAILABLE',
+        tasks: saved.tasks,
+        selectedTaskId: saved.selectedTaskId,
+        isTimerRunning: saved.isTimerRunning,
+        lastTickTimestamp: saved.lastTickTimestamp,
+      });
+    }
   }, [state.activeList, dispatch, mode]);
 
   useEffect(() => {

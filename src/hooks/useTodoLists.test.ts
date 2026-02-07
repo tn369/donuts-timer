@@ -57,7 +57,8 @@ describe('useTodoLists', () => {
     // 状態が single モードへコピーされていることを確認
     expect(storage.saveExecutionState).toHaveBeenCalledWith(expect.objectContaining({
       mode: 'single',
-      selectedTaskId: 'task-1'
+      selectedTaskId: 'task-1',
+      isAutoResume: true
     }));
   });
 });

@@ -51,4 +51,11 @@ export type Action =
     }
   | { type: 'RESTORE_SESSION' }
   | { type: 'CANCEL_RESTORE' }
+  | {
+    type: 'AUTO_RESTORE';
+    tasks: Task[];
+    selectedTaskId: string | null;
+    isTimerRunning: boolean;
+    lastTickTimestamp: number | null;
+  }
   | { type: 'FAST_FORWARD' };
