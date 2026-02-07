@@ -6,7 +6,7 @@ import { ArrowLeft, Camera, GripVertical, Plus, Save, Trash2 } from 'lucide-reac
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { RewardTaskSettings,Task, TodoList } from '../types';
+import type { RewardTaskSettings, Task, TodoList } from '../types';
 import { resizeImage } from '../utils/image';
 import { ShapeIcon } from './ShapeIcon';
 import styles from './TodoListSettings.module.css';
@@ -163,7 +163,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
       ...editedList,
       tasks: editedList.tasks.map((t) =>
         t.id === taskId && t.kind === 'reward'
-          ? { ...t, rewardSettings: { ...(t.rewardSettings || { mode: 'duration' }), ...settings } }
+          ? { ...t, rewardSettings: { ...(t.rewardSettings ?? { mode: 'duration' }), ...settings } }
           : t
       ),
     });
@@ -450,6 +450,171 @@ export const TimeStepper: React.FC<{
 /**
  * 個別のタスク（または目標時刻）を編集するためのコンポーネント
  */
+/**
+ * アイコン選択ポップアップコンポーネント
+ */
+const IconSelectorPopup: React.FC<{
+  show: boolean;
+  direction: 'bottom' | 'top';
+  task: Task;
+  allExistingIcons: string[];
+  onClose: () => void;
+  onIconSelect: (icon: string) => void;
+  onImageUpload: () => void;
+}> = ({ show, direction, task, allExistingIcons, onClose, onIconSelect, onImageUpload }) => (
+  <AnimatePresence>
+    {show && (
+      <>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className={styles.popupBackdrop}
+          onClick={onClose}
+        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: direction === 'bottom' ? 10 : -10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: direction === 'bottom' ? 10 : -10 }}
+          className={`${styles.iconSelectorPopup} ${styles[direction]}`}
+        >
+          <div className={styles.iconSelectorHeader}>
+            <span>がぞうをえらぶ</span>
+            <button className={styles.closeSelectorBtn} onClick={onClose}>
+              ×
+            </button>
+          </div>
+          <div className={styles.iconSelectorContent}>
+            <button className={styles.uploadNewBtn} onClick={onImageUpload}>
+              <Plus size={20} />
+              <span>新しくアップロード</span>
+            </button>
+            <div className={styles.existingIconsGrid}>
+              {allExistingIcons.map((icon, index) => (
+                <button
+                  key={index}
+                  className={`${styles.iconOption} ${task.icon === icon ? styles.active : ''}`}
+                  onClick={() => {
+                    onIconSelect(icon);
+                  }}
+                >
+                  <img src={icon} alt={`Icon ${index}`} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </>
+    )}
+  </AnimatePresence>
+);
+
+/**
+ * 時間指定モードのエディタ
+ */
+const DurationModeEditor: React.FC<{
+  task: Task;
+  onTaskChange: (taskId: string, updates: Partial<Task>) => void;
+  onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
+}> = ({ task, onTaskChange, onRewardSettingsChange }) => {
+  const isDurationMode = task.rewardSettings?.mode === 'duration' || !task.rewardSettings;
+
+  return (
+    <label className={`${styles.rewardModeOption} ${isDurationMode ? styles.active : ''}`}>
+      <input
+        type="radio"
+        name={`reward-mode-${task.id}`}
+        checked={isDurationMode}
+        onChange={() => {
+          onRewardSettingsChange(task.id, { mode: 'duration' });
+        }}
+      />
+      <span className={styles.rewardModeLabel}>きまった時間</span>
+      <div className={styles.rewardModeInput}>
+        <TimeStepper
+          value={Math.floor(task.plannedSeconds / 60)}
+          onChange={(val) => {
+            onTaskChange(task.id, { plannedSeconds: val * 60 });
+          }}
+          unit="ぷん"
+          disabled={task.rewardSettings?.mode === 'target-time'}
+          step={5}
+        />
+      </div>
+    </label>
+  );
+};
+
+/**
+ * 目標時刻モードのエディタ
+ */
+const TargetTimeModeEditor: React.FC<{
+  task: Task;
+  onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
+}> = ({ task, onRewardSettingsChange }) => {
+  const isTargetTimeMode = task.rewardSettings?.mode === 'target-time';
+
+  return (
+    <label className={`${styles.rewardModeOption} ${isTargetTimeMode ? styles.active : ''}`}>
+      <input
+        type="radio"
+        name={`reward-mode-${task.id}`}
+        checked={isTargetTimeMode}
+        onChange={() => {
+          onRewardSettingsChange(task.id, { mode: 'target-time' });
+        }}
+      />
+      <span className={styles.rewardModeLabel}>おわる時刻</span>
+      <div className={styles.rewardModeInput}>
+        <TimeStepper
+          value={task.rewardSettings?.targetHour ?? 9}
+          onChange={(val) => {
+            onRewardSettingsChange(task.id, { targetHour: val % 24 });
+          }}
+          unit="じ"
+          disabled={!isTargetTimeMode}
+          step={1}
+          max={23}
+          options={Array.from({ length: 24 }, (_, i) => i)}
+        />
+        <TimeStepper
+          value={task.rewardSettings?.targetMinute ?? 0}
+          onChange={(val) => {
+            onRewardSettingsChange(task.id, { targetMinute: val % 60 });
+          }}
+          unit="ふん"
+          disabled={!isTargetTimeMode}
+          step={5}
+          max={55}
+          options={Array.from({ length: 12 }, (_, i) => i * 5)}
+        />
+      </div>
+    </label>
+  );
+};
+
+/**
+ * 報酬設定エディタコンポーネント
+ */
+const RewardSettingsEditor: React.FC<{
+  task: Task;
+  onTaskChange: (taskId: string, updates: Partial<Task>) => void;
+  onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
+}> = ({ task, onTaskChange, onRewardSettingsChange }) => (
+  <div className={styles.rewardTimeSettings}>
+    <h4 className={styles.rewardTimeSettingsTitle}>じかんの けいさん</h4>
+    <DurationModeEditor
+      task={task}
+      onTaskChange={onTaskChange}
+      onRewardSettingsChange={onRewardSettingsChange}
+    />
+    <TargetTimeModeEditor task={task} onRewardSettingsChange={onRewardSettingsChange} />
+  </div>
+);
+
+/**
+ * 個別のタスク（または目標時刻）を編集するためのコンポーネント
+ */
 const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   task,
   onTaskChange,
@@ -547,59 +712,20 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           style={{ display: 'none' }}
         />
 
-        <AnimatePresence>
-          {showIconSelector && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className={styles.popupBackdrop}
-                onClick={() => {
-                  setShowIconSelector(false);
-                }}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: popupDirection === 'bottom' ? 10 : -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: popupDirection === 'bottom' ? 10 : -10 }}
-                className={`${styles.iconSelectorPopup} ${styles[popupDirection]}`}
-              >
-                <div className={styles.iconSelectorHeader}>
-                  <span>がぞうをえらぶ</span>
-                  <button
-                    className={styles.closeSelectorBtn}
-                    onClick={() => {
-                      setShowIconSelector(false);
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className={styles.iconSelectorContent}>
-                  <button className={styles.uploadNewBtn} onClick={handleImageClick}>
-                    <Plus size={20} />
-                    <span>新しくアップロード</span>
-                  </button>
-                  <div className={styles.existingIconsGrid}>
-                    {allExistingIcons.map((icon, index) => (
-                      <button
-                        key={index}
-                        className={`${styles.iconOption} ${task.icon === icon ? styles.active : ''}`}
-                        onClick={() => {
-                          onTaskChange(task.id, { icon });
-                          setShowIconSelector(false);
-                        }}
-                      >
-                        <img src={icon} alt={`Icon ${index}`} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        <IconSelectorPopup
+          show={showIconSelector}
+          direction={popupDirection}
+          task={task}
+          allExistingIcons={allExistingIcons}
+          onClose={() => {
+            setShowIconSelector(false);
+          }}
+          onIconSelect={(icon) => {
+            onTaskChange(task.id, { icon });
+            setShowIconSelector(false);
+          }}
+          onImageUpload={handleImageClick}
+        />
       </button>
 
       <div className={styles.taskEditorInfo}>
@@ -622,62 +748,11 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             />
           </div>
         ) : (
-          <div className={styles.rewardTimeSettings}>
-            <h4 className={styles.rewardTimeSettingsTitle}>じかんの けいさん</h4>
-
-            <label
-              className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'duration' || !task.rewardSettings ? styles.active : ''}`}
-            >
-              <input
-                type="radio"
-                name={`reward-mode-${task.id}`}
-                checked={task.rewardSettings?.mode === 'duration' || !task.rewardSettings}
-                onChange={() => { onRewardSettingsChange(task.id, { mode: 'duration' }); }}
-              />
-              <span className={styles.rewardModeLabel}>きまった時間</span>
-              <div className={styles.rewardModeInput}>
-                <TimeStepper
-                  value={Math.floor(task.plannedSeconds / 60)}
-                  onChange={(val) => { onTaskChange(task.id, { plannedSeconds: val * 60 }); }}
-                  unit="ぷん"
-                  disabled={task.rewardSettings?.mode === 'target-time'}
-                  step={5}
-                />
-              </div>
-            </label>
-
-            <label
-              className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'target-time' ? styles.active : ''}`}
-            >
-              <input
-                type="radio"
-                name={`reward-mode-${task.id}`}
-                checked={task.rewardSettings?.mode === 'target-time'}
-                onChange={() => { onRewardSettingsChange(task.id, { mode: 'target-time' }); }}
-              />
-              <span className={styles.rewardModeLabel}>おわる時刻</span>
-              <div className={styles.rewardModeInput}>
-                <TimeStepper
-                  value={task.rewardSettings?.targetHour ?? 9}
-                  onChange={(val) => { onRewardSettingsChange(task.id, { targetHour: val % 24 }); }}
-                  unit="じ"
-                  disabled={task.rewardSettings?.mode !== 'target-time'}
-                  step={1}
-                  max={23}
-                  options={Array.from({ length: 24 }, (_, i) => i)}
-                />
-                <TimeStepper
-                  value={task.rewardSettings?.targetMinute ?? 0}
-                  onChange={(val) => { onRewardSettingsChange(task.id, { targetMinute: val % 60 }); }}
-                  unit="ふん"
-                  disabled={task.rewardSettings?.mode !== 'target-time'}
-                  step={5}
-                  max={55}
-                  options={Array.from({ length: 12 }, (_, i) => i * 5)}
-                />
-              </div>
-            </label>
-          </div>
+          <RewardSettingsEditor
+            task={task}
+            onTaskChange={onTaskChange}
+            onRewardSettingsChange={onRewardSettingsChange}
+          />
         )}
       </div>
 

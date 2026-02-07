@@ -595,8 +595,10 @@
 }
 
 .taskEditorItem.reward {
-  background: rgb(16 185 129 / 2%);
-  border: 2px solid rgb(16 185 129 / 30%);
+  background: linear-gradient(135deg, #fff5f5 0%, #fffaf0 100%);
+  border: 2px dashed #f59e0b;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgb(245 158 11 / 18%);
 }
 
 .taskEditorImage {
@@ -917,8 +919,8 @@
 
 /* ごほうびタスク設定のスタイル */
 .rewardTimeSettings {
-  margin-top: 8px;
   padding: 12px;
+  margin-top: 8px;
   background: linear-gradient(135deg, rgb(255 255 255 / 90%) 0%, rgb(255 250 240 / 90%) 100%);
   border: 1px solid rgb(245 158 11 / 30%);
   border-radius: 12px;
@@ -950,7 +952,7 @@
   margin-bottom: 0;
 }
 
-.rewardMode Option:hover {
+.rewardModeOption:hover {
   background: rgb(255 255 255 / 80%);
   transform: translateX(4px);
 }
@@ -981,12 +983,4 @@
   flex-direction: column;
   gap: 6px;
   align-items: stretch;
-}
-
-.taskEditorItem.reward {
-  padding: 32px 12px 12px;
-  background: linear-gradient(135deg, #fff5f5 0%, #fffaf0 100%);
-  border: 2px dashed #f59e0b;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgb(245 158 11 / 18%);
 }
