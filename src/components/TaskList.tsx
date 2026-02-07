@@ -53,7 +53,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   };
 
   if (!isReorderEnabled || !onReorderTasks) {
-  // 並び替えが無効の場合は通常の表示
+    // 並び替えが無効の場合は通常の表示
     return (
       <div className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}>
         {tasks.map((task) => (

@@ -111,6 +111,11 @@ export const INITIAL_TASKS: Task[] = [
     status: 'todo',
     elapsedSeconds: 0,
     actualSeconds: 0,
+    rewardSettings: {
+      mode: 'duration',
+      targetHour: 7,
+      targetMinute: 55,
+    },
   },
 ];
 
@@ -121,6 +126,7 @@ export const BASE_REWARD_SECONDS = 15 * 60;
 
 /**
  * デフォルトの目標時刻設定
+ * @deprecated ごほうびタスク自身のrewardSettingsを使用してください
  */
 export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
   mode: 'duration', // デフォルトは所要時間モード
@@ -136,7 +142,7 @@ export const DEFAULT_TODO_LISTS: TodoList[] = [
     id: 'default-morning',
     title: 'あさのやることリスト',
     tasks: INITIAL_TASKS,
-    targetTimeSettings: DEFAULT_TARGET_TIME,
+    // targetTimeSettings は削除（ごほうびタスクのrewardSettingsに移行）
     timerSettings: { shape: 'square', color: 'blue' },
   },
 ];

@@ -20,7 +20,7 @@ export interface State {
   tasks: Task[]; // 現在表示中のタスク一覧
   selectedTaskId: string | null; // 現在選択中のタスクID
   isTimerRunning: boolean; // タイマーが動いているかどうか
-  targetTimeSettings: TargetTimeSettings; // 目標時刻/所要時間の設定
+  targetTimeSettings?: TargetTimeSettings; // 目標時刻/所要時間の設定（後方互換性のため、将来的に削除予定）
   activeList: TodoList | null; // 現在アクティブなリストの全体定義
   timerSettings: TimerSettings; // タイマーの見た目設定
   lastTickTimestamp: number | null; // 前回の時刻更新時のタイムスタンプ

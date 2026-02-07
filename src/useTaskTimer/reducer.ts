@@ -1,7 +1,7 @@
 /**
  * タイマーの各種状態遷移（時間更新、タスク選択、開始/停止など）を管理するリデューサー
  */
-import type { TargetTimeSettings, Task, TodoList } from '../types';
+import type { Task, TodoList } from '../types';
 import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from '../utils/task';
 import type { Action, State } from './types';
 
@@ -15,20 +15,20 @@ export function getBaseRewardSeconds(list: TodoList | null): number {
 
 /**
  * 現在のモード（所要時間/目標時刻）に基づいてごほうび時間を再計算する
+ * モード情報はごほうびタスク自身のrewardSettingsから取得する
  */
-export function updateRewardTime(
-  tasks: Task[],
-  targetTimeSettings: TargetTimeSettings,
-  baseRewardSeconds: number
-): Task[] {
+export function updateRewardTime(tasks: Task[], baseRewardSeconds: number): Task[] {
   const rewardTask = tasks.find((t) => t.kind === 'reward');
-  const rewardElapsed = rewardTask ? rewardTask.elapsedSeconds : 0;
+  if (!rewardTask) return tasks;
+
+  const rewardElapsed = rewardTask.elapsedSeconds;
+  const rewardSettings = rewardTask.rewardSettings;
 
   let newRewardSeconds: number;
 
-  if (targetTimeSettings.mode === 'target-time') {
+  if (rewardSettings?.mode === 'target-time') {
     newRewardSeconds =
-      calculateRewardTimeFromTarget(tasks, targetTimeSettings, new Date()) + rewardElapsed;
+      calculateRewardTimeFromTargetReward(tasks, rewardSettings, new Date()) + rewardElapsed;
   } else {
     newRewardSeconds = calculateRewardSeconds(tasks, baseRewardSeconds);
   }
@@ -37,11 +37,11 @@ export function updateRewardTime(
 }
 
 /**
- * 目標時刻モードでのごほうび時間計算
+ * 目標時刻モードでのごほうび時間計算（ごほうびタスクのrewardSettings利用版）
  */
-function calculateRewardTimeFromTarget(
+function calculateRewardTimeFromTargetReward(
   tasks: Task[],
-  settings: TargetTimeSettings,
+  settings: { targetHour?: number; targetMinute?: number },
   now: Date
 ): number {
   let todoTasksSeconds = 0;
@@ -60,8 +60,8 @@ function calculateRewardTimeFromTarget(
   });
 
   return calculateRewardSecondsFromTargetTime(
-    settings.targetHour,
-    settings.targetMinute,
+    settings.targetHour ?? 0,
+    settings.targetMinute ?? 0,
     now,
     todoTasksSeconds
   );
@@ -91,11 +91,7 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
     t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
   );
 
-  updatedTasks = updateRewardTime(
-    updatedTasks,
-    state.targetTimeSettings,
-    getBaseRewardSeconds(state.activeList)
-  );
+  updatedTasks = updateRewardTime(updatedTasks, getBaseRewardSeconds(state.activeList));
 
   // ごほうびタスクが時間切れになった場合の自動終了処理
   const updatedTask = updatedTasks.find((t) => t.id === state.selectedTaskId);
@@ -250,11 +246,7 @@ function handleSelectTask(
   let { updatedTasks } = result;
   const { nextTaskIdToSelect, nextIsTimerRunning } = result;
 
-  updatedTasks = updateRewardTime(
-    updatedTasks,
-    state.targetTimeSettings,
-    getBaseRewardSeconds(state.activeList)
-  );
+  updatedTasks = updateRewardTime(updatedTasks, getBaseRewardSeconds(state.activeList));
 
   if (nextTaskIdToSelect && nextIsTimerRunning) {
     updatedTasks = updatedTasks.map((t) =>
@@ -328,11 +320,7 @@ function handleReset(state: State): State {
   }));
   return {
     ...state,
-    tasks: updateRewardTime(
-      resetTasks,
-      state.targetTimeSettings,
-      getBaseRewardSeconds(state.activeList)
-    ),
+    tasks: updateRewardTime(resetTasks, getBaseRewardSeconds(state.activeList)),
     selectedTaskId: null,
     isTimerRunning: false,
     lastTickTimestamp: null,
@@ -368,7 +356,7 @@ function handleUpdateActiveList(
     ...state,
     activeList: list,
     targetTimeSettings: list.targetTimeSettings,
-    tasks: updateRewardTime(updatedTasks, list.targetTimeSettings, getBaseRewardSeconds(list)),
+    tasks: updateRewardTime(updatedTasks, getBaseRewardSeconds(list)),
   };
 }
 
@@ -385,7 +373,7 @@ function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
   }));
   return {
     activeList: list,
-    tasks: updateRewardTime(initializedTasks, list.targetTimeSettings, getBaseRewardSeconds(list)),
+    tasks: updateRewardTime(initializedTasks, getBaseRewardSeconds(list)),
     selectedTaskId: null,
     isTimerRunning: false,
     lastTickTimestamp: null,
@@ -414,11 +402,7 @@ function handleFastForward(state: State): State {
     t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
   );
 
-  updatedTasks = updateRewardTime(
-    updatedTasks,
-    state.targetTimeSettings,
-    getBaseRewardSeconds(state.activeList)
-  );
+  updatedTasks = updateRewardTime(updatedTasks, getBaseRewardSeconds(state.activeList));
 
   return {
     ...state,
@@ -481,11 +465,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
 
     return {
       ...state,
-      tasks: updateRewardTime(
-        mergedTasks,
-        state.targetTimeSettings,
-        getBaseRewardSeconds(state.activeList)
-      ),
+      tasks: updateRewardTime(mergedTasks, getBaseRewardSeconds(state.activeList)),
       selectedTaskId: finalSelectedTaskId,
       isTimerRunning: finalIsTimerRunning,
       lastTickTimestamp,
@@ -522,11 +502,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
 
     return {
       ...state,
-      tasks: updateRewardTime(
-        mergedTasks,
-        state.targetTimeSettings,
-        getBaseRewardSeconds(state.activeList)
-      ),
+      tasks: updateRewardTime(mergedTasks, getBaseRewardSeconds(state.activeList)),
       selectedTaskId: finalSelectedTaskId,
       isTimerRunning: finalIsTimerRunning,
       lastTickTimestamp,
@@ -538,16 +514,12 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     return {
       ...state,
       targetTimeSettings: settings,
-      tasks: updateRewardTime(state.tasks, settings, getBaseRewardSeconds(state.activeList)),
+      tasks: updateRewardTime(state.tasks, getBaseRewardSeconds(state.activeList)),
     };
   },
   REFRESH_REWARD_TIME: (state) => ({
     ...state,
-    tasks: updateRewardTime(
-      state.tasks,
-      state.targetTimeSettings,
-      getBaseRewardSeconds(state.activeList)
-    ),
+    tasks: updateRewardTime(state.tasks, getBaseRewardSeconds(state.activeList)),
   }),
   REORDER_TASKS: (state, action) => {
     const { fromIndex, toIndex } = action;
@@ -569,11 +541,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     newTasks.splice(toIndex, 0, movedTask);
 
     // Recalculate reward time after reordering
-    const updatedTasks = updateRewardTime(
-      newTasks,
-      state.targetTimeSettings,
-      getBaseRewardSeconds(state.activeList)
-    );
+    const updatedTasks = updateRewardTime(newTasks, getBaseRewardSeconds(state.activeList));
 
     return {
       ...state,

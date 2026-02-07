@@ -35,6 +35,39 @@ export interface ExecutionState {
 }
 
 /**
+ * 古いデータ構造から新しいデータ構造への移行
+ * グローバルのtargetTimeSettingsをごほうびタスクのrewardSettingsに移行する
+ * @param list 移行対象のリスト
+ * @returns 移行後のリスト
+ */
+const migrateTodoList = (list: TodoList): TodoList => {
+  // targetTimeSettingsが存在し、rewardタスクが設定を持っていない場合
+  if (list.targetTimeSettings) {
+    const migratedTasks = list.tasks.map((task) => {
+      if (task.kind === 'reward' && !task.rewardSettings) {
+        return {
+          ...task,
+          rewardSettings: {
+            mode: list.targetTimeSettings!.mode,
+            targetHour: list.targetTimeSettings!.targetHour,
+            targetMinute: list.targetTimeSettings!.targetMinute,
+          },
+        };
+      }
+      return task;
+    });
+
+    return {
+      ...list,
+      tasks: migratedTasks,
+      // targetTimeSettingsは保持（後方互換性のため）
+    };
+  }
+
+  return list;
+};
+
+/**
  * localStorageからすべてのやることリストを読み込み
  * @param fallbackLists 読み込み失敗時のデフォルト値
  * @returns 読み込まれたリスト
@@ -46,7 +79,8 @@ export const loadTodoLists = (fallbackLists: TodoList[] = []): TodoList[] => {
       return fallbackLists;
     }
 
-    return JSON.parse(stored) as TodoList[];
+    const parsed = JSON.parse(stored) as TodoList[];
+    return parsed.map(migrateTodoList); // マイグレーション適用
   } catch (error) {
     console.error('Failed to load todo lists:', error);
     return fallbackLists;

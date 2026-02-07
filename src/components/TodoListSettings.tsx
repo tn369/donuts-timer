@@ -6,7 +6,7 @@ import { ArrowLeft, Camera, GripVertical, Plus, Save, Trash2 } from 'lucide-reac
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { TargetTimeSettings, Task, TodoList } from '../types';
+import type { TargetTimeSettings, Task, TodoList, TimerSettings, RewardTaskSettings } from '../types';
 import { resizeImage } from '../utils/image';
 import { ShapeIcon } from './ShapeIcon';
 import styles from './TodoListSettings.module.css';
@@ -158,10 +158,14 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
     });
   };
 
-  const handleTargetTimeChange = (updates: Partial<TargetTimeSettings>) => {
+  const handleRewardSettingsChange = (taskId: string, settings: Partial<RewardTaskSettings>) => {
     setEditedList({
       ...editedList,
-      targetTimeSettings: { ...editedList.targetTimeSettings, ...updates },
+      tasks: editedList.tasks.map((t) =>
+        t.id === taskId && t.kind === 'reward'
+          ? { ...t, rewardSettings: { ...(t.rewardSettings || { mode: 'duration' }), ...settings } }
+          : t
+      ),
     });
   };
 
@@ -277,32 +281,6 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         </section>
 
         <section className={styles.settingsSection}>
-          <h2 className={styles.sectionTitle}>ごほうび の じかん計算</h2>
-          <div className={styles.modeSelection}>
-            <button
-              className={`${styles.modeButton} ${editedList.targetTimeSettings.mode === 'duration' ? styles.active : ''}`}
-              onClick={() => {
-                handleTargetTimeChange({ mode: 'duration' });
-              }}
-            >
-              <div className={styles.modeIcon}>⏳</div>
-              <div className={styles.modeLabel}>きまった時間</div>
-              <div className={styles.modeDescription}>のこった時間があそび時間</div>
-            </button>
-            <button
-              className={`${styles.modeButton} ${editedList.targetTimeSettings.mode === 'target-time' ? styles.active : ''}`}
-              onClick={() => {
-                handleTargetTimeChange({ mode: 'target-time' });
-              }}
-            >
-              <div className={styles.modeIcon}>⏰</div>
-              <div className={styles.modeLabel}>おわる時刻</div>
-              <div className={styles.modeDescription}>出発にまにあうよう調整</div>
-            </button>
-          </div>
-        </section>
-
-        <section className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>やること の せってい</h2>
           <div className={styles.taskEditorList}>
             <Reorder.Group
@@ -317,12 +295,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                   <Reorder.Item key={task.id} value={task}>
                     <TaskEditorItem
                       task={task}
-                      mode={editedList.targetTimeSettings.mode}
-                      targetHour={editedList.targetTimeSettings.targetHour}
-                      targetMinute={editedList.targetTimeSettings.targetMinute}
                       onTaskChange={handleTaskChange}
                       onRemoveTask={removeTask}
-                      onTargetTimeChange={handleTargetTimeChange}
+                      onRewardSettingsChange={handleRewardSettingsChange}
                       allExistingIcons={allExistingIcons}
                     />
                   </Reorder.Item>
@@ -346,12 +321,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                   <TaskEditorItem
                     key={task.id}
                     task={task}
-                    mode={editedList.targetTimeSettings.mode}
-                    targetHour={editedList.targetTimeSettings.targetHour}
-                    targetMinute={editedList.targetTimeSettings.targetMinute}
                     onTaskChange={handleTaskChange}
                     onRemoveTask={removeTask}
-                    onTargetTimeChange={handleTargetTimeChange}
+                    onRewardSettingsChange={handleRewardSettingsChange}
                     allExistingIcons={allExistingIcons}
                   />
                 ))}
@@ -368,12 +340,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
  */
 interface TaskEditorItemProps {
   task: Task;
-  mode: 'duration' | 'target-time';
-  targetHour: number;
-  targetMinute: number;
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
   onRemoveTask: (taskId: string) => void;
-  onTargetTimeChange: (updates: Partial<TargetTimeSettings>) => void;
+  onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
   allExistingIcons: string[];
 }
 
@@ -497,73 +466,13 @@ export const TimeStepper: React.FC<{
 };
 
 /**
- * タスクの時間入力部分を制御するコンポーネント
- */
-const TaskEditorTimeInput: React.FC<{
-  task: Task;
-  mode: 'duration' | 'target-time';
-  targetHour: number;
-  targetMinute: number;
-  onTaskChange: (taskId: string, updates: Partial<Task>) => void;
-  onTargetTimeChange: (updates: Partial<TargetTimeSettings>) => void;
-}> = ({ task, mode, targetHour, targetMinute, onTaskChange, onTargetTimeChange }) => {
-  if (task.kind === 'reward' && mode === 'target-time') {
-    return (
-      <div className={styles.taskTargetTimeInputs}>
-        <TimeStepper
-          value={targetHour}
-          onChange={(val) => {
-            onTargetTimeChange({ targetHour: val % 24 });
-          }}
-          unit="じ"
-          step={1}
-          max={23}
-          options={Array.from({ length: 24 }, (_, i) => i)}
-        />
-        <span className={styles.timeSeparatorSmall}>:</span>
-        <TimeStepper
-          value={targetMinute}
-          onChange={(val) => {
-            onTargetTimeChange({ targetMinute: val % 60 });
-          }}
-          unit="ふん"
-          step={5}
-          max={55}
-          options={Array.from({ length: 12 }, (_, i) => i * 5)}
-        />
-        <span className={styles.timeLabelSmall}> におわる</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.taskTimeInputGroup}>
-      <TimeStepper
-        value={Math.floor(task.plannedSeconds / 60)}
-        onChange={(val) => {
-          onTaskChange(task.id, { plannedSeconds: val * 60 });
-        }}
-        unit="ぷん"
-        disabled={task.kind === 'reward' && mode === 'target-time'}
-      />
-      {task.kind === 'reward' && mode === 'target-time' && (
-        <span className={styles.autoCalcHint}>（じどう計算）</span>
-      )}
-    </div>
-  );
-};
-
-/**
  * 個別のタスク（または目標時刻）を編集するためのコンポーネント
  */
 const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   task,
-  mode,
-  targetHour,
-  targetMinute,
   onTaskChange,
   onRemoveTask,
-  onTargetTimeChange,
+  onRewardSettingsChange,
   allExistingIcons,
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
@@ -720,16 +629,71 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             onTaskChange(task.id, { name: e.target.value });
           }}
         />
-        <div className={styles.taskTimeInputGroup}>
-          <TaskEditorTimeInput
-            task={task}
-            mode={mode}
-            targetHour={targetHour}
-            targetMinute={targetMinute}
-            onTaskChange={onTaskChange}
-            onTargetTimeChange={onTargetTimeChange}
-          />
-        </div>
+        {task.kind === 'todo' ? (
+          <div className={styles.taskTimeInputGroup}>
+            <TimeStepper
+              value={Math.floor(task.plannedSeconds / 60)}
+              onChange={(val) => {
+                onTaskChange(task.id, { plannedSeconds: val * 60 });
+              }}
+              unit="ぷん"
+            />
+          </div>
+        ) : (
+          <div className={styles.rewardTimeSettings}>
+            <h4 className={styles.rewardTimeSettingsTitle}>じかんの けいさん</h4>
+
+            <label className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'duration' || !task.rewardSettings ? styles.active : ''}`}>
+              <input
+                type="radio"
+                name={`reward-mode-${task.id}`}
+                checked={task.rewardSettings?.mode === 'duration' || !task.rewardSettings}
+                onChange={() => onRewardSettingsChange(task.id, { mode: 'duration' })}
+              />
+              <span className={styles.rewardModeLabel}>きまった時間</span>
+              <div className={styles.rewardModeInput}>
+                <TimeStepper
+                  value={Math.floor(task.plannedSeconds / 60)}
+                  onChange={(val) => onTaskChange(task.id, { plannedSeconds: val * 60 })}
+                  unit="ぷん"
+                  disabled={task.rewardSettings?.mode === 'target-time'}
+                  step={5}
+                />
+              </div>
+            </label>
+
+            <label className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'target-time' ? styles.active : ''}`}>
+              <input
+                type="radio"
+                name={`reward-mode-${task.id}`}
+                checked={task.rewardSettings?.mode === 'target-time'}
+                onChange={() => onRewardSettingsChange(task.id, { mode: 'target-time' })}
+              />
+              <span className={styles.rewardModeLabel}>おわる時刻</span>
+              <div className={styles.rewardModeInput}>
+                <TimeStepper
+                  value={task.rewardSettings?.targetHour ?? 9}
+                  onChange={(val) => onRewardSettingsChange(task.id, { targetHour: val % 24 })}
+                  unit="じ"
+                  disabled={task.rewardSettings?.mode !== 'target-time'}
+                  step={1}
+                  max={23}
+                  options={Array.from({ length: 24 }, (_, i) => i)}
+                />
+                <span className={styles.timeSeparatorSmall}>:</span>
+                <TimeStepper
+                  value={task.rewardSettings?.targetMinute ?? 0}
+                  onChange={(val) => onRewardSettingsChange(task.id, { targetMinute: val % 60 })}
+                  unit="ふん"
+                  disabled={task.rewardSettings?.mode !== 'target-time'}
+                  step={5}
+                  max={55}
+                  options={Array.from({ length: 12 }, (_, i) => i * 5)}
+                />
+              </div>
+            </label>
+          </div>
+        )}
       </div>
 
       {task.kind === 'todo' && (

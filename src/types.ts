@@ -18,6 +18,15 @@ export type TaskStatus = 'todo' | 'running' | 'paused' | 'done';
 export type VariableTaskMode = 'duration' | 'target-time';
 
 /**
+ * ごほうびタスクの時間計算設定
+ */
+export interface RewardTaskSettings {
+  mode: 'duration' | 'target-time';
+  targetHour?: number; // 0-23、target-timeモード時のみ使用
+  targetMinute?: number; // 0-59、target-timeモード時のみ使用
+}
+
+/**
  * 目標時刻設定
  */
 export interface TargetTimeSettings {
@@ -38,6 +47,7 @@ export interface Task {
   status: TaskStatus; // 現在の状態
   elapsedSeconds: number; // 経過時間（秒）
   actualSeconds: number; // 実績時間（秒、完了時に確定）
+  rewardSettings?: RewardTaskSettings; // ごほうびタスク専用設定（kind === 'reward'の場合のみ使用）
 }
 
 /**
@@ -85,6 +95,6 @@ export interface TodoList {
   id: string;
   title: string;
   tasks: Task[];
-  targetTimeSettings: TargetTimeSettings;
+  targetTimeSettings?: TargetTimeSettings; // オプショナル（後方互換性のため、将来的に削除予定）
   timerSettings?: TimerSettings; // オプショナル（互換性のため）
 }
