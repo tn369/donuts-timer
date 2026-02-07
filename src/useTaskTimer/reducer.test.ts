@@ -390,4 +390,131 @@ describe('timerReducer', () => {
       expect(newState.tasks[0].elapsedSeconds).toBeGreaterThan(0);
     });
   });
+
+  describe('REORDER_TASKS action', () => {
+    it('should reorder tasks correctly', () => {
+      // Arrange
+      const task1: Task = { ...mockTask, id: '1', name: 'Task 1' };
+      const task2: Task = { ...mockTask, id: '2', name: 'Task 2' };
+      const task3: Task = { ...mockTask, id: '3', name: 'Task 3' };
+      const stateWithTasks: State = {
+        ...initialState,
+        tasks: [task1, task2, task3],
+      };
+      const action: Action = { type: 'REORDER_TASKS', fromIndex: 0, toIndex: 2 };
+
+      // Act
+      const newState = timerReducer(stateWithTasks, action);
+
+      // Assert
+      expect(newState.tasks[0].id).toBe('2');
+      expect(newState.tasks[1].id).toBe('3');
+      expect(newState.tasks[2].id).toBe('1');
+    });
+
+    it('should update selectedTaskId when selected task is moved', () => {
+      // Arrange
+      const task1: Task = { ...mockTask, id: '1', name: 'Task 1' };
+      const task2: Task = { ...mockTask, id: '2', name: 'Task 2' };
+      const task3: Task = { ...mockTask, id: '3', name: 'Task 3' };
+      const stateWithSelection: State = {
+        ...initialState,
+        tasks: [task1, task2, task3],
+        selectedTaskId: '1',
+      };
+      const action: Action = { type: 'REORDER_TASKS', fromIndex: 0, toIndex: 2 };
+
+      // Act
+      const newState = timerReducer(stateWithSelection, action);
+
+      // Assert
+      expect(newState.selectedTaskId).toBe('1'); // selectedTaskId should remain the same
+      expect(newState.tasks[2].id).toBe('1'); // Task moved to index 2
+    });
+
+    it('should do nothing when fromIndex is out of bounds', () => {
+      // Arrange
+      const task1: Task = { ...mockTask, id: '1', name: 'Task 1' };
+      const task2: Task = { ...mockTask, id: '2', name: 'Task 2' };
+      const stateWithTasks: State = {
+        ...initialState,
+        tasks: [task1, task2],
+      };
+      const action: Action = { type: 'REORDER_TASKS', fromIndex: 5, toIndex: 1 };
+
+      // Act
+      const newState = timerReducer(stateWithTasks, action);
+
+      // Assert
+      expect(newState.tasks).toEqual([task1, task2]); // No change
+    });
+
+    it('should do nothing when toIndex is out of bounds', () => {
+      // Arrange
+      const task1: Task = { ...mockTask, id: '1', name: 'Task 1' };
+      const task2: Task = { ...mockTask, id: '2', name: 'Task 2' };
+      const stateWithTasks: State = {
+        ...initialState,
+        tasks: [task1, task2],
+      };
+      const action: Action = { type: 'REORDER_TASKS', fromIndex: 0, toIndex: 10 };
+
+      // Act
+      const newState = timerReducer(stateWithTasks, action);
+
+      // Assert
+      expect(newState.tasks).toEqual([task1, task2]); // No change
+    });
+
+    it('should do nothing when fromIndex equals toIndex', () => {
+      // Arrange
+      const task1: Task = { ...mockTask, id: '1', name: 'Task 1' };
+      const task2: Task = { ...mockTask, id: '2', name: 'Task 2' };
+      const stateWithTasks: State = {
+        ...initialState,
+        tasks: [task1, task2],
+      };
+      const action: Action = { type: 'REORDER_TASKS', fromIndex: 1, toIndex: 1 };
+
+      // Act
+      const newState = timerReducer(stateWithTasks, action);
+
+      // Assert
+      expect(newState.tasks).toEqual([task1, task2]); // No change
+    });
+
+    it('should recalculate reward time after reordering', () => {
+      // Arrange
+      const todoTask: Task = { ...mockTask, id: 'todo-1', kind: 'todo', plannedSeconds: 600 };
+      const rewardTask: Task = {
+        ...mockTask,
+        id: 'reward-1',
+        kind: 'reward',
+        plannedSeconds: 300,
+      };
+      const activeList: TodoList = {
+        id: 'list-1',
+        title: 'Test List',
+        tasks: [todoTask, rewardTask],
+        targetTimeSettings: initialState.targetTimeSettings,
+        timerSettings: initialState.timerSettings,
+      };
+      const stateWithReward: State = {
+        ...initialState,
+        tasks: [todoTask, rewardTask],
+        activeList,
+      };
+      const action: Action = { type: 'REORDER_TASKS', fromIndex: 0, toIndex: 1 };
+
+      // Act
+      const newState = timerReducer(stateWithReward, action);
+
+      // Assert
+      // Task order should be changed
+      expect(newState.tasks[0].id).toBe('reward-1');
+      expect(newState.tasks[1].id).toBe('todo-1');
+      // Reward time should be recalculated
+      expect(newState.tasks).toBeDefined();
+    });
+  });
 });

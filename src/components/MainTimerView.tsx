@@ -58,6 +58,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     resumeSession,
     cancelResume,
     pendingRestorableState,
+    reorderTasks,
   } = useTaskTimer(timerMode);
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
@@ -113,6 +114,8 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
           shape={timerSettings.shape}
           color={timerSettings.color}
           isCompact={isSiblingMode}
+          onReorderTasks={reorderTasks}
+          isReorderEnabled={true}
         />
 
         {isSiblingMode && (

@@ -141,6 +141,13 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     }
   }, [state.activeList, mode]);
 
+  /**
+   * タスクの順序を入れ替える
+   */
+  const reorderTasks = useCallback((fromIndex: number, toIndex: number) => {
+    dispatch({ type: 'REORDER_TASKS', fromIndex, toIndex });
+  }, []);
+
   return {
     ...state,
     isTaskSelectable,
@@ -156,5 +163,6 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     fastForward,
     resumeSession,
     cancelResume,
+    reorderTasks,
   };
 }

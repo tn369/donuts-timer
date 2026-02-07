@@ -549,6 +549,37 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
       getBaseRewardSeconds(state.activeList)
     ),
   }),
+  REORDER_TASKS: (state, action) => {
+    const { fromIndex, toIndex } = action;
+
+    // Validate indices
+    if (
+      fromIndex < 0 ||
+      fromIndex >= state.tasks.length ||
+      toIndex < 0 ||
+      toIndex >= state.tasks.length ||
+      fromIndex === toIndex
+    ) {
+      return state;
+    }
+
+    // Reorder tasks
+    const newTasks = [...state.tasks];
+    const [movedTask] = newTasks.splice(fromIndex, 1);
+    newTasks.splice(toIndex, 0, movedTask);
+
+    // Recalculate reward time after reordering
+    const updatedTasks = updateRewardTime(
+      newTasks,
+      state.targetTimeSettings,
+      getBaseRewardSeconds(state.activeList)
+    );
+
+    return {
+      ...state,
+      tasks: updatedTasks,
+    };
+  },
   FAST_FORWARD: handleFastForward as unknown as Handler<'FAST_FORWARD'>,
 };
 

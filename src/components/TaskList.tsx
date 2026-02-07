@@ -1,6 +1,9 @@
 /**
  * タスクの一覧を表示するコンポーネント
  */
+import { Reorder } from 'framer-motion';
+import React from 'react';
+
 import type { Task, TimerColor, TimerShape } from '../types';
 import { TaskCard } from './TaskCard';
 import styles from './TaskList.module.css';
@@ -16,6 +19,8 @@ interface TaskListProps {
   shape?: TimerShape; // タイマーの形状
   color?: TimerColor; // タイマーの色
   isCompact?: boolean; // コンパクト表示にするかどうか
+  onReorderTasks?: (fromIndex: number, toIndex: number) => void; // タスクを並び替える時のコールバック
+  isReorderEnabled?: boolean; // タスクの並び替えが可能かどうか
 }
 
 /**
@@ -29,21 +34,66 @@ export const TaskList: React.FC<TaskListProps> = ({
   shape,
   color,
   isCompact = false,
+  onReorderTasks,
+  isReorderEnabled = true,
 }) => {
+  const handleReorder = (newTasks: Task[]) => {
+    if (!onReorderTasks) return;
+
+    // 元の配列と新しい配列を比較して、移動元と移動先のインデックスを特定
+    const movedTaskId = newTasks.find((task, index) => tasks[index]?.id !== task.id)?.id;
+    if (!movedTaskId) return;
+
+    const fromIndex = tasks.findIndex((t) => t.id === movedTaskId);
+    const toIndex = newTasks.findIndex((t) => t.id === movedTaskId);
+
+    if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+      onReorderTasks(fromIndex, toIndex);
+    }
+  };
+
+  if (!isReorderEnabled || !onReorderTasks) {
+  // 並び替えが無効の場合は通常の表示
+    return (
+      <div className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}>
+        {tasks.map((task) => (
+          <div key={task.id} className={styles.taskWrapper}>
+            <TaskCard
+              task={task}
+              isSelected={task.id === selectedTaskId}
+              isSelectable={isTaskSelectable(task.id)}
+              onSelect={onSelectTask}
+              shape={shape}
+              color={color}
+              isCompact={isCompact}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // 並び替えが有効の場合は Reorder コンポーネントを使用
   return (
-    <div className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}>
+    <Reorder.Group
+      axis="x"
+      values={tasks}
+      onReorder={handleReorder}
+      className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}
+    >
       {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          isSelected={task.id === selectedTaskId}
-          isSelectable={isTaskSelectable(task.id)}
-          onSelect={onSelectTask}
-          shape={shape}
-          color={color}
-          isCompact={isCompact}
-        />
+        <Reorder.Item key={task.id} value={task} className={styles.taskWrapper}>
+          <TaskCard
+            task={task}
+            isSelected={task.id === selectedTaskId}
+            isSelectable={isTaskSelectable(task.id)}
+            onSelect={onSelectTask}
+            shape={shape}
+            color={color}
+            isCompact={isCompact}
+          />
+        </Reorder.Item>
       ))}
-    </div>
+    </Reorder.Group>
   );
 };

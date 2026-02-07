@@ -42,6 +42,7 @@ export type Action =
   | { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
   | { type: 'INIT_LIST'; list: TodoList }
   | { type: 'SET_TIMER_SETTINGS'; settings: TimerSettings }
+  | { type: 'REORDER_TASKS'; fromIndex: number; toIndex: number }
   | {
       type: 'RESTORE_AVAILABLE';
       tasks: Task[];

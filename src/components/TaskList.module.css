@@ -26,3 +26,29 @@
 .taskList::-webkit-scrollbar {
   display: none;
 }
+
+.taskWrapper {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  list-style: none;
+}
+
+.dragHandle {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: color 0.2s;
+}
+
+.taskWrapper:hover .dragHandle {
+  color: #94a3b8;
+}
