@@ -51,11 +51,6 @@ const createDefaultList = (): TodoList => ({
       actualSeconds: 0,
     },
   ]),
-  targetTimeSettings: {
-    mode: 'duration',
-    targetHour: 7,
-    targetMinute: 55,
-  },
 });
 
 /**

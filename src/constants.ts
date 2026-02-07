@@ -11,7 +11,7 @@ import studyIcon from './assets/study_wakaru_boy.png';
 import mealIcon from './assets/syokuji_boy.png';
 import familyIcon from './assets/syokuji_family_tanoshisou.png';
 import toiletIcon from './assets/toilet_boy.png';
-import type { TargetTimeSettings, Task, TodoList } from './types';
+import type { Task, TodoList } from './types';
 
 /**
  * プリセット画像の一覧
@@ -118,21 +118,6 @@ export const INITIAL_TASKS: Task[] = [
     },
   },
 ];
-
-/**
- * ごほうびの基本時間（15分）
- */
-export const BASE_REWARD_SECONDS = 15 * 60;
-
-/**
- * デフォルトの目標時刻設定
- * @deprecated ごほうびタスク自身のrewardSettingsを使用してください
- */
-export const DEFAULT_TARGET_TIME: TargetTimeSettings = {
-  mode: 'duration', // デフォルトは所要時間モード
-  targetHour: 7,
-  targetMinute: 55,
-};
 
 /**
  * 初期表示用のやることリスト一覧

@@ -83,11 +83,6 @@
     margin 0.3s ease;
 }
 
-.compact .taskImageContainer {
-  height: 80px;
-  margin-bottom: 8px;
-}
-
 .taskImage {
   max-width: 90%;
   max-height: 90%;

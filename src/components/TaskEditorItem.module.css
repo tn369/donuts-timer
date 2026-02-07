@@ -133,14 +133,6 @@
   opacity: 1;
 }
 
-.changeImageBtn.secondary {
-  background: var(--color-info);
-}
-
-.changeImageBtn.secondary:hover {
-  background: #2563eb;
-}
-
 .taskEditorImageButtons {
   position: absolute;
   right: -8px;

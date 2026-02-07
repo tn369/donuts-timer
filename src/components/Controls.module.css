@@ -20,11 +20,6 @@
   padding: 0;
 }
 
-.btnSpacer {
-  flex-shrink: 0;
-  width: 52px;
-}
-
 .btn {
   display: flex;
   flex: 1;
