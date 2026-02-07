@@ -5,7 +5,14 @@ import { useState } from 'react';
 import { v4 as uuid_v4 } from 'uuid';
 
 import { DEFAULT_TODO_LISTS, migrateTasksWithDefaultIcons, PRESET_IMAGES } from '../constants';
-import { loadActiveListId, loadTodoLists, saveActiveListId, saveTodoLists } from '../storage';
+import {
+  loadActiveListId,
+  loadExecutionState,
+  loadTodoLists,
+  saveActiveListId,
+  saveExecutionState,
+  saveTodoLists,
+} from '../storage';
 import type { TodoList } from '../types';
 
 /**
@@ -177,12 +184,49 @@ export const useTodoLists = () => {
       new Set([...PRESET_IMAGES, ...todoLists.flatMap((list) => list.tasks.map((t) => t.icon))])
     ).filter((icon) => icon !== '');
 
+  /**
+   * 現在のリストを複製して2人モードに切り替える
+   */
+  const duplicateActiveListForSiblingMode = () => {
+    if (activeLists.length > 0) {
+      const list = activeLists[0];
+      // 1人モードの実行状態を2人モードの両方にコピーする
+      const currentState = loadExecutionState(list.id, 'single');
+      if (currentState) {
+        saveExecutionState({ ...currentState, mode: 'sibling-0' });
+        saveExecutionState({ ...currentState, mode: 'sibling-1' });
+      }
+
+      setActiveLists([list, list]);
+      setIsSiblingMode(true);
+    }
+  };
+
+  /**
+   * 2人モードを終了して1人モードに戻る
+   */
+  const exitSiblingMode = () => {
+    if (isSiblingMode && activeLists.length > 0) {
+      const list = activeLists[0];
+      // 2人モード（左側）の実行状態を1人モードに書き戻す
+      const currentState = loadExecutionState(list.id, 'sibling-0');
+      if (currentState) {
+        saveExecutionState({ ...currentState, mode: 'single' });
+      }
+
+      setActiveLists([list]);
+      setIsSiblingMode(false);
+    }
+  };
+
   return {
     activeLists,
     addNewList,
     clearActiveList,
     copyList,
     deleteList,
+    duplicateActiveListForSiblingMode,
+    exitSiblingMode,
     getAllUniqueIcons,
     isSiblingMode,
     saveList,

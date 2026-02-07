@@ -2,7 +2,7 @@
  * タイマー画面の上部に表示される、設定や操作のためのコントロールバーコンポーネント
  */
 import { motion } from 'framer-motion';
-import { ChevronLeft, Palette, Settings, Zap } from 'lucide-react';
+import { ChevronLeft, Palette, Settings, User, Users, Zap } from 'lucide-react';
 import React, { useCallback } from 'react';
 
 import type { TimerColor, TimerShape, TodoList } from '../types';
@@ -38,16 +38,16 @@ const SHAPES: (
   | 'star'
   | 'heart'
 )[] = [
-  'circle',
-  'square',
-  'triangle',
-  'diamond',
-  'pentagon',
-  'hexagon',
-  'octagon',
-  'star',
-  'heart',
-];
+    'circle',
+    'square',
+    'triangle',
+    'diamond',
+    'pentagon',
+    'hexagon',
+    'octagon',
+    'star',
+    'heart',
+  ];
 
 const COLORS: (
   | 'red'
@@ -62,18 +62,18 @@ const COLORS: (
   | 'cyan'
   | 'lime'
 )[] = [
-  'red',
-  'blue',
-  'yellow',
-  'green',
-  'pink',
-  'purple',
-  'orange',
-  'teal',
-  'indigo',
-  'cyan',
-  'lime',
-];
+    'red',
+    'blue',
+    'yellow',
+    'green',
+    'pink',
+    'purple',
+    'orange',
+    'teal',
+    'indigo',
+    'cyan',
+    'lime',
+  ];
 
 /**
  * MainTimerHeaderControlsのプロパティ
@@ -92,6 +92,8 @@ interface HeaderControlsProps {
   setTimerSettings: (s: { shape: TimerShape; color: TimerColor }) => void; // 設定変更用の関数
   activeList: TodoList | null; // 現在アクティブなリスト
   onEditSettings: (id: string) => void; // 設定画面を開くコールバック
+  onEnterSiblingMode?: () => void; // ふたりモードへ切り替えるコールバック
+  onExitSiblingMode?: () => void; // ひとりモードへ切り替えるコールバック
 }
 
 /**
@@ -111,6 +113,8 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   setTimerSettings,
   activeList,
   onEditSettings,
+  onEnterSiblingMode,
+  onExitSiblingMode,
 }) => {
   const handleNextShape = useCallback(() => {
     const currentShapeIndex = SHAPES.indexOf(timerSettings.shape);
@@ -159,6 +163,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         </div>
       )}
 
+
       <div className={styles.topControlsGroup}>
         {import.meta.env.DEV && (
           <motion.button
@@ -199,6 +204,32 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         >
           <Settings size={isSiblingMode ? 20 : 24} />
         </motion.button>
+
+        {isSiblingMode ? (
+          onExitSiblingMode && (
+            <motion.button
+              whileHover={{ scale: 1.05, translateY: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onExitSiblingMode}
+              className={styles.settingsButton}
+              aria-label="ひとりモードにもどす"
+            >
+              <User size={20} />
+            </motion.button>
+          )
+        ) : (
+          onEnterSiblingMode && (
+            <motion.button
+              whileHover={{ scale: 1.05, translateY: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onEnterSiblingMode}
+              className={styles.settingsButton}
+              aria-label="ふたりモードにきりかえる"
+            >
+              <Users size={24} />
+            </motion.button>
+          )
+        )}
       </div>
     </div>
   );

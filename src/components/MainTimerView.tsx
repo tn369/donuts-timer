@@ -25,6 +25,8 @@ interface MainTimerViewProps {
   showSelectionButton?: boolean; // リスト選択に戻るボタンを表示するか
   isSiblingMode?: boolean; // 2画面モードかどうか
   timerMode?: TimerMode; // タイマーのモード（single/sibling-0/sibling-1）
+  onEnterSiblingMode?: () => void; // ふたりモードへ切り替えるコールバック
+  onExitSiblingMode?: () => void; // ひとりモードへ切り替えるコールバック
 }
 
 /**
@@ -37,6 +39,8 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   showSelectionButton = true,
   isSiblingMode = false,
   timerMode = 'single',
+  onEnterSiblingMode,
+  onExitSiblingMode,
 }) => {
   const {
     tasks,
@@ -96,6 +100,8 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         setTimerSettings={setTimerSettings}
         activeList={activeList}
         onEditSettings={onEditSettings}
+        onEnterSiblingMode={onEnterSiblingMode}
+        onExitSiblingMode={onExitSiblingMode}
       />
 
       <div className={isSiblingMode ? styles.mainRowSibling : ''}>

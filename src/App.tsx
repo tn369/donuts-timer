@@ -30,6 +30,8 @@ function App() {
     copyList,
     deleteList,
     getAllUniqueIcons,
+    duplicateActiveListForSiblingMode,
+    exitSiblingMode,
     isSiblingMode,
     saveList,
     selectList,
@@ -106,6 +108,7 @@ function App() {
               onEditSettings={(id) => {
                 showSettings(id, 'main');
               }}
+              onExitSiblingMode={exitSiblingMode}
               isSiblingMode={true}
               timerMode="sibling-0"
             />
@@ -118,6 +121,7 @@ function App() {
               onEditSettings={(id) => {
                 showSettings(id, 'main');
               }}
+              onExitSiblingMode={exitSiblingMode}
               showSelectionButton={false}
               isSiblingMode={true}
               timerMode="sibling-1"
@@ -131,6 +135,7 @@ function App() {
           onEditSettings={(id) => {
             showSettings(id, 'main');
           }}
+            onEnterSiblingMode={duplicateActiveListForSiblingMode}
           timerMode="single"
         />
       )}
