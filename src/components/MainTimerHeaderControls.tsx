@@ -204,21 +204,20 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         </motion.button>
       )}
 
-      {!isSiblingMode && (
-        <div className={styles.topMainControls}>
-          <Controls
-            isRunning={isRunning}
-            onStart={startTimer}
-            onStop={stopTimer}
-            onReset={() => {
-              setShowResetConfirm(true);
-            }}
-            canStartOrStop={canStartOrStop}
-            isCompact={true}
-            hideReset={true}
-          />
-        </div>
-      )}
+      <div className={styles.topMainControls}>
+        <Controls
+          isRunning={isRunning}
+          onStart={startTimer}
+          onStop={stopTimer}
+          onReset={() => {
+            setShowResetConfirm(true);
+          }}
+          canStartOrStop={canStartOrStop}
+          isCompact={true}
+          isSmall={isSiblingMode}
+          hideReset={true}
+        />
+      </div>
 
       <div className={styles.topControlsGroup}>
         {renderDebugButton()}

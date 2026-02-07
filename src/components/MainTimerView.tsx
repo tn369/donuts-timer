@@ -12,7 +12,6 @@ import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
 import { ResetModal } from './ResetModal';
 import { ResumeModal } from './ResumeModal';
-import { SiblingControls } from './SiblingControls';
 import { TaskList } from './TaskList';
 
 /**
@@ -105,33 +104,17 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         onExitSiblingMode={onExitSiblingMode}
       />
 
-      <div className={isSiblingMode ? styles.mainRowSibling : ''}>
-        <TaskList
-          tasks={tasks}
-          selectedTaskId={selectedTaskId}
-          isTaskSelectable={isTaskSelectable}
-          onSelectTask={selectTask}
-          shape={timerSettings.shape}
-          color={timerSettings.color}
-          isCompact={isSiblingMode}
-          onReorderTasks={reorderTasks}
-          isReorderEnabled={true}
-        />
-
-        {isSiblingMode && (
-          <div className={styles.sideControls}>
-            <SiblingControls
-              isRunning={isRunning}
-              onStart={startTimer}
-              onStop={stopTimer}
-              onReset={() => {
-                setShowResetConfirm(true);
-              }}
-              canStartOrStop={canStartOrStop}
-            />
-          </div>
-        )}
-      </div>
+      <TaskList
+        tasks={tasks}
+        selectedTaskId={selectedTaskId}
+        isTaskSelectable={isTaskSelectable}
+        onSelectTask={selectTask}
+        shape={timerSettings.shape}
+        color={timerSettings.color}
+        isCompact={isSiblingMode}
+        onReorderTasks={reorderTasks}
+        isReorderEnabled={true}
+      />
 
       <AnimatePresence>
         {showResetConfirm && (

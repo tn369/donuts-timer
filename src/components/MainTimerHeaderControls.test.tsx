@@ -104,8 +104,8 @@ describe('MainTimerHeaderControls', () => {
     expect(screen.getByText('スタート')).toBeInTheDocument();
   });
 
-  it('isSiblingMode が true の時、スタートボタンが表示されないこと', () => {
+  it('isSiblingMode が true の時も、スタートボタンが表示されること', () => {
     render(<MainTimerHeaderControls {...defaultProps} isSiblingMode={true} />);
-    expect(screen.queryByText('スタート')).not.toBeInTheDocument();
+    expect(screen.getByText('スタート')).toBeInTheDocument();
   });
 });

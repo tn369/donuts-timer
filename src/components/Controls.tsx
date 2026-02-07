@@ -16,6 +16,7 @@ interface ControlsProps {
   onStop: () => void; // ストップボタンクリック時のコールバック
   canStartOrStop: boolean; // スタート/ストップ操作が可能かどうか
   isCompact?: boolean; // コンパクト表示にするかどうか
+  isSmall?: boolean; // 小さい表示にするかどうか
   onReset?: () => void; // リセットボタンクリック時のコールバック (オプショナル)
   hideReset?: boolean; // リセットボタンを非表示にするかどうか
 }
@@ -28,7 +29,8 @@ const StartStopButton: React.FC<{
   onStart: () => void;
   onStop: () => void;
   disabled: boolean;
-}> = ({ isRunning, onStart, onStop, disabled }) => {
+  isSmall?: boolean;
+}> = ({ isRunning, onStart, onStop, disabled, isSmall }) => {
   const buttonClass = isRunning ? styles.btnStop : styles.btnStart;
   const buttonOnClick = isRunning ? onStop : onStart;
   const buttonText = isRunning ? 'ストップ' : 'スタート';
@@ -53,7 +55,7 @@ const StartStopButton: React.FC<{
       onClick={buttonOnClick}
       disabled={disabled}
     >
-      <Icon size={20} fill="currentColor" /> {buttonText}
+      <Icon size={isSmall ? 16 : 20} fill="currentColor" /> {buttonText}
     </ControlButton>
   );
 };
@@ -68,9 +70,12 @@ export const Controls: React.FC<ControlsProps> = ({
   onReset,
   canStartOrStop,
   isCompact = false,
+  isSmall = false,
   hideReset = false,
 }) => {
-  const containerClass = `${styles.controls} ${isCompact ? styles.compact : ''}`;
+  const containerClass = `${styles.controls} ${isCompact ? styles.compact : ''} ${
+    isSmall ? styles.small : ''
+  }`;
 
   return (
     <div className={containerClass}>
@@ -79,11 +84,12 @@ export const Controls: React.FC<ControlsProps> = ({
         onStart={onStart}
         onStop={onStop}
         disabled={!canStartOrStop}
+        isSmall={isSmall}
       />
 
       {!hideReset && onReset && (
         <ControlButton className={`${styles.btn} ${styles.btnReset}`} onClick={onReset}>
-          <RotateCcw size={18} />
+          <RotateCcw size={isSmall ? 16 : 18} />
         </ControlButton>
       )}
     </div>
