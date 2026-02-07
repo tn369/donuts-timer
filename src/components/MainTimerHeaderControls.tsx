@@ -1,9 +1,9 @@
 /**
  * タイマー画面の上部に表示される、設定や操作のためのコントロールバーコンポーネント
  */
-import { motion } from 'framer-motion';
-import { ChevronLeft, Palette, Settings, User, Users, Zap } from 'lucide-react';
-import React, { useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, Menu, Palette, RotateCcw, Settings, User, Users, X, Zap } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 
 import type { TimerColor, TimerShape, TodoList } from '../types';
 import { Controls } from './Controls';
@@ -116,6 +116,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   onEnterSiblingMode,
   onExitSiblingMode,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleNextShape = useCallback(() => {
     const currentShapeIndex = SHAPES.indexOf(timerSettings.shape);
     const nextShape = SHAPES[(currentShapeIndex + 1) % SHAPES.length];
@@ -151,18 +152,22 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
     );
   };
 
-  const renderModeToggleButton = () => {
+  const renderModeToggleButton = (isMenu?: boolean) => {
     if (isSiblingMode) {
       if (!onExitSiblingMode) return null;
       return (
         <motion.button
           whileHover={{ scale: 1.05, translateY: -2 }}
           whileTap={{ scale: 0.95 }}
-          onClick={onExitSiblingMode}
-          className={styles.settingsButton}
+          onClick={() => {
+            onExitSiblingMode();
+            setIsMenuOpen(false);
+          }}
+          className={isMenu ? styles.menuItem : styles.settingsButton}
           aria-label="ひとりモードにもどす"
         >
           <User size={20} />
+          {isMenu && <span>ひとりモード</span>}
         </motion.button>
       );
     }
@@ -172,11 +177,15 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
       <motion.button
         whileHover={{ scale: 1.05, translateY: -2 }}
         whileTap={{ scale: 0.95 }}
-        onClick={onEnterSiblingMode}
-        className={styles.settingsButton}
+        onClick={() => {
+          onEnterSiblingMode();
+          setIsMenuOpen(false);
+        }}
+        className={isMenu ? styles.menuItem : styles.settingsButton}
         aria-label="ふたりモードにきりかえる"
       >
         <Users size={24} />
+        {isMenu && <span>ふたりモード</span>}
       </motion.button>
     );
   };
@@ -206,6 +215,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
             }}
             canStartOrStop={canStartOrStop}
             isCompact={true}
+            hideReset={true}
           />
         </div>
       )}
@@ -230,16 +240,53 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         >
           <Palette size={isSiblingMode ? 20 : 24} color={TIMER_COLORS[timerSettings.color]} />
         </motion.button>
-        {renderModeToggleButton()}
-        <motion.button
-          whileHover={{ scale: 1.05, translateY: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleEditSettings}
-          className={styles.settingsButton}
-          aria-label="リストのせってい"
-        >
-          <Settings size={isSiblingMode ? 20 : 24} />
-        </motion.button>
+
+        <div className={styles.menuContainer}>
+          <motion.button
+            whileHover={{ scale: 1.05, translateY: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => { setIsMenuOpen(!isMenuOpen); }}
+            className={`${styles.settingsButton} ${isMenuOpen ? styles.active : ''}`}
+            aria-label="メニューをひらく"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </motion.button>
+
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className={styles.menuDropdown}
+              >
+                {renderModeToggleButton(true)}
+                <button
+                  onClick={() => {
+                    setShowResetConfirm(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className={styles.menuItem}
+                  aria-label="リセットする"
+                >
+                  <RotateCcw size={20} />
+                  <span>さいしょから（リセット）</span>
+                </button>
+                <button
+                  onClick={() => {
+                    handleEditSettings();
+                    setIsMenuOpen(false);
+                  }}
+                  className={styles.menuItem}
+                  aria-label="リストのせってい"
+                >
+                  <Settings size={20} />
+                  <span>リストのせってい</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

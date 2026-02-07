@@ -34,8 +34,11 @@ describe('MainTimerHeaderControls', () => {
     expect(screen.getByLabelText('リストをえらびなおす')).toBeInTheDocument();
     expect(screen.getByLabelText('タイマーのかたちをかえる')).toBeInTheDocument();
     expect(screen.getByLabelText('タイマーのいろをかえる')).toBeInTheDocument();
-    expect(screen.getByLabelText('ふたりモードにきりかえる')).toBeInTheDocument();
-    expect(screen.getByLabelText('リストのせってい')).toBeInTheDocument();
+    expect(screen.getByLabelText('メニューをひらく')).toBeInTheDocument();
+
+    // 初期状態ではメニュー内のボタンは見えない
+    expect(screen.queryByLabelText('ふたりモードにきりかえる')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('リストのせってい')).not.toBeInTheDocument();
   });
 
   it('「もどる」ボタンをクリックすると onBackToSelection が呼ばれること', () => {
@@ -56,22 +59,44 @@ describe('MainTimerHeaderControls', () => {
     expect(defaultProps.setTimerSettings).toHaveBeenCalled();
   });
 
-  it('ふたりモード切り替えボタンをクリックすると onEnterSiblingMode が呼ばれること', () => {
+  it('メニューを開いてふたりモード切り替えボタンをクリックすると onEnterSiblingMode が呼ばれること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
+
+    // メニューを開く
+    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+
     fireEvent.click(screen.getByLabelText('ふたりモードにきりかえる'));
     expect(defaultProps.onEnterSiblingMode).toHaveBeenCalled();
   });
 
-  it('ふたりモード中、ひとりモードに戻るボタンが表示され、クリックすると onExitSiblingMode が呼ばれること', () => {
+  it('ふたりモード中、メニューを開いてひとりモードに戻るボタンをクリックすると onExitSiblingMode が呼ばれること', () => {
     render(<MainTimerHeaderControls {...defaultProps} isSiblingMode={true} />);
+
+    // メニューを開く
+    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+
     fireEvent.click(screen.getByLabelText('ひとりモードにもどす'));
     expect(defaultProps.onExitSiblingMode).toHaveBeenCalled();
   });
 
-  it('設定ボタンをクリックすると onEditSettings が呼ばれること', () => {
+  it('メニューを開いて設定ボタンをクリックすると onEditSettings が呼ばれること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
+
+    // メニューを開く
+    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+
     fireEvent.click(screen.getByLabelText('リストのせってい'));
     expect(defaultProps.onEditSettings).toHaveBeenCalledWith('test-list');
+  });
+
+  it('メニューを開いてリセットボタンをクリックすると setShowResetConfirm が呼ばれること', () => {
+    render(<MainTimerHeaderControls {...defaultProps} />);
+
+    // メニューを開く
+    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+
+    fireEvent.click(screen.getByLabelText('リセットする'));
+    expect(defaultProps.setShowResetConfirm).toHaveBeenCalledWith(true);
   });
 
   it('isSiblingMode が false の時、スタートボタンが表示されること', () => {

@@ -122,3 +122,60 @@
   gap: 16px;
   margin-left: auto;
 }
+
+.menuContainer {
+  position: relative;
+}
+
+.settingsButton.active {
+  color: var(--color-primary);
+  background: white;
+  border-color: var(--color-primary);
+}
+
+.menuDropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 280px;
+  padding: 12px;
+  background: var(--glass-bg);
+  border: 4px solid white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 15%);
+  backdrop-filter: var(--glass-blur);
+}
+
+.menuItem {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  font-family: Gaegu, cursive;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-align: left;
+  cursor: pointer;
+  background: white;
+  border: 3px solid #f0f0f0;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.menuItem:hover {
+  color: var(--color-primary);
+  background: #fdfdfd;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
+  transform: translateY(-2px);
+}
+
+.menuItem svg {
+  flex-shrink: 0;
+}
