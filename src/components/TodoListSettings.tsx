@@ -6,7 +6,7 @@ import { ArrowLeft, Camera, GripVertical, Plus, Save, Trash2 } from 'lucide-reac
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { TargetTimeSettings, Task, TodoList, TimerSettings, RewardTaskSettings } from '../types';
+import type { RewardTaskSettings,Task, TodoList } from '../types';
 import { resizeImage } from '../utils/image';
 import { ShapeIcon } from './ShapeIcon';
 import styles from './TodoListSettings.module.css';
@@ -170,10 +170,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   };
 
   const handleReorderTasks = (newOrder: Task[]) => {
-    const rewardTasks = editedList.tasks.filter((t) => t.kind === 'reward');
     setEditedList({
       ...editedList,
-      tasks: [...newOrder, ...rewardTasks],
+      tasks: newOrder,
     });
   };
 
@@ -284,24 +283,22 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           <h2 className={styles.sectionTitle}>やること の せってい</h2>
           <div className={styles.taskEditorList}>
             <Reorder.Group
-              axis="y"
-              values={editedList.tasks.filter((t) => t.kind !== 'reward')}
+              axis="x"
+              values={editedList.tasks}
               onReorder={handleReorderTasks}
               className={styles.reorderGroup}
             >
-              {editedList.tasks
-                .filter((t) => t.kind !== 'reward')
-                .map((task) => (
-                  <Reorder.Item key={task.id} value={task}>
-                    <TaskEditorItem
-                      task={task}
-                      onTaskChange={handleTaskChange}
-                      onRemoveTask={removeTask}
-                      onRewardSettingsChange={handleRewardSettingsChange}
-                      allExistingIcons={allExistingIcons}
-                    />
-                  </Reorder.Item>
-                ))}
+              {editedList.tasks.map((task) => (
+                <Reorder.Item key={task.id} value={task}>
+                  <TaskEditorItem
+                    task={task}
+                    onTaskChange={handleTaskChange}
+                    onRemoveTask={removeTask}
+                    onRewardSettingsChange={handleRewardSettingsChange}
+                    allExistingIcons={allExistingIcons}
+                  />
+                </Reorder.Item>
+              ))}
             </Reorder.Group>
 
             <motion.button
@@ -313,21 +310,6 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               <Plus size={20} />
               <span>やること を ついか</span>
             </motion.button>
-
-            <AnimatePresence mode="popLayout">
-              {editedList.tasks
-                .filter((t) => t.kind === 'reward')
-                .map((task) => (
-                  <TaskEditorItem
-                    key={task.id}
-                    task={task}
-                    onTaskChange={handleTaskChange}
-                    onRemoveTask={removeTask}
-                    onRewardSettingsChange={handleRewardSettingsChange}
-                    allExistingIcons={allExistingIcons}
-                  />
-                ))}
-            </AnimatePresence>
           </div>
         </section>
       </div>
@@ -643,18 +625,20 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           <div className={styles.rewardTimeSettings}>
             <h4 className={styles.rewardTimeSettingsTitle}>じかんの けいさん</h4>
 
-            <label className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'duration' || !task.rewardSettings ? styles.active : ''}`}>
+            <label
+              className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'duration' || !task.rewardSettings ? styles.active : ''}`}
+            >
               <input
                 type="radio"
                 name={`reward-mode-${task.id}`}
                 checked={task.rewardSettings?.mode === 'duration' || !task.rewardSettings}
-                onChange={() => onRewardSettingsChange(task.id, { mode: 'duration' })}
+                onChange={() => { onRewardSettingsChange(task.id, { mode: 'duration' }); }}
               />
               <span className={styles.rewardModeLabel}>きまった時間</span>
               <div className={styles.rewardModeInput}>
                 <TimeStepper
                   value={Math.floor(task.plannedSeconds / 60)}
-                  onChange={(val) => onTaskChange(task.id, { plannedSeconds: val * 60 })}
+                  onChange={(val) => { onTaskChange(task.id, { plannedSeconds: val * 60 }); }}
                   unit="ぷん"
                   disabled={task.rewardSettings?.mode === 'target-time'}
                   step={5}
@@ -662,28 +646,29 @@ const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
               </div>
             </label>
 
-            <label className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'target-time' ? styles.active : ''}`}>
+            <label
+              className={`${styles.rewardModeOption} ${task.rewardSettings?.mode === 'target-time' ? styles.active : ''}`}
+            >
               <input
                 type="radio"
                 name={`reward-mode-${task.id}`}
                 checked={task.rewardSettings?.mode === 'target-time'}
-                onChange={() => onRewardSettingsChange(task.id, { mode: 'target-time' })}
+                onChange={() => { onRewardSettingsChange(task.id, { mode: 'target-time' }); }}
               />
               <span className={styles.rewardModeLabel}>おわる時刻</span>
               <div className={styles.rewardModeInput}>
                 <TimeStepper
                   value={task.rewardSettings?.targetHour ?? 9}
-                  onChange={(val) => onRewardSettingsChange(task.id, { targetHour: val % 24 })}
+                  onChange={(val) => { onRewardSettingsChange(task.id, { targetHour: val % 24 }); }}
                   unit="じ"
                   disabled={task.rewardSettings?.mode !== 'target-time'}
                   step={1}
                   max={23}
                   options={Array.from({ length: 24 }, (_, i) => i)}
                 />
-                <span className={styles.timeSeparatorSmall}>:</span>
                 <TimeStepper
                   value={task.rewardSettings?.targetMinute ?? 0}
-                  onChange={(val) => onRewardSettingsChange(task.id, { targetMinute: val % 60 })}
+                  onChange={(val) => { onRewardSettingsChange(task.id, { targetMinute: val % 60 }); }}
                   unit="ふん"
                   disabled={task.rewardSettings?.mode !== 'target-time'}
                   step={5}

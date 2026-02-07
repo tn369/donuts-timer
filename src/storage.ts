@@ -48,9 +48,9 @@ const migrateTodoList = (list: TodoList): TodoList => {
         return {
           ...task,
           rewardSettings: {
-            mode: list.targetTimeSettings!.mode,
-            targetHour: list.targetTimeSettings!.targetHour,
-            targetMinute: list.targetTimeSettings!.targetMinute,
+            mode: list.targetTimeSettings?.mode ?? 'duration',
+            targetHour: list.targetTimeSettings?.targetHour ?? 9,
+            targetMinute: list.targetTimeSettings?.targetMinute ?? 0,
           },
         };
       }
