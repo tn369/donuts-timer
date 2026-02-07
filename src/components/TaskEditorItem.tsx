@@ -142,16 +142,17 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 1024 * 1024) {
-        alert('画像サイズが大きすぎます。1MB以下の画像を選んでください。');
-        return;
-      }
-
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
-        const resizedImage = await resizeImage(base64String, 200, 200);
-        onTaskChange(task.id, { icon: resizedImage });
+        try {
+          // どんなサイズでも 200x200 程度に圧縮して保存する
+          const resizedImage = await resizeImage(base64String, 200, 200);
+          onTaskChange(task.id, { icon: resizedImage });
+        } catch (error) {
+          console.error('Failed to resize image:', error);
+          alert('画像の処理に失敗しました。');
+        }
       };
       reader.readAsDataURL(file);
     }

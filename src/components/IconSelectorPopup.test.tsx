@@ -1,7 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { IconSelectorPopup } from './IconSelectorPopup';
+
 import type { Task } from '../types';
+import { IconSelectorPopup } from './IconSelectorPopup';
 
 describe('IconSelectorPopup', () => {
   const mockTask: Task = {
@@ -53,7 +54,7 @@ describe('IconSelectorPopup', () => {
     // Note: backdrop is a div with styles.popupBackdrop.
     // In actual DOM it has the class, but in test we might need another way or data-testid
     const onClose = vi.fn();
-    const { container } = render(
+    render(
       <IconSelectorPopup
         show={true}
         direction="bottom"
