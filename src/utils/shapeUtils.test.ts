@@ -68,7 +68,7 @@ describe('shapeUtils', () => {
     });
 
     it('should fallback to circle for unknown shape', () => {
-      const renderer = createRenderer('unknown' as any, size, strokeWidth);
+      const renderer = createRenderer('unknown' as 'circle', size, strokeWidth);
       expect(renderer.svgElementType).toBe('circle');
     });
   });

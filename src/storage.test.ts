@@ -47,7 +47,7 @@ describe('storage utility', () => {
 
     it('should return fallbackLists and log error when JSON is invalid', () => {
       localStorage.setItem('task-timer-lists', 'invalid-json');
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => void 0);
       const fallback: TodoList[] = [];
       const result = loadTodoLists(fallback);
       expect(result).toEqual(fallback);
@@ -71,7 +71,7 @@ describe('storage utility', () => {
     });
 
     it('should log error when save fails', () => {
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => void 0);
       const mockSetItem = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
         throw new Error('Quota exceeded');
       });
@@ -111,7 +111,9 @@ describe('storage utility', () => {
         listId: 'list-1',
       };
       saveExecutionState(state);
-      const stored = JSON.parse(localStorage.getItem('task-timer-execution-state-single-list-1')!);
+      const stored: unknown = JSON.parse(
+        localStorage.getItem('task-timer-execution-state-single-list-1') ?? '{}'
+      );
       expect(stored).toEqual(state);
     });
 
@@ -125,14 +127,14 @@ describe('storage utility', () => {
         mode: 'sibling-0' as const,
       };
       saveExecutionState(state);
-      const stored = JSON.parse(
-        localStorage.getItem('task-timer-execution-state-sibling-0-list-1')!
+      const stored: unknown = JSON.parse(
+        localStorage.getItem('task-timer-execution-state-sibling-0-list-1') ?? '{}'
       );
       expect(stored).toEqual(state);
     });
 
     it('should log error when save fails', () => {
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => void 0);
       const mockSetItem = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
         throw new Error('Quota exceeded');
       });
@@ -220,7 +222,7 @@ describe('storage utility', () => {
 
     it('should log error and return null when JSON is invalid', () => {
       localStorage.setItem('task-timer-execution-state-single-list-1', 'invalid-json');
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => void 0);
 
       const result = loadExecutionState('list-1', 'single');
       expect(result).toBeNull();
