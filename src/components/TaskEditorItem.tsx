@@ -43,7 +43,7 @@ const DurationModeEditor: React.FC<{
           onChange={(val) => {
             onTaskChange(task.id, { plannedSeconds: val * 60 });
           }}
-          unit="ぷん"
+          unit="ふん"
           disabled={task.rewardSettings?.mode === 'target-time'}
           step={5}
         />
@@ -252,7 +252,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
               onChange={(val) => {
                 onTaskChange(task.id, { plannedSeconds: val * 60 });
               }}
-              unit="ぷん"
+              unit="ふん"
             />
           </div>
         ) : (
