@@ -135,7 +135,7 @@ function App() {
           onEditSettings={(id) => {
             showSettings(id, 'main');
           }}
-            onEnterSiblingMode={duplicateActiveListForSiblingMode}
+          onEnterSiblingMode={duplicateActiveListForSiblingMode}
           timerMode="single"
         />
       )}

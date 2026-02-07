@@ -501,17 +501,17 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     const mergedTasks =
       state.tasks.length > 0
         ? state.tasks.map((task) => {
-          const savedTask = tasks.find((t) => t.id === task.id);
-          if (savedTask) {
-            return {
-              ...task,
-              status: savedTask.status,
-              elapsedSeconds: savedTask.elapsedSeconds,
-              actualSeconds: savedTask.actualSeconds,
-            };
-          }
-          return task;
-        })
+            const savedTask = tasks.find((t) => t.id === task.id);
+            if (savedTask) {
+              return {
+                ...task,
+                status: savedTask.status,
+                elapsedSeconds: savedTask.elapsedSeconds,
+                actualSeconds: savedTask.actualSeconds,
+              };
+            }
+            return task;
+          })
         : tasks;
 
     const finalSelectedTaskId = mergedTasks.some((t) => t.id === selectedTaskId)

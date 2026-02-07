@@ -404,8 +404,7 @@ export const TimeStepper: React.FC<{
       return;
     }
 
-    let newValue = value - step;
-    if (newValue < 0) newValue = 0;
+    const newValue = Math.max(0, value - step);
     onChange(newValue);
   };
 
@@ -429,16 +428,29 @@ export const TimeStepper: React.FC<{
     onChange(newValue);
   };
 
+  const isDecrementDisabled = () => {
+    if (disabled) return true;
+    if (options) {
+      return options.includes(value) && options.indexOf(value) <= 0;
+    }
+    return value <= 0;
+  };
+
+  const isIncrementDisabled = () => {
+    if (disabled) return true;
+    if (options) {
+      return options.includes(value) && options.indexOf(value) >= options.length - 1;
+    }
+    return max !== undefined && value >= max;
+  };
+
   return (
     <div className={styles.stepperContainer}>
       <button
         type="button"
         className={styles.stepperBtn}
         onClick={handleDecrement}
-        disabled={
-          (disabled ?? false) ||
-          (options ? options.indexOf(value) <= 0 && options.indexOf(value) !== -1 : value <= 0)
-        }
+        disabled={isDecrementDisabled()}
       >
         -
       </button>
@@ -447,7 +459,9 @@ export const TimeStepper: React.FC<{
           <select
             className={styles.stepperInput}
             value={value}
-            onChange={(e) => onChange(parseInt(e.target.value))}
+            onChange={(e) => {
+              onChange(parseInt(e.target.value));
+            }}
             disabled={disabled}
             style={{ appearance: 'none', background: 'transparent', textAlign: 'center' }}
           >
@@ -458,15 +472,15 @@ export const TimeStepper: React.FC<{
             ))}
           </select>
         ) : (
-            <input
-              type="number"
-              className={styles.stepperInput}
-              value={value}
-              onChange={(e) => {
-                onChange(parseInt(e.target.value || '0'));
-              }}
-              disabled={disabled}
-            />
+          <input
+            type="number"
+            className={styles.stepperInput}
+            value={value}
+            onChange={(e) => {
+              onChange(parseInt(e.target.value || '0'));
+            }}
+            disabled={disabled}
+          />
         )}
         <span className={styles.stepperUnit}>{unit}</span>
       </div>
@@ -474,12 +488,7 @@ export const TimeStepper: React.FC<{
         type="button"
         className={styles.stepperBtn}
         onClick={handleIncrement}
-        disabled={
-          (disabled ?? false) ||
-          (options
-            ? options.indexOf(value) >= options.length - 1 && options.indexOf(value) !== -1
-            : max !== undefined && value >= max)
-        }
+        disabled={isIncrementDisabled()}
       >
         +
       </button>

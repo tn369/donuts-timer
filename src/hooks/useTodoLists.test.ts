@@ -1,10 +1,11 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, expect, it, beforeEach, vi } from 'vitest';
-import { useTodoLists } from './useTodoLists';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import * as storage from '../storage';
+import { useTodoLists } from './useTodoLists';
 
 vi.mock('../storage', async () => {
-  const actual = (await vi.importActual('../storage')) as any;
+  const actual = await vi.importActual('../storage');
   return {
     ...actual,
     loadTodoLists: vi.fn(() => []),
@@ -20,8 +21,13 @@ vi.mock('../storage', async () => {
 describe('useTodoLists', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (storage.loadTodoLists as any).mockReturnValue([
-      { id: 'list-1', title: 'List 1', tasks: [], targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 } }
+    vi.mocked(storage.loadTodoLists).mockReturnValue([
+      {
+        id: 'list-1',
+        title: 'List 1',
+        tasks: [],
+        targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
+      },
     ]);
   });
 
@@ -42,23 +48,32 @@ describe('useTodoLists', () => {
     expect(result.current.activeLists.length).toBe(2);
 
     // mock storage state for sibling-0
-    const mockState = { tasks: [], selectedTaskId: 'task-1', isTimerRunning: true, lastTickTimestamp: 123, listId: 'list-1', mode: 'sibling-0' };
-    (storage.loadExecutionState as any).mockReturnValue(mockState);
+    const mockState = {
+      tasks: [],
+      selectedTaskId: 'task-1',
+      isTimerRunning: true,
+      lastTickTimestamp: 123,
+      listId: 'list-1',
+      mode: 'sibling-0' as const,
+    };
+    vi.mocked(storage.loadExecutionState).mockReturnValue(mockState);
 
-    // ひとりモードに戻す（未実装：Red）
+    // ひとりモードに戻す
     act(() => {
-      // @ts-ignore
+      // @ts-expect-error - exitSiblingMode might be missing in some states or still being implemented
       result.current.exitSiblingMode();
     });
 
     expect(result.current.isSiblingMode).toBe(false);
     expect(result.current.activeLists.length).toBe(1);
-    
+
     // 状態が single モードへコピーされていることを確認
-    expect(storage.saveExecutionState).toHaveBeenCalledWith(expect.objectContaining({
-      mode: 'single',
-      selectedTaskId: 'task-1',
-      isAutoResume: true
-    }));
+    expect(storage.saveExecutionState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: 'single',
+        selectedTaskId: 'task-1',
+        isAutoResume: true,
+      })
+    );
   });
 });

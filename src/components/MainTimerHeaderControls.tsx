@@ -38,16 +38,16 @@ const SHAPES: (
   | 'star'
   | 'heart'
 )[] = [
-    'circle',
-    'square',
-    'triangle',
-    'diamond',
-    'pentagon',
-    'hexagon',
-    'octagon',
-    'star',
-    'heart',
-  ];
+  'circle',
+  'square',
+  'triangle',
+  'diamond',
+  'pentagon',
+  'hexagon',
+  'octagon',
+  'star',
+  'heart',
+];
 
 const COLORS: (
   | 'red'
@@ -62,18 +62,18 @@ const COLORS: (
   | 'cyan'
   | 'lime'
 )[] = [
-    'red',
-    'blue',
-    'yellow',
-    'green',
-    'pink',
-    'purple',
-    'orange',
-    'teal',
-    'indigo',
-    'cyan',
-    'lime',
-  ];
+  'red',
+  'blue',
+  'yellow',
+  'green',
+  'pink',
+  'purple',
+  'orange',
+  'teal',
+  'indigo',
+  'cyan',
+  'lime',
+];
 
 /**
  * MainTimerHeaderControlsのプロパティ
@@ -134,6 +134,53 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
     }
   }, [activeList, onEditSettings]);
 
+  const renderDebugButton = () => {
+    if (!import.meta.env.DEV) return null;
+
+    return (
+      <motion.button
+        whileHover={{ scale: 1.05, translateY: -2 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={fastForward}
+        className={styles.settingsButton}
+        style={{ color: '#fbbf24' }}
+        aria-label="デバッグ：すすめる"
+      >
+        <Zap size={isSiblingMode ? 20 : 24} fill="currentColor" />
+      </motion.button>
+    );
+  };
+
+  const renderModeToggleButton = () => {
+    if (isSiblingMode) {
+      if (!onExitSiblingMode) return null;
+      return (
+        <motion.button
+          whileHover={{ scale: 1.05, translateY: -2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onExitSiblingMode}
+          className={styles.settingsButton}
+          aria-label="ひとりモードにもどす"
+        >
+          <User size={20} />
+        </motion.button>
+      );
+    }
+
+    if (!onEnterSiblingMode) return null;
+    return (
+      <motion.button
+        whileHover={{ scale: 1.05, translateY: -2 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onEnterSiblingMode}
+        className={styles.settingsButton}
+        aria-label="ふたりモードにきりかえる"
+      >
+        <Users size={24} />
+      </motion.button>
+    );
+  };
+
   return (
     <div className={styles.topControls}>
       {showSelectionButton && (
@@ -163,20 +210,8 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         </div>
       )}
 
-
       <div className={styles.topControlsGroup}>
-        {import.meta.env.DEV && (
-          <motion.button
-            whileHover={{ scale: 1.05, translateY: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={fastForward}
-            className={styles.settingsButton}
-            style={{ color: '#fbbf24' }}
-            aria-label="デバッグ：すすめる"
-          >
-            <Zap size={isSiblingMode ? 20 : 24} fill="currentColor" />
-          </motion.button>
-        )}
+        {renderDebugButton()}
         <motion.button
           whileHover={{ scale: 1.05, translateY: -2 }}
           whileTap={{ scale: 0.95 }}
@@ -195,31 +230,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         >
           <Palette size={isSiblingMode ? 20 : 24} color={TIMER_COLORS[timerSettings.color]} />
         </motion.button>
-        {isSiblingMode ? (
-          onExitSiblingMode && (
-            <motion.button
-              whileHover={{ scale: 1.05, translateY: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onExitSiblingMode}
-              className={styles.settingsButton}
-              aria-label="ひとりモードにもどす"
-            >
-              <User size={20} />
-            </motion.button>
-          )
-        ) : (
-          onEnterSiblingMode && (
-            <motion.button
-              whileHover={{ scale: 1.05, translateY: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onEnterSiblingMode}
-              className={styles.settingsButton}
-              aria-label="ふたりモードにきりかえる"
-            >
-              <Users size={24} />
-            </motion.button>
-          )
-        )}
+        {renderModeToggleButton()}
         <motion.button
           whileHover={{ scale: 1.05, translateY: -2 }}
           whileTap={{ scale: 0.95 }}
