@@ -108,16 +108,6 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
             strokeLinejoin="round"
           />
         );
-      case 'octagon':
-        return (
-          <polygon
-            points={getPoints(8)}
-            fill="none"
-            stroke={color}
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-        );
       case 'star':
         return (
           <polygon

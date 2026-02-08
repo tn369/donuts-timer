@@ -61,8 +61,7 @@ export type TimerShape =
   | 'pentagon'
   | 'hexagon'
   | 'star'
-  | 'heart'
-  | 'octagon';
+  | 'heart';
 
 /**
  * タイマーのカラー

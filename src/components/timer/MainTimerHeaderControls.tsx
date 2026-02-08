@@ -34,7 +34,6 @@ const SHAPES: (
   | 'diamond'
   | 'pentagon'
   | 'hexagon'
-  | 'octagon'
   | 'star'
   | 'heart'
 )[] = [
@@ -43,8 +42,7 @@ const SHAPES: (
   'triangle',
   'diamond',
   'pentagon',
-  'hexagon',
-  'octagon',
+    'hexagon',
   'star',
   'heart',
 ];

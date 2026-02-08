@@ -61,12 +61,6 @@ describe('shapeUtils', () => {
       expect(props.d).toContain('M');
     });
 
-    it('should return a renderer for octagon', () => {
-      const renderer = createRenderer('octagon', size, strokeWidth);
-      const props = renderer.getBackgroundProps();
-      expect(props.d).toContain('M');
-    });
-
     it('should fallback to circle for unknown shape', () => {
       const renderer = createRenderer('unknown' as 'circle', size, strokeWidth);
       expect(renderer.svgElementType).toBe('circle');

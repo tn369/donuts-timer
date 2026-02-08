@@ -295,8 +295,6 @@ export const createRenderer = (shape: string, size: number, strokeWidth: number)
       return new PolygonRenderer(size, strokeWidth, 5);
     case 'hexagon':
       return new PolygonRenderer(size, strokeWidth, 6);
-    case 'octagon':
-      return new PolygonRenderer(size, strokeWidth, 8);
     case 'star':
       return new PolygonRenderer(size, strokeWidth, 5, true);
     case 'heart':

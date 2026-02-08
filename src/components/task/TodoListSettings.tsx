@@ -66,7 +66,6 @@ const SHAPE_NAMES: Record<string, string> = {
   diamond: 'だいや',
   pentagon: 'ごかく',
   hexagon: 'ろっかく',
-  octagon: 'はっかく',
   star: 'ほし',
   heart: 'はーと',
 };
@@ -78,7 +77,6 @@ const SHAPES = [
   'diamond',
   'pentagon',
   'hexagon',
-  'octagon',
   'star',
   'heart',
 ] as const;
