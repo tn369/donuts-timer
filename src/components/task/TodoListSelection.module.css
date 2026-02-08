@@ -78,10 +78,17 @@
 }
 
 .listName {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   font-size: 32px;
   font-weight: 800;
   color: var(--color-text-main);
+}
+
+.listSubtitle {
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-muted);
 }
 
 .listTaskCount {
@@ -283,6 +290,11 @@
 .compact .listName {
   margin-bottom: 8px;
   font-size: 24px;
+}
+
+.compact .listSubtitle {
+  margin-bottom: 8px;
+  font-size: 16px;
 }
 
 .compact .listTaskCount {

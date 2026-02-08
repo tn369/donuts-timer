@@ -37,10 +37,18 @@ export interface ExecutionState {
 /**
  * 古いデータ構造から新しいデータ構造への移行
  * グローバルのtargetTimeSettingsをごほうびタスクのrewardSettingsに移行する
+ * タイトルから「のやることリスト」サフィックスを除去する
  * @param list 移行対象のリスト
  * @returns 移行後のリスト
  */
 const migrateTodoList = (list: TodoList): TodoList => {
+  const TITLE_SUFFIX = 'のやることリスト';
+
+  // タイトルからサフィックスを除去
+  const migratedTitle = list.title.endsWith(TITLE_SUFFIX)
+    ? list.title.slice(0, -TITLE_SUFFIX.length)
+    : list.title;
+
   // targetTimeSettingsが存在し、rewardタスクが設定を持っていない場合
   if (list.targetTimeSettings) {
     const migratedTasks = list.tasks.map((task) => {
@@ -59,12 +67,16 @@ const migrateTodoList = (list: TodoList): TodoList => {
 
     return {
       ...list,
+      title: migratedTitle,
       tasks: migratedTasks,
-      // targetTimeSettingsは保持（後方互換性のため）
+      // targetTimeSettingsは保持(後方互換性のため)
     };
   }
 
-  return list;
+  return {
+    ...list,
+    title: migratedTitle,
+  };
 };
 
 /**

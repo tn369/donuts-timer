@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../../types';
@@ -7,7 +7,7 @@ import { TodoListSettings } from './TodoListSettings';
 describe('TodoListSettings', () => {
   const mockList: TodoList = {
     id: '1',
-    title: 'あさのやることリスト',
+    title: 'あさ',
     tasks: [],
     timerSettings: { shape: 'circle', color: 'blue' },
   };
@@ -34,6 +34,28 @@ describe('TodoListSettings', () => {
 
     // 新しく追加されたタスクのデフォルト名が表示されていることを確認
     expect(await screen.findByDisplayValue('新しいやること')).toBeInTheDocument();
+  });
+
+  it('保存時にタイトルからサフィックスが除去されること', () => {
+    const onSave = vi.fn();
+    render(<TodoListSettings list={mockList} onSave={onSave} onBack={vi.fn()} />);
+
+    // タイトル入力欄を変更
+    const titleInput = screen.getByPlaceholderText('なまえ');
+    fireEvent.change(titleInput, { target: { value: 'よる' } });
+
+    // 保存ボタンをクリック
+    const saveButton = screen.getByText('ほぞんする');
+    act(() => {
+      saveButton.click();
+    });
+
+    // onSaveが呼ばれ、titleにサフィックスが含まれていないことを確認
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'よる',
+      })
+    );
   });
 
   describe('戻るボタンの確認ダイアログ', () => {

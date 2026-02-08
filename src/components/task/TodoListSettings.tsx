@@ -227,7 +227,10 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
 
         <button
           onClick={() => {
-            onSave(editedList);
+            const titleWithoutSuffix = editedList.title.endsWith(TITLE_SUFFIX)
+              ? editedList.title.slice(0, -TITLE_SUFFIX.length)
+              : editedList.title;
+            onSave({ ...editedList, title: titleWithoutSuffix });
           }}
           className={`${styles.confirmButton} ${styles.hasChanges}`}
           style={{ marginLeft: 'auto' }}

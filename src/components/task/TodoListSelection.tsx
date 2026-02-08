@@ -141,6 +141,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                   )}
                 </div>
                 <h3 className={styles.listName}>{list.title}</h3>
+                <p className={styles.listSubtitle}>のやることリスト</p>
                 <p className={styles.listTaskCount}>
                   {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
                 </p>

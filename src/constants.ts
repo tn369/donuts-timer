@@ -125,9 +125,9 @@ export const INITIAL_TASKS: Task[] = [
 export const DEFAULT_TODO_LISTS: TodoList[] = [
   {
     id: 'default-morning',
-    title: 'あさのやることリスト',
+    title: 'あさ',
     tasks: INITIAL_TASKS,
-    // targetTimeSettings は削除（ごほうびタスクのrewardSettingsに移行）
+    // targetTimeSettings は削除(ごほうびタスクのrewardSettingsに移行)
     timerSettings: { shape: 'square', color: 'blue' },
   },
 ];
