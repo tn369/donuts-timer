@@ -3,7 +3,7 @@
  */
 import React from 'react';
 
-import type { TimerShape } from '../types';
+import type { TimerShape } from '../../types';
 
 /**
  * ShapeIconのプロパティ

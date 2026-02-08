@@ -6,8 +6,8 @@ import { ArrowLeft, Plus, Save } from 'lucide-react';
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { RewardTaskSettings, Task, TodoList } from '../types';
-import { ShapeIcon } from './ShapeIcon';
+import type { RewardTaskSettings, Task, TodoList } from '../../types';
+import { ShapeIcon } from '../common/ShapeIcon';
 import { TaskEditorItem } from './TaskEditorItem';
 import styles from './TodoListSettings.module.css';
 
@@ -151,7 +151,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   const handleTaskChange = (taskId: string, updates: Partial<Task>) => {
     setEditedList({
       ...editedList,
-      tasks: editedList.tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)),
+      tasks: editedList.tasks.map((t: Task) => (t.id === taskId ? { ...t, ...updates } : t)),
     });
   };
 
@@ -167,7 +167,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
       actualSeconds: 0,
     };
 
-    const rewardIndex = editedList.tasks.findIndex((t) => t.kind === 'reward');
+    const rewardIndex = editedList.tasks.findIndex((t: any) => t.kind === 'reward');
     const newTasks = [...editedList.tasks];
     if (rewardIndex !== -1) {
       newTasks.splice(rewardIndex, 0, newTask);
@@ -181,14 +181,14 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   const removeTask = (taskId: string) => {
     setEditedList({
       ...editedList,
-      tasks: editedList.tasks.filter((t) => t.id !== taskId || t.kind === 'reward'),
+      tasks: editedList.tasks.filter((t: any) => t.id !== taskId || t.kind === 'reward'),
     });
   };
 
   const handleRewardSettingsChange = (taskId: string, settings: Partial<RewardTaskSettings>) => {
     setEditedList({
       ...editedList,
-      tasks: editedList.tasks.map((t) =>
+      tasks: editedList.tasks.map((t: any) =>
         t.id === taskId && t.kind === 'reward'
           ? { ...t, rewardSettings: { ...(t.rewardSettings ?? { mode: 'duration' }), ...settings } }
           : t
@@ -317,7 +317,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               onReorder={handleReorderTasks}
               className={styles.reorderGroup}
             >
-              {editedList.tasks.map((task) => (
+              {editedList.tasks.map((task: any) => (
                 <ReorderableTaskItem
                   key={task.id}
                   task={task}

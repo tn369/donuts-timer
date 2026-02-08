@@ -5,10 +5,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Menu, Palette, RotateCcw, Settings, User, Users, X, Zap } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 
-import type { TimerColor, TimerShape, TodoList } from '../types';
+import type { TimerColor, TimerShape, TodoList } from '../../types';
 import { Controls } from './Controls';
 import styles from './MainTimerView.module.css';
-import { ShapeIcon } from './ShapeIcon';
+import { ShapeIcon } from '../common/ShapeIcon';
 
 /**
  * タイマーのカラーコード定義

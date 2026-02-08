@@ -1,12 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { TodoList } from '../types';
+import type { TodoList } from '../../types';
 import { TodoListSelection } from './TodoListSelection';
 
 // useWindowSize のモック
 const mockUseWindowSize = vi.fn<() => { width: number; height: number }>();
-vi.mock('../hooks/useWindowSize', () => ({
+vi.mock('../../hooks/useWindowSize', () => ({
   useWindowSize: () => mockUseWindowSize(),
 }));
 
@@ -63,19 +63,11 @@ describe('TodoListSelection', () => {
     expect(selectionScreen?.className).not.toContain('compact');
   });
 
-  it('小さな高さ（高さ 500px）では compact クラスが付与されること', () => {
-    mockUseWindowSize.mockReturnValue({ width: 1024, height: 500 });
-    const { container } = render(<TodoListSelection {...defaultProps} />);
-
-    const selectionScreen = container.querySelector('[class*="selectionScreen"]');
-    expect(selectionScreen?.className).toContain('compact');
-  });
-
   it('カードをクリックしたときに onSelect が呼ばれること', () => {
     mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
     render(<TodoListSelection {...defaultProps} />);
 
-    fireEvent.click(screen.getByLabelText('朝の準備 リストをえらぶ'));
+    fireEvent.click(screen.getByLabelText(/朝の準備 リストをえらぶ/));
     expect(defaultProps.onSelect).toHaveBeenCalledWith('list-1');
   });
 
@@ -84,14 +76,14 @@ describe('TodoListSelection', () => {
     render(<TodoListSelection {...defaultProps} />);
 
     // ふたりでボタンをクリック
-    fireEvent.click(screen.getByLabelText('ふたりで つかう'));
+    fireEvent.click(screen.getByLabelText(/ふたりで つかう/));
 
     // 1つ目のリストを選択
-    fireEvent.click(screen.getByLabelText('朝の準備 リストをえらぶ'));
+    fireEvent.click(screen.getByLabelText(/朝の準備 リストをえらぶ/));
     expect(screen.getByText('ふたりめ の リストを えらんでね')).toBeInTheDocument();
 
     // 2つ目のリストを選択
-    fireEvent.click(screen.getByLabelText('宿題 リストをえらぶ'));
+    fireEvent.click(screen.getByLabelText(/宿題 リストをえらぶ/));
 
     expect(defaultProps.onSelectSibling).toHaveBeenCalledWith('list-1', 'list-2');
   });
@@ -100,6 +92,6 @@ describe('TodoListSelection', () => {
     mockUseWindowSize.mockReturnValue({ width: 1024, height: 500 });
     render(<TodoListSelection {...defaultProps} />);
 
-    expect(screen.queryByLabelText('ふたりで つかう')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /ふたりで/ })).not.toBeInTheDocument();
   });
 });

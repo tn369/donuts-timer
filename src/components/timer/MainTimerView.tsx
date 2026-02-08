@@ -4,16 +4,16 @@
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useTaskEffects } from '../hooks/useTaskEffects';
-import { useWindowSize } from '../hooks/useWindowSize';
-import { type TimerMode } from '../storage';
-import type { Task, TodoList } from '../types';
-import { useTaskTimer } from '../useTaskTimer';
+import { useTaskEffects } from '../../hooks/useTaskEffects';
+import { useWindowSize } from '../../hooks/useWindowSize';
+import { type TimerMode } from '../../storage';
+import type { Task, TodoList } from '../../types';
+import { useTaskTimer } from '../../useTaskTimer';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
-import { ResetModal } from './ResetModal';
-import { ResumeModal } from './ResumeModal';
-import { TaskList } from './TaskList';
+import { ResetModal } from '../modals/ResetModal';
+import { ResumeModal } from '../modals/ResumeModal';
+import { TaskList } from '../task/TaskList';
 
 /**
  * MainTimerViewのプロパティ

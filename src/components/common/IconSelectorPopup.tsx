@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { createPortal } from 'react-dom';
 
-import type { Task } from '../types';
+import type { Task } from '../../types';
 import styles from './IconSelectorPopup.module.css';
 
 interface IconSelectorPopupProps {

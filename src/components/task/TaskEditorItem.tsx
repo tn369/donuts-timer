@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { Camera, GripVertical, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
-import type { RewardTaskSettings, Task } from '../types';
-import { resizeImage } from '../utils/image';
-import { IconSelectorPopup } from './IconSelectorPopup';
+import type { RewardTaskSettings, Task } from '../../types';
+import { resizeImage } from '../../utils/image';
+import { IconSelectorPopup } from '../common/IconSelectorPopup';
 import styles from './TaskEditorItem.module.css';
-import { TimeStepper } from './TimeStepper';
+import { TimeStepper } from '../common/TimeStepper';
 
 interface TaskEditorItemProps {
   task: Task;

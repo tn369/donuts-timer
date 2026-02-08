@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { useWindowSize } from '../hooks/useWindowSize';
-import type { TodoList } from '../types';
+import { useWindowSize } from '../../hooks/useWindowSize';
+import type { TodoList } from '../../types';
 import styles from './TodoListSelection.module.css';
 
 /**
@@ -139,7 +139,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                 </div>
                 <h3 className={styles.listName}>{list.title}</h3>
                 <p className={styles.listTaskCount}>
-                  {list.tasks.filter((t) => t.kind === 'todo').length}この やること
+                  {list.tasks.filter((t: any) => t.kind === 'todo').length}この やること
                 </p>
               </div>
 

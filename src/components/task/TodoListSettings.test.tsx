@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { TodoList } from '../types';
+import type { TodoList } from '../../types';
 import { TodoListSettings } from './TodoListSettings';
 
 describe('TodoListSettings', () => {

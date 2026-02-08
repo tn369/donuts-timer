@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { TimerColor, TimerShape, TodoList } from '../types';
+import type { TimerColor, TimerShape, TodoList } from '../../types';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 
 describe('MainTimerHeaderControls', () => {
@@ -31,31 +31,31 @@ describe('MainTimerHeaderControls', () => {
 
   it('レンダリングされること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
-    expect(screen.getByLabelText('リストをえらびなおす')).toBeInTheDocument();
-    expect(screen.getByLabelText('タイマーのかたちをかえる')).toBeInTheDocument();
-    expect(screen.getByLabelText('タイマーのいろをかえる')).toBeInTheDocument();
-    expect(screen.getByLabelText('メニューをひらく')).toBeInTheDocument();
+    expect(screen.getByLabelText(/リストをえらびなおす/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/タイマーのかたちをかえる/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/タイマーのいろをかえる/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/メニューをひらく/)).toBeInTheDocument();
 
     // 初期状態ではメニュー内のボタンは見えない
-    expect(screen.queryByLabelText('ふたりモードにきりかえる')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('リストのせってい')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/ふたりモードにきりかえる/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/リストのせってい/)).not.toBeInTheDocument();
   });
 
   it('「もどる」ボタンをクリックすると onBackToSelection が呼ばれること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
-    fireEvent.click(screen.getByLabelText('リストをえらびなおす'));
+    fireEvent.click(screen.getByLabelText(/リストをえらびなおす/));
     expect(defaultProps.onBackToSelection).toHaveBeenCalled();
   });
 
   it('形変更ボタンをクリックすると setTimerSettings が呼ばれること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
-    fireEvent.click(screen.getByLabelText('タイマーのかたちをかえる'));
+    fireEvent.click(screen.getByLabelText(/タイマーのかたちをかえる/));
     expect(defaultProps.setTimerSettings).toHaveBeenCalled();
   });
 
   it('色変更ボタンをクリックすると setTimerSettings が呼ばれること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
-    fireEvent.click(screen.getByLabelText('タイマーのいろをかえる'));
+    fireEvent.click(screen.getByLabelText(/タイマーのいろをかえる/));
     expect(defaultProps.setTimerSettings).toHaveBeenCalled();
   });
 
@@ -63,9 +63,9 @@ describe('MainTimerHeaderControls', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
 
     // メニューを開く
-    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
 
-    fireEvent.click(screen.getByLabelText('ふたりモードにきりかえる'));
+    fireEvent.click(screen.getByLabelText(/ふたりモードにきりかえる/));
     expect(defaultProps.onEnterSiblingMode).toHaveBeenCalled();
   });
 
@@ -73,9 +73,9 @@ describe('MainTimerHeaderControls', () => {
     render(<MainTimerHeaderControls {...defaultProps} isSiblingMode={true} />);
 
     // メニューを開く
-    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
 
-    fireEvent.click(screen.getByLabelText('ひとりモードにもどす'));
+    fireEvent.click(screen.getByLabelText(/ひとりモードにもどす/));
     expect(defaultProps.onExitSiblingMode).toHaveBeenCalled();
   });
 
@@ -83,9 +83,9 @@ describe('MainTimerHeaderControls', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
 
     // メニューを開く
-    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
 
-    fireEvent.click(screen.getByLabelText('リストのせってい'));
+    fireEvent.click(screen.getByLabelText(/リストのせってい/));
     expect(defaultProps.onEditSettings).toHaveBeenCalledWith('test-list');
   });
 
@@ -93,9 +93,9 @@ describe('MainTimerHeaderControls', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
 
     // メニューを開く
-    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
 
-    fireEvent.click(screen.getByLabelText('リセットする'));
+    fireEvent.click(screen.getByLabelText(/リセットする/));
     expect(defaultProps.setShowResetConfirm).toHaveBeenCalledWith(true);
   });
 
@@ -113,17 +113,17 @@ describe('MainTimerHeaderControls', () => {
     render(<MainTimerHeaderControls {...defaultProps} isCompact={true} />);
 
     // メニューを開く
-    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
 
-    expect(screen.queryByLabelText('ふたりモードにきりかえる')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/ふたりモードにきりかえる/)).not.toBeInTheDocument();
   });
 
   it('コンパクト表示（isCompact=true）であっても、すでにふたりモード（isSiblingMode=true）なら「ひとりモードにもどす」が表示されること', () => {
     render(<MainTimerHeaderControls {...defaultProps} isCompact={true} isSiblingMode={true} />);
 
     // メニューを開く
-    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
 
-    expect(screen.getByLabelText('ひとりモードにもどす')).toBeInTheDocument();
+    expect(screen.getByLabelText(/ひとりモードにもどす/)).toBeInTheDocument();
   });
 });
