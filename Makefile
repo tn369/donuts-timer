@@ -1,4 +1,4 @@
-NPM = npm
+NPM = npx pnpm
 TSC = npx tsc
 VITE = npx vite
 VITEST = npx vitest
