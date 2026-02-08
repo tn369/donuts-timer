@@ -2,7 +2,7 @@
  * やることリストを選択、追加、編集、削除するための選択画面コンポーネント。1人モードと2人モードの切り替えが可能。
  */
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
+import { AlertTriangle, Copy, Edit2, ListChecks, Plus, Trash2, User, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -85,7 +85,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               }}
               aria-label="ひとりで つかう"
             >
-              ひとりで
+              <User size={18} /> ひとりで
             </button>
             <button
               className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
