@@ -8,6 +8,7 @@ import { useTaskEffects } from '../hooks/useTaskEffects';
 import { type TimerMode } from '../storage';
 import type { Task, TodoList } from '../types';
 import { useTaskTimer } from '../useTaskTimer';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
 import { ResetModal } from './ResetModal';
@@ -60,6 +61,10 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     reorderTasks,
   } = useTaskTimer(timerMode);
 
+  const { height } = useWindowSize();
+  const isAutoCompact = height > 0 && height < 600;
+  const isCompactLayout = isSiblingMode || isAutoCompact;
+
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
   // 初回ロード
@@ -85,7 +90,10 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   }, [isRunning, selectedTaskId, selectedTask, tasks]);
 
   return (
-    <div className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''}`}>
+    <div
+      className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''} ${isAutoCompact ? styles.compact : ''
+        }`}
+    >
       <MainTimerHeaderControls
         showSelectionButton={showSelectionButton}
         onBackToSelection={onBackToSelection}
@@ -102,6 +110,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         onEditSettings={onEditSettings}
         onEnterSiblingMode={onEnterSiblingMode}
         onExitSiblingMode={onExitSiblingMode}
+        isCompact={isAutoCompact}
       />
 
       <TaskList
@@ -111,7 +120,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         onSelectTask={selectTask}
         shape={timerSettings.shape}
         color={timerSettings.color}
-        isCompact={isSiblingMode}
+        isCompact={isCompactLayout}
         onReorderTasks={reorderTasks}
         isReorderEnabled={true}
       />

@@ -94,6 +94,7 @@ interface HeaderControlsProps {
   onEditSettings: (id: string) => void; // 設定画面を開くコールバック
   onEnterSiblingMode?: () => void; // ふたりモードへ切り替えるコールバック
   onExitSiblingMode?: () => void; // ひとりモードへ切り替えるコールバック
+  isCompact?: boolean; // コンパクト表示かどうか
 }
 
 /**
@@ -115,6 +116,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   onEditSettings,
   onEnterSiblingMode,
   onExitSiblingMode,
+  isCompact = false,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleNextShape = useCallback(() => {
@@ -147,7 +149,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         style={{ color: '#fbbf24' }}
         aria-label="デバッグ：すすめる"
       >
-        <Zap size={isSiblingMode ? 20 : 24} fill="currentColor" />
+        <Zap size={isSiblingMode || isCompact ? 20 : 24} fill="currentColor" />
       </motion.button>
     );
   };
@@ -200,7 +202,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           className={`${styles.settingsButton} ${styles.secondary}`}
           aria-label="リストをえらびなおす"
         >
-          <ChevronLeft size={isSiblingMode ? 20 : 24} /> もどる
+          <ChevronLeft size={isSiblingMode || isCompact ? 20 : 24} /> もどる
         </motion.button>
       )}
 
@@ -214,7 +216,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           }}
           canStartOrStop={canStartOrStop}
           isCompact={true}
-          isSmall={isSiblingMode}
+          isSmall={isSiblingMode || isCompact}
           hideReset={true}
         />
       </div>
@@ -228,7 +230,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           className={styles.settingsButton}
           aria-label="タイマーのかたちをかえる"
         >
-          <ShapeIcon shape={timerSettings.shape} size={isSiblingMode ? 20 : 28} />
+          <ShapeIcon shape={timerSettings.shape} size={isSiblingMode || isCompact ? 20 : 28} />
         </motion.button>
         <motion.button
           whileHover={{ scale: 1.05, translateY: -2 }}
@@ -237,7 +239,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           className={styles.settingsButton}
           aria-label="タイマーのいろをかえる"
         >
-          <Palette size={isSiblingMode ? 20 : 24} color={TIMER_COLORS[timerSettings.color]} />
+          <Palette size={isSiblingMode || isCompact ? 20 : 24} color={TIMER_COLORS[timerSettings.color]} />
         </motion.button>
 
         <div className={styles.menuContainer}>
