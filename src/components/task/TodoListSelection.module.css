@@ -322,3 +322,84 @@
 .listCard:hover .listCardActions {
   opacity: 1;
 }
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgb(0 0 0 / 20%);
+  backdrop-filter: blur(4px);
+}
+
+.modalContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.confirmDialog {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  pointer-events: auto;
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 40px rgb(0 0 0 / 15%);
+}
+
+.confirmDialogMessage {
+  padding: 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: var(--color-text-main);
+  text-align: center;
+}
+
+.confirmDialogActions {
+  display: flex;
+  gap: 16px;
+}
+
+.confirmDialogBtn {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  border-radius: 16px;
+  transition: var(--transition-smooth);
+}
+
+.cancelBtn {
+  color: var(--color-text-muted);
+  background: #f1f5f9;
+}
+
+.cancelBtn:hover {
+  color: var(--color-text-main);
+  background: #e2e8f0;
+}
+
+.deleteBtn {
+  color: white;
+  background: var(--color-danger);
+  box-shadow: 0 4px 12px rgb(239 68 68 / 20%);
+}
+
+.deleteBtn:hover {
+  box-shadow: 0 6px 20px rgb(239 68 68 / 30%);
+  transform: translateY(-2px);
+}

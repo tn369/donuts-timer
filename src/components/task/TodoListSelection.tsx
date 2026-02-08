@@ -4,9 +4,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useWindowSize } from '../../hooks/useWindowSize';
-import type { TodoList } from '../../types';
+import type { Task, TodoList } from '../../types';
 import styles from './TodoListSelection.module.css';
 
 /**
@@ -36,6 +37,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
 }) => {
   const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [deleteConfirmListId, setDeleteConfirmListId] = useState<string | null>(null);
   const { height } = useWindowSize();
   const isCompact = height > 0 && height < 600;
 
@@ -139,7 +141,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                 </div>
                 <h3 className={styles.listName}>{list.title}</h3>
                 <p className={styles.listTaskCount}>
-                  {list.tasks.filter((t: any) => t.kind === 'todo').length}この やること
+                  {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
                 </p>
               </div>
 
@@ -169,7 +171,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                     className={`${styles.actionBtn} ${styles.delete}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDelete(list.id);
+                      setDeleteConfirmListId(list.id);
                     }}
                     aria-label="リストを けす"
                   >
@@ -197,6 +199,56 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           </motion.div>
         )}
       </div>
+
+      {createPortal(
+        <AnimatePresence>
+          {deleteConfirmListId && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.modalBackdrop}
+                onClick={() => {
+                  setDeleteConfirmListId(null);
+                }}
+              />
+              <div className={styles.modalContainer}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  className={styles.confirmDialog}
+                >
+                  <div className={styles.confirmDialogMessage}>
+                    このリストを けしても いいですか？
+                  </div>
+                  <div className={styles.confirmDialogActions}>
+                    <button
+                      className={`${styles.confirmDialogBtn} ${styles.cancelBtn}`}
+                      onClick={() => {
+                        setDeleteConfirmListId(null);
+                      }}
+                    >
+                      キャンセル
+                    </button>
+                    <button
+                      className={`${styles.confirmDialogBtn} ${styles.deleteBtn}`}
+                      onClick={() => {
+                        onDelete(deleteConfirmListId);
+                        setDeleteConfirmListId(null);
+                      }}
+                    >
+                      けす
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };

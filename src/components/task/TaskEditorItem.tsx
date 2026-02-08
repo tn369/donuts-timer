@@ -6,8 +6,8 @@ import React, { useRef, useState } from 'react';
 import type { RewardTaskSettings, Task } from '../../types';
 import { resizeImage } from '../../utils/image';
 import { IconSelectorPopup } from '../common/IconSelectorPopup';
-import styles from './TaskEditorItem.module.css';
 import { TimeStepper } from '../common/TimeStepper';
+import styles from './TaskEditorItem.module.css';
 
 interface TaskEditorItemProps {
   task: Task;

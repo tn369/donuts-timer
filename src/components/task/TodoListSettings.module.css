@@ -393,10 +393,10 @@
   width: 100%;
   max-width: 400px;
   padding: 32px;
+  pointer-events: auto;
   background: white;
   border-radius: var(--radius-xl);
   box-shadow: 0 20px 40px rgb(0 0 0 / 15%);
-  pointer-events: auto;
 }
 
 .confirmDialogMessage {

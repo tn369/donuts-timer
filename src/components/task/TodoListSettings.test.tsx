@@ -52,7 +52,7 @@ describe('TodoListSettings', () => {
       confirmSpy.mockRestore();
     });
 
-    it('変更がある場合、確認ダイアログを表示すること', async () => {
+    it('変更がある場合、確認ダイアログを表示すること', () => {
       const onBack = vi.fn();
       render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={onBack} />);
 
@@ -68,7 +68,9 @@ describe('TodoListSettings', () => {
       });
 
       // カスタムダイアログが表示されていることを確認
-      expect(screen.getByText('へんこう されています。ほぞんせずに もどりますか？')).toBeInTheDocument();
+      expect(
+        screen.getByText('へんこう されています。ほぞんせずに もどりますか？')
+      ).toBeInTheDocument();
       expect(screen.getByText('もどる')).toBeInTheDocument();
       expect(screen.getByText('キャンセル')).toBeInTheDocument();
     });
@@ -100,7 +102,7 @@ describe('TodoListSettings', () => {
       });
     });
 
-    it('変更があり、確認ダイアログで「もどる」を選択した場合、onBackを呼ぶこと', async () => {
+    it('変更があり、確認ダイアログで「もどる」を選択した場合、onBackを呼ぶこと', () => {
       const onBack = vi.fn();
       render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={onBack} />);
 

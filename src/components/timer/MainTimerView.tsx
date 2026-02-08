@@ -9,11 +9,11 @@ import { useWindowSize } from '../../hooks/useWindowSize';
 import { type TimerMode } from '../../storage';
 import type { Task, TodoList } from '../../types';
 import { useTaskTimer } from '../../useTaskTimer';
-import { MainTimerHeaderControls } from './MainTimerHeaderControls';
-import styles from './MainTimerView.module.css';
 import { ResetModal } from '../modals/ResetModal';
 import { ResumeModal } from '../modals/ResumeModal';
 import { TaskList } from '../task/TaskList';
+import { MainTimerHeaderControls } from './MainTimerHeaderControls';
+import styles from './MainTimerView.module.css';
 
 /**
  * MainTimerViewのプロパティ

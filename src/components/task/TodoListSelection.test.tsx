@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../../types';
@@ -93,5 +93,54 @@ describe('TodoListSelection', () => {
     render(<TodoListSelection {...defaultProps} />);
 
     expect(screen.queryByRole('button', { name: /ふたりで/ })).not.toBeInTheDocument();
+  });
+
+  it('削除ボタンをクリックすると確認ダイアログが表示され、確認後に onDelete が呼ばれること', async () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+    render(<TodoListSelection {...defaultProps} />);
+
+    // 最初のリストの削除ボタンをクリック
+    const deleteButtons = screen.getAllByLabelText('リストを けす');
+    fireEvent.click(deleteButtons[0]);
+
+    // 確認ダイアログが表示されることを確認
+    expect(screen.getByText('このリストを けしても いいですか？')).toBeInTheDocument();
+
+    // 削除ボタンをクリック
+    const confirmButton = screen.getByRole('button', { name: 'けす' });
+    fireEvent.click(confirmButton);
+
+    // onDelete が呼ばれることを確認
+    expect(defaultProps.onDelete).toHaveBeenCalledWith('list-1');
+
+    // ダイアログが閉じることを確認
+    await waitFor(() => {
+      expect(screen.queryByText('このリストを けしても いいですか？')).not.toBeInTheDocument();
+    });
+  });
+
+  it('削除確認ダイアログでキャンセルボタンをクリックすると onDelete が呼ばれないこと', async () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+    const onDeleteMock = vi.fn();
+    render(<TodoListSelection {...defaultProps} onDelete={onDeleteMock} />);
+
+    // 最初のリストの削除ボタンをクリック
+    const deleteButtons = screen.getAllByLabelText('リストを けす');
+    fireEvent.click(deleteButtons[0]);
+
+    // 確認ダイアログが表示されることを確認
+    expect(screen.getByText('このリストを けしても いいですか？')).toBeInTheDocument();
+
+    // キャンセルボタンをクリック
+    const cancelButton = screen.getByRole('button', { name: 'キャンセル' });
+    fireEvent.click(cancelButton);
+
+    // onDelete が呼ばれないことを確認
+    expect(onDeleteMock).not.toHaveBeenCalled();
+
+    // ダイアログが閉じることを確認
+    await waitFor(() => {
+      expect(screen.queryByText('このリストを けしても いいですか？')).not.toBeInTheDocument();
+    });
   });
 });

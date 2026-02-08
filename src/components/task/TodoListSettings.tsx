@@ -169,7 +169,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
       actualSeconds: 0,
     };
 
-    const rewardIndex = editedList.tasks.findIndex((t: any) => t.kind === 'reward');
+    const rewardIndex = editedList.tasks.findIndex((t: Task) => t.kind === 'reward');
     const newTasks = [...editedList.tasks];
     if (rewardIndex !== -1) {
       newTasks.splice(rewardIndex, 0, newTask);
@@ -183,14 +183,14 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   const removeTask = (taskId: string) => {
     setEditedList({
       ...editedList,
-      tasks: editedList.tasks.filter((t: any) => t.id !== taskId || t.kind === 'reward'),
+      tasks: editedList.tasks.filter((t: Task) => t.id !== taskId || t.kind === 'reward'),
     });
   };
 
   const handleRewardSettingsChange = (taskId: string, settings: Partial<RewardTaskSettings>) => {
     setEditedList({
       ...editedList,
-      tasks: editedList.tasks.map((t: any) =>
+      tasks: editedList.tasks.map((t: Task) =>
         t.id === taskId && t.kind === 'reward'
           ? { ...t, rewardSettings: { ...(t.rewardSettings ?? { mode: 'duration' }), ...settings } }
           : t
@@ -329,7 +329,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               onReorder={handleReorderTasks}
               className={styles.reorderGroup}
             >
-              {editedList.tasks.map((task: any) => (
+              {editedList.tasks.map((task: Task) => (
                 <ReorderableTaskItem
                   key={task.id}
                   task={task}
@@ -363,7 +363,9 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className={styles.modalBackdrop}
-                onClick={() => setShowConfirmDialog(false)}
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                }}
               />
               <div className={styles.modalContainer}>
                 <motion.div
@@ -380,11 +382,16 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                   <div className={styles.confirmDialogActions}>
                     <button
                       className={`${styles.confirmDialogBtn} ${styles.cancelBtn}`}
-                      onClick={() => setShowConfirmDialog(false)}
+                      onClick={() => {
+                        setShowConfirmDialog(false);
+                      }}
                     >
                       キャンセル
                     </button>
-                    <button className={`${styles.confirmDialogBtn} ${styles.leaveBtn}`} onClick={onBack}>
+                    <button
+                      className={`${styles.confirmDialogBtn} ${styles.leaveBtn}`}
+                      onClick={onBack}
+                    >
                       もどる
                     </button>
                   </div>

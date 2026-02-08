@@ -6,9 +6,9 @@ import { ChevronLeft, Menu, Palette, RotateCcw, Settings, User, Users, X, Zap } 
 import React, { useCallback, useState } from 'react';
 
 import type { TimerColor, TimerShape, TodoList } from '../../types';
+import { ShapeIcon } from '../common/ShapeIcon';
 import { Controls } from './Controls';
 import styles from './MainTimerView.module.css';
-import { ShapeIcon } from '../common/ShapeIcon';
 
 /**
  * タイマーのカラーコード定義
