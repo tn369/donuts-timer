@@ -28,7 +28,7 @@ const migrateTodoList = (list: TodoList): TodoList => ({
  */
 const createDefaultList = (): TodoList => ({
   id: uuid_v4(),
-  title: 'あたらしいやることリスト',
+  title: 'あさ',
   tasks: migrateTasksWithDefaultIcons([
     {
       id: uuid_v4(),
