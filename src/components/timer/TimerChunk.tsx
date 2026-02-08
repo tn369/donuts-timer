@@ -35,7 +35,6 @@ const getColorClass = (color: TimerColor) => {
     pink: styles.colorPink,
     purple: styles.colorPurple,
     orange: styles.colorOrange,
-    teal: styles.colorTeal,
     indigo: styles.colorIndigo,
     cyan: styles.colorCyan,
     lime: styles.colorLime,

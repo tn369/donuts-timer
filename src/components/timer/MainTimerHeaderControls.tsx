@@ -21,7 +21,6 @@ const TIMER_COLORS: Record<string, string> = {
   pink: '#ff6a95',
   purple: '#7b61ff',
   orange: '#f97316',
-  teal: '#14b8a6',
   indigo: '#6366f1',
   cyan: '#06b6d4',
   lime: '#84cc16',
@@ -46,23 +45,10 @@ const COLORS: (
   | 'pink'
   | 'purple'
   | 'orange'
-  | 'teal'
   | 'indigo'
   | 'cyan'
   | 'lime'
-)[] = [
-  'red',
-  'blue',
-  'yellow',
-  'green',
-  'pink',
-  'purple',
-  'orange',
-  'teal',
-  'indigo',
-  'cyan',
-  'lime',
-];
+)[] = ['red', 'blue', 'yellow', 'green', 'pink', 'purple', 'orange', 'indigo', 'cyan', 'lime'];
 
 /**
  * MainTimerHeaderControlsのプロパティ

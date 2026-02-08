@@ -74,7 +74,6 @@ export type TimerColor =
   | 'pink'
   | 'purple'
   | 'orange'
-  | 'teal'
   | 'indigo'
   | 'cyan'
   | 'lime';
