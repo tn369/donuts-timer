@@ -1,8 +1,9 @@
 /**
  * 個別のタスクを表示するカードコンポーネント。タイマー表示や進捗、完了状態を表示する。
  */
+import type { DragControls} from 'framer-motion';
 import { motion } from 'framer-motion';
-import { Camera, Check } from 'lucide-react';
+import { Camera, Check, GripVertical } from 'lucide-react';
 import React from 'react';
 
 import type { Task, TimerColor, TimerShape } from '../types';
@@ -21,6 +22,7 @@ interface TaskCardProps {
   shape?: TimerShape; // タイマーの形状
   color?: TimerColor; // タイマーの色
   isCompact?: boolean; // コンパクト表示にするかどうか
+  dragControls?: DragControls; // ドラッグ制御用
 }
 
 /**
@@ -42,8 +44,18 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   remaining,
   isDone,
   isOverdue,
+  dragControls,
 }) => (
   <div className={styles.compactLayout}>
+    {dragControls && (
+      <div
+        className={styles.dragHandle}
+        onPointerDown={(e) => { dragControls.start(e); }}
+        style={{ cursor: 'grab' }}
+      >
+        <GripVertical size={16} />
+      </div>
+    )}
     <div className={styles.compactTop}>
       {task.icon && <img src={task.icon} alt={task.name} className={styles.taskImageCompact} />}
       <div className={styles.compactText}>
@@ -86,8 +98,18 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   remaining,
   isDone,
   isOverdue,
+  dragControls,
 }) => (
   <>
+    {dragControls && (
+      <div
+        className={styles.dragHandle}
+        onPointerDown={(e) => { dragControls.start(e); }}
+        style={{ cursor: 'grab' }}
+      >
+        <GripVertical size={20} />
+      </div>
+    )}
     {!isDone && (
       <div className={styles.taskImageContainer}>
         {task.icon ? (
@@ -185,6 +207,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   shape,
   color,
   isCompact = false,
+  dragControls,
 }) => {
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
@@ -209,6 +232,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     remaining,
     isDone,
     isOverdue,
+    dragControls,
   };
 
   return (

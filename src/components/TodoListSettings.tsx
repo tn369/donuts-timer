@@ -1,7 +1,7 @@
 /**
  * やることリストの詳細設定（名前、形状、色、タスク構成、目標時刻）を行うコンポーネント
  */
-import { motion, Reorder } from 'framer-motion';
+import { motion, Reorder, useDragControls } from 'framer-motion';
 import { ArrowLeft, Plus, Save } from 'lucide-react';
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -290,17 +290,27 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               onReorder={handleReorderTasks}
               className={styles.reorderGroup}
             >
-              {editedList.tasks.map((task) => (
-                <Reorder.Item key={task.id} value={task}>
-                  <TaskEditorItem
-                    task={task}
-                    onTaskChange={handleTaskChange}
-                    onRemoveTask={removeTask}
-                    onRewardSettingsChange={handleRewardSettingsChange}
-                    allExistingIcons={allExistingIcons}
-                  />
-                </Reorder.Item>
-              ))}
+              {editedList.tasks.map((task) => {
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                const dragControls = useDragControls();
+                return (
+                  <Reorder.Item
+                    key={task.id}
+                    value={task}
+                    dragListener={false}
+                    dragControls={dragControls}
+                  >
+                    <TaskEditorItem
+                      task={task}
+                      onTaskChange={handleTaskChange}
+                      onRemoveTask={removeTask}
+                      onRewardSettingsChange={handleRewardSettingsChange}
+                      allExistingIcons={allExistingIcons}
+                      dragControls={dragControls}
+                    />
+                  </Reorder.Item>
+                );
+              })}
             </Reorder.Group>
 
             <motion.button

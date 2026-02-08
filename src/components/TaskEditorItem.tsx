@@ -1,3 +1,4 @@
+import type { DragControls} from 'framer-motion';
 import { motion } from 'framer-motion';
 import { Camera, GripVertical, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
@@ -14,6 +15,7 @@ interface TaskEditorItemProps {
   onRemoveTask: (taskId: string) => void;
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
   allExistingIcons: string[];
+  dragControls?: DragControls;
 }
 
 /**
@@ -128,6 +130,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   onRemoveTask,
   onRewardSettingsChange,
   allExistingIcons,
+  dragControls,
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
   const [popupDirection, setPopupDirection] = useState<'bottom' | 'top'>('bottom');
@@ -166,8 +169,12 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       exit={{ opacity: 0, x: 20 }}
       className={`${styles.taskEditorItem} ${task.kind === 'reward' ? styles.reward : ''}`}
     >
-      {task.kind !== 'reward' && (
-        <div className={styles.dragHandle}>
+      {task.kind !== 'reward' && dragControls && (
+        <div
+          className={styles.dragHandle}
+          onPointerDown={(e) => { dragControls.start(e); }}
+          style={{ cursor: 'grab', pointerEvents: 'auto' }}
+        >
           <GripVertical size={20} />
         </div>
       )}

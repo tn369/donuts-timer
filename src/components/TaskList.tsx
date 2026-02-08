@@ -1,7 +1,7 @@
 /**
  * タスクの一覧を表示するコンポーネント
  */
-import { Reorder } from 'framer-motion';
+import { Reorder, useDragControls } from 'framer-motion';
 import React from 'react';
 
 import type { Task, TimerColor, TimerShape } from '../types';
@@ -81,19 +81,30 @@ export const TaskList: React.FC<TaskListProps> = ({
       onReorder={handleReorder}
       className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}
     >
-      {tasks.map((task) => (
-        <Reorder.Item key={task.id} value={task} className={styles.taskWrapper}>
-          <TaskCard
-            task={task}
-            isSelected={task.id === selectedTaskId}
-            isSelectable={isTaskSelectable(task.id)}
-            onSelect={onSelectTask}
-            shape={shape}
-            color={color}
-            isCompact={isCompact}
-          />
-        </Reorder.Item>
-      ))}
+      {tasks.map((task) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const dragControls = useDragControls();
+        return (
+          <Reorder.Item
+            key={task.id}
+            value={task}
+            className={styles.taskWrapper}
+            dragListener={false}
+            dragControls={dragControls}
+          >
+            <TaskCard
+              task={task}
+              isSelected={task.id === selectedTaskId}
+              isSelectable={isTaskSelectable(task.id)}
+              onSelect={onSelectTask}
+              shape={shape}
+              color={color}
+              isCompact={isCompact}
+              dragControls={dragControls}
+            />
+          </Reorder.Item>
+        );
+      })}
     </Reorder.Group>
   );
 };
