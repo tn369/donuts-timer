@@ -1,6 +1,8 @@
 /**
  * アプリケーションのエントリーポイントコンポーネント。画面遷移やグローバルな状態管理を行う。
  */
+import { useState } from 'react';
+
 import styles from './App.module.css';
 import { TodoListSelection } from './components/task/TodoListSelection';
 import { TodoListSettings } from './components/task/TodoListSettings';
@@ -25,9 +27,9 @@ function App() {
   } = useAppScreen();
   const {
     activeLists,
-    addNewList,
     clearActiveList,
     copyList,
+    createTemporaryList,
     deleteList,
     getAllUniqueIcons,
     duplicateActiveListForSiblingMode,
@@ -38,6 +40,7 @@ function App() {
     selectSiblingLists,
     todoLists,
   } = useTodoLists();
+  const [temporaryList, setTemporaryList] = useState<TodoList | null>(null);
 
   const handleSelectList = (listId: string) => {
     selectList(listId);
@@ -50,7 +53,8 @@ function App() {
   };
 
   const handleAddNewList = () => {
-    const newList = addNewList();
+    const newList = createTemporaryList();
+    setTemporaryList(newList);
     setEditingListId(newList.id);
     setSettingsSource('selection');
     setCurrentScreen('settings');
@@ -58,6 +62,7 @@ function App() {
 
   const handleSaveList = (updatedList: TodoList) => {
     saveList(updatedList);
+    setTemporaryList(null);
     backFromSettings();
   };
 
@@ -83,14 +88,21 @@ function App() {
   }
 
   if (currentScreen === 'settings' && editingListId) {
-    const listToEdit = todoLists.find((list) => list.id === editingListId);
+    // 一時的なリストがあればそれを使用、なければtodoListsから検索
+    const listToEdit =
+      temporaryList?.id === editingListId
+        ? temporaryList
+        : todoLists.find((list) => list.id === editingListId);
     if (listToEdit) {
       return (
         <TodoListSettings
           list={listToEdit}
           allExistingIcons={getAllUniqueIcons()}
           onSave={handleSaveList}
-          onBack={backFromSettings}
+          onBack={() => {
+            setTemporaryList(null);
+            backFromSettings();
+          }}
         />
       );
     }

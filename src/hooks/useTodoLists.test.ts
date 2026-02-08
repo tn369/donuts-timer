@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as storage from '../storage';
+import type { TodoList } from '../types';
 import { useTodoLists } from './useTodoLists';
 
 vi.mock('../storage', async () => {
@@ -80,6 +81,46 @@ describe('useTodoLists', () => {
 
     expect(result.current.todoLists).toContainEqual(newList);
     expect(storage.saveTodoLists).toHaveBeenCalledWith(expect.arrayContaining([newList]));
+  });
+
+  it('should create temporary list without saving when createTemporaryList is called', () => {
+    const { result } = renderHook(() => useTodoLists());
+    let tempList: TodoList | undefined;
+    act(() => {
+      tempList = result.current.createTemporaryList();
+    });
+
+    // 一時的なリストが返されること
+    expect(tempList).toBeDefined();
+    expect(tempList?.id).toBeDefined();
+    expect(tempList?.title).toBe('あさ');
+
+    // todoListsには追加されていないこと
+    expect(result.current.todoLists).not.toContainEqual(tempList);
+
+    // saveTodoListsが呼ばれていないこと
+    expect(storage.saveTodoLists).not.toHaveBeenCalled();
+  });
+
+  it('should save temporary list when saveList is called with a list not in todoLists', () => {
+    const { result } = renderHook(() => useTodoLists());
+    let tempList: TodoList | undefined;
+    act(() => {
+      tempList = result.current.createTemporaryList();
+    });
+
+    // 一時的なリストを保存
+    act(() => {
+      if (tempList) {
+        result.current.saveList(tempList);
+      }
+    });
+
+    // todoListsに追加されていること
+    expect(result.current.todoLists).toContainEqual(tempList);
+
+    // saveTodoListsが呼ばれていること
+    expect(storage.saveTodoLists).toHaveBeenCalled();
   });
 
   it('should delete list and save when deleteList is called', () => {

@@ -132,6 +132,13 @@ export const useTodoLists = () => {
   };
 
   /**
+   * 一時的なリストを作成する（保存しない）
+   */
+  const createTemporaryList = () => {
+    return createDefaultList();
+  };
+
+  /**
    * リストを削除する
    */
   const deleteList = (listId: string) => {
@@ -154,9 +161,20 @@ export const useTodoLists = () => {
 
   /**
    * リストの内容を保存する
+   * リストがtodoListsに存在しない場合は新規追加として扱う
    */
   const saveList = (updatedList: TodoList) => {
-    const updatedLists = todoLists.map((list) => (list.id === updatedList.id ? updatedList : list));
+    const existingIndex = todoLists.findIndex((list) => list.id === updatedList.id);
+    let updatedLists: TodoList[];
+
+    if (existingIndex === -1) {
+      // 新規リストの場合は追加
+      updatedLists = [...todoLists, updatedList];
+    } else {
+      // 既存リストの場合は更新
+      updatedLists = todoLists.map((list) => (list.id === updatedList.id ? updatedList : list));
+    }
+
     setTodoLists(updatedLists);
     saveTodoLists(updatedLists);
     setActiveLists((prev) => prev.map((list) => (list.id === updatedList.id ? updatedList : list)));
@@ -219,6 +237,7 @@ export const useTodoLists = () => {
     addNewList,
     clearActiveList,
     copyList,
+    createTemporaryList,
     deleteList,
     duplicateActiveListForSiblingMode,
     exitSiblingMode,
