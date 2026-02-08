@@ -8,5 +8,13 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/pnpm-lock.yaml',
+      '**/pnpm.yaml',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+    ],
   },
 });
