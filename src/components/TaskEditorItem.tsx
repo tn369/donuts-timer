@@ -1,4 +1,4 @@
-import type { DragControls} from 'framer-motion';
+import type { DragControls } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { Camera, GripVertical, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
@@ -172,7 +172,9 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       {task.kind !== 'reward' && dragControls && (
         <div
           className={styles.dragHandle}
-          onPointerDown={(e) => { dragControls.start(e); }}
+          onPointerDown={(e) => {
+            dragControls.start(e);
+          }}
           style={{ cursor: 'grab', pointerEvents: 'auto' }}
         >
           <GripVertical size={20} />

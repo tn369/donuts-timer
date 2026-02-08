@@ -1,7 +1,7 @@
 /**
  * 個別のタスクを表示するカードコンポーネント。タイマー表示や進捗、完了状態を表示する。
  */
-import type { DragControls} from 'framer-motion';
+import type { DragControls } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { Camera, Check, GripVertical } from 'lucide-react';
 import React from 'react';
@@ -50,7 +50,9 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
     {dragControls && (
       <div
         className={styles.dragHandle}
-        onPointerDown={(e) => { dragControls.start(e); }}
+        onPointerDown={(e) => {
+          dragControls.start(e);
+        }}
         style={{ cursor: 'grab' }}
       >
         <GripVertical size={16} />
@@ -104,7 +106,9 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
     {dragControls && (
       <div
         className={styles.dragHandle}
-        onPointerDown={(e) => { dragControls.start(e); }}
+        onPointerDown={(e) => {
+          dragControls.start(e);
+        }}
         style={{ cursor: 'grab' }}
       >
         <GripVertical size={20} />

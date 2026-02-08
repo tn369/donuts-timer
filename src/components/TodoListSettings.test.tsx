@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../types';
@@ -22,5 +22,17 @@ describe('TodoListSettings', () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
     expect(screen.getByText('ほぞんする')).toBeInTheDocument();
+  });
+
+  it('タスクが追加できること', async () => {
+    render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+    const addButton = screen.getByText('やること を ついか');
+    act(() => {
+      addButton.click();
+    });
+
+    // 新しく追加されたタスクのデフォルト名が表示されていることを確認
+    expect(await screen.findByDisplayValue('新しいやること')).toBeInTheDocument();
   });
 });

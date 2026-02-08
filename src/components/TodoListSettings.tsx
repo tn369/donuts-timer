@@ -99,6 +99,33 @@ const TITLE_SUFFIX = 'のやることリスト';
 const PRESET_TITLES = ['あさ', 'おひる', 'ゆうがた', 'よる', 'しゅくだい', 'おけいこ'];
 
 /**
+ * ドラッグ可能な個別のタスクアイテムコンポーネント
+ * Hook(useDragControls) をループ外（このコンポーネント内）で呼び出すために抽出
+ */
+const ReorderableTaskItem: React.FC<{
+  task: Task;
+  onTaskChange: (taskId: string, updates: Partial<Task>) => void;
+  onRemoveTask: (taskId: string) => void;
+  onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
+  allExistingIcons: string[];
+}> = ({ task, onTaskChange, onRemoveTask, onRewardSettingsChange, allExistingIcons }) => {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item key={task.id} value={task} dragListener={false} dragControls={dragControls}>
+      <TaskEditorItem
+        task={task}
+        onTaskChange={onTaskChange}
+        onRemoveTask={onRemoveTask}
+        onRewardSettingsChange={onRewardSettingsChange}
+        allExistingIcons={allExistingIcons}
+        dragControls={dragControls}
+      />
+    </Reorder.Item>
+  );
+};
+
+/**
  * やることリストの設定画面コンポーネント
  */
 export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
@@ -290,27 +317,16 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
               onReorder={handleReorderTasks}
               className={styles.reorderGroup}
             >
-              {editedList.tasks.map((task) => {
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                const dragControls = useDragControls();
-                return (
-                  <Reorder.Item
-                    key={task.id}
-                    value={task}
-                    dragListener={false}
-                    dragControls={dragControls}
-                  >
-                    <TaskEditorItem
-                      task={task}
-                      onTaskChange={handleTaskChange}
-                      onRemoveTask={removeTask}
-                      onRewardSettingsChange={handleRewardSettingsChange}
-                      allExistingIcons={allExistingIcons}
-                      dragControls={dragControls}
-                    />
-                  </Reorder.Item>
-                );
-              })}
+              {editedList.tasks.map((task) => (
+                <ReorderableTaskItem
+                  key={task.id}
+                  task={task}
+                  onTaskChange={handleTaskChange}
+                  onRemoveTask={removeTask}
+                  onRewardSettingsChange={handleRewardSettingsChange}
+                  allExistingIcons={allExistingIcons}
+                />
+              ))}
             </Reorder.Group>
 
             <motion.button
