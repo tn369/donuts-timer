@@ -2,12 +2,13 @@
  * やることリストを選択、追加、編集、削除するための選択画面コンポーネント。1人モードと2人モードの切り替えが可能。
  */
 import { AnimatePresence, motion } from 'framer-motion';
-import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
+import { AlertTriangle, Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useWindowSize } from '../../hooks/useWindowSize';
 import type { Task, TodoList } from '../../types';
+import { ConfirmModal } from '../modals/ConfirmModal';
 import styles from './TodoListSelection.module.css';
 
 /**
@@ -203,48 +204,20 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
       {createPortal(
         <AnimatePresence>
           {deleteConfirmListId && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className={styles.modalBackdrop}
-                onClick={() => {
-                  setDeleteConfirmListId(null);
-                }}
-              />
-              <div className={styles.modalContainer}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  className={styles.confirmDialog}
-                >
-                  <div className={styles.confirmDialogMessage}>
-                    このリストを けしても いいですか？
-                  </div>
-                  <div className={styles.confirmDialogActions}>
-                    <button
-                      className={`${styles.confirmDialogBtn} ${styles.cancelBtn}`}
-                      onClick={() => {
-                        setDeleteConfirmListId(null);
-                      }}
-                    >
-                      キャンセル
-                    </button>
-                    <button
-                      className={`${styles.confirmDialogBtn} ${styles.deleteBtn}`}
-                      onClick={() => {
-                        onDelete(deleteConfirmListId);
-                        setDeleteConfirmListId(null);
-                      }}
-                    >
-                      けす
-                    </button>
-                  </div>
-                </motion.div>
-              </div>
-            </>
+            <ConfirmModal
+              title="このリストを けしても いいですか？"
+              cancelText="キャンセル"
+              confirmText="けす"
+              confirmStyle="danger"
+              icon={<AlertTriangle size={48} />}
+              onCancel={() => {
+                setDeleteConfirmListId(null);
+              }}
+              onConfirm={() => {
+                onDelete(deleteConfirmListId);
+                setDeleteConfirmListId(null);
+              }}
+            />
           )}
         </AnimatePresence>,
         document.body

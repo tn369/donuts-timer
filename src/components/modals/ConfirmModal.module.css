@@ -64,9 +64,14 @@
   background: #e0e0e0;
 }
 
-.btnConfirmReset {
+.btnConfirmDanger {
   color: white;
   background: var(--color-danger);
+}
+
+.btnConfirmPrimary {
+  color: white;
+  background: var(--color-primary);
 }
 
 .btnModal:hover {
