@@ -133,7 +133,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               }}
               aria-label={`${list.title} リストをえらぶ`}
             >
-              <div className="list-card-content">
+              <div className={styles.listCardContent}>
                 <div className={styles.listIconBg}>
                   <ListChecks size={56} className={styles.listIcon} />
                   {isSelected && (
@@ -195,7 +195,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
             whileTap={{ scale: 0.98 }}
             onClick={onAdd}
           >
-            <div className="list-card-content">
+            <div className={styles.listCardContent}>
               <div className={styles.addIconContainer}>
                 <Plus size={64} />
               </div>

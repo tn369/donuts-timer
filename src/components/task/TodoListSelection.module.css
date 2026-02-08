@@ -60,6 +60,13 @@
   transform: translateY(-8px) scale(1.02);
 }
 
+.listCardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .listIconBg {
   position: relative;
   display: flex;
