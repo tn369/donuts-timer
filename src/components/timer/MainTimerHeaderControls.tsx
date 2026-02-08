@@ -36,16 +36,7 @@ const SHAPES: (
   | 'hexagon'
   | 'star'
   | 'heart'
-)[] = [
-  'circle',
-  'square',
-  'triangle',
-  'diamond',
-  'pentagon',
-    'hexagon',
-  'star',
-  'heart',
-];
+)[] = ['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon', 'star', 'heart'];
 
 const COLORS: (
   | 'red'
