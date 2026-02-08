@@ -39,6 +39,14 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   const { height } = useWindowSize();
   const isCompact = height > 0 && height < 600;
 
+  // コンパクト表示時はふたりモードを解除
+  React.useEffect(() => {
+    if (isCompact && isSiblingModeSelect) {
+      setIsSiblingModeSelect(false);
+      setSelectedIds([]);
+    }
+  }, [isCompact, isSiblingModeSelect]);
+
   /**
    * カードがクリックされた際のハンドラ
    */
@@ -64,27 +72,29 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           <span>どれに する？</span>
         </h1>
 
-        <div className={styles.modeToggleContainer}>
-          <button
-            className={`${styles.modeToggleBtn} ${!isSiblingModeSelect ? styles.active : ''}`}
-            onClick={() => {
-              setIsSiblingModeSelect(false);
-              setSelectedIds([]);
-            }}
-            aria-label="ひとりで つかう"
-          >
-            ひとりで
-          </button>
-          <button
-            className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
-            onClick={() => {
-              setIsSiblingModeSelect(true);
-            }}
-            aria-label="ふたりで つかう"
-          >
-            <Users size={18} /> ふたりで
-          </button>
-        </div>
+        {!isCompact && (
+          <div className={styles.modeToggleContainer}>
+            <button
+              className={`${styles.modeToggleBtn} ${!isSiblingModeSelect ? styles.active : ''}`}
+              onClick={() => {
+                setIsSiblingModeSelect(false);
+                setSelectedIds([]);
+              }}
+              aria-label="ひとりで つかう"
+            >
+              ひとりで
+            </button>
+            <button
+              className={`${styles.modeToggleBtn} ${isSiblingModeSelect ? styles.active : ''}`}
+              onClick={() => {
+                setIsSiblingModeSelect(true);
+              }}
+              aria-label="ふたりで つかう"
+            >
+              <Users size={18} /> ふたりで
+            </button>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>

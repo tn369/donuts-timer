@@ -108,4 +108,22 @@ describe('MainTimerHeaderControls', () => {
     render(<MainTimerHeaderControls {...defaultProps} isSiblingMode={true} />);
     expect(screen.getByText('スタート')).toBeInTheDocument();
   });
+
+  it('コンパクト表示（isCompact=true）の時、メニュー内に「ふたりモードにきりかえる」が表示されないこと', () => {
+    render(<MainTimerHeaderControls {...defaultProps} isCompact={true} />);
+
+    // メニューを開く
+    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+
+    expect(screen.queryByLabelText('ふたりモードにきりかえる')).not.toBeInTheDocument();
+  });
+
+  it('コンパクト表示（isCompact=true）であっても、すでにふたりモード（isSiblingMode=true）なら「ひとりモードにもどす」が表示されること', () => {
+    render(<MainTimerHeaderControls {...defaultProps} isCompact={true} isSiblingMode={true} />);
+
+    // メニューを開く
+    fireEvent.click(screen.getByLabelText('メニューをひらく'));
+
+    expect(screen.getByLabelText('ひとりモードにもどす')).toBeInTheDocument();
+  });
 });

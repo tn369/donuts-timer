@@ -95,4 +95,11 @@ describe('TodoListSelection', () => {
 
     expect(defaultProps.onSelectSibling).toHaveBeenCalledWith('list-1', 'list-2');
   });
+
+  it('コンパクト表示（高さ 500px）では「ふたりで」ボタンが表示されないこと', () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 500 });
+    render(<TodoListSelection {...defaultProps} />);
+
+    expect(screen.queryByLabelText('ふたりで つかう')).not.toBeInTheDocument();
+  });
 });

@@ -215,6 +215,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           onExitSiblingMode={onExitSiblingMode}
           setShowResetConfirm={setShowResetConfirm}
           handleEditSettings={handleEditSettings}
+          isCompact={isCompact}
         />
       </div>
     </div>
@@ -230,7 +231,48 @@ interface ModeToggleButtonProps {
   onExitSiblingMode?: () => void;
   setIsMenuOpen: (open: boolean) => void;
   isMenu?: boolean;
+  isCompact?: boolean;
 }
+
+const SiblingModeButton: React.FC<{
+  onExitSiblingMode: () => void;
+  setIsMenuOpen: (open: boolean) => void;
+  isMenu: boolean;
+}> = ({ onExitSiblingMode, setIsMenuOpen, isMenu }) => (
+  <motion.button
+    whileHover={{ scale: 1.05, translateY: -2 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={() => {
+      onExitSiblingMode();
+      setIsMenuOpen(false);
+    }}
+    className={isMenu ? styles.menuItem : styles.settingsButton}
+    aria-label="ひとりモードにもどす"
+  >
+    <User size={20} />
+    {isMenu && <span>ひとりモード</span>}
+  </motion.button>
+);
+
+const SoloModeButton: React.FC<{
+  onEnterSiblingMode: () => void;
+  setIsMenuOpen: (open: boolean) => void;
+  isMenu: boolean;
+}> = ({ onEnterSiblingMode, setIsMenuOpen, isMenu }) => (
+  <motion.button
+    whileHover={{ scale: 1.05, translateY: -2 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={() => {
+      onEnterSiblingMode();
+      setIsMenuOpen(false);
+    }}
+    className={isMenu ? styles.menuItem : styles.settingsButton}
+    aria-label="ふたりモードにきりかえる"
+  >
+    <Users size={24} />
+    {isMenu && <span>ふたりモード</span>}
+  </motion.button>
+);
 
 const ModeToggleButton: React.FC<ModeToggleButtonProps> = ({
   isSiblingMode,
@@ -238,41 +280,29 @@ const ModeToggleButton: React.FC<ModeToggleButtonProps> = ({
   onExitSiblingMode,
   setIsMenuOpen,
   isMenu = false,
+  isCompact = false,
 }) => {
+  // コンパクト表示時はふたりモードへの切り替えを禁止
+  if (isCompact && !isSiblingMode) return null;
+
   if (isSiblingMode) {
     if (!onExitSiblingMode) return null;
     return (
-      <motion.button
-        whileHover={{ scale: 1.05, translateY: -2 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          onExitSiblingMode();
-          setIsMenuOpen(false);
-        }}
-        className={isMenu ? styles.menuItem : styles.settingsButton}
-        aria-label="ひとりモードにもどす"
-      >
-        <User size={20} />
-        {isMenu && <span>ひとりモード</span>}
-      </motion.button>
+      <SiblingModeButton
+        onExitSiblingMode={onExitSiblingMode}
+        setIsMenuOpen={setIsMenuOpen}
+        isMenu={isMenu}
+      />
     );
   }
 
   if (!onEnterSiblingMode) return null;
   return (
-    <motion.button
-      whileHover={{ scale: 1.05, translateY: -2 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => {
-        onEnterSiblingMode();
-        setIsMenuOpen(false);
-      }}
-      className={isMenu ? styles.menuItem : styles.settingsButton}
-      aria-label="ふたりモードにきりかえる"
-    >
-      <Users size={24} />
-      {isMenu && <span>ふたりモード</span>}
-    </motion.button>
+    <SoloModeButton
+      onEnterSiblingMode={onEnterSiblingMode}
+      setIsMenuOpen={setIsMenuOpen}
+      isMenu={isMenu}
+    />
   );
 };
 
@@ -287,6 +317,7 @@ interface HeaderMenuProps {
   onExitSiblingMode?: () => void;
   setShowResetConfirm: (show: boolean) => void;
   handleEditSettings: () => void;
+  isCompact?: boolean;
 }
 
 const HeaderMenu: React.FC<HeaderMenuProps> = ({
@@ -297,6 +328,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({
   onExitSiblingMode,
   setShowResetConfirm,
   handleEditSettings,
+  isCompact = false,
 }) => {
   return (
     <div className={styles.menuContainer}>
@@ -326,6 +358,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({
               onExitSiblingMode={onExitSiblingMode}
               setIsMenuOpen={setIsMenuOpen}
               isMenu={true}
+              isCompact={isCompact}
             />
             <button
               onClick={() => {
