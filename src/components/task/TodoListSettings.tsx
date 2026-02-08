@@ -286,7 +286,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 aria-label={`${s}のかたち`}
               >
                 <div className={styles.modeIcon}>
-                  <ShapeIcon shape={s} size={40} color="currentColor" />
+                  <ShapeIcon shape={s} size={32} color="currentColor" />
                 </div>
                 <div className={styles.modeLabel}>{SHAPE_NAMES[s]}</div>
               </button>
