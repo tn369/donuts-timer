@@ -5,10 +5,10 @@ import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { useTaskEffects } from '../hooks/useTaskEffects';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { type TimerMode } from '../storage';
 import type { Task, TodoList } from '../types';
 import { useTaskTimer } from '../useTaskTimer';
-import { useWindowSize } from '../hooks/useWindowSize';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
 import { ResetModal } from './ResetModal';
@@ -91,8 +91,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
 
   return (
     <div
-      className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''} ${isAutoCompact ? styles.compact : ''
-        }`}
+      className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''} ${
+        isAutoCompact ? styles.compact : ''
+      }`}
     >
       <MainTimerHeaderControls
         showSelectionButton={showSelectionButton}
@@ -125,29 +126,61 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         isReorderEnabled={true}
       />
 
-      <AnimatePresence>
-        {showResetConfirm && (
-          <ResetModal
-            onCancel={() => {
-              setShowResetConfirm(false);
-            }}
-            onConfirm={() => {
-              reset();
-              setShowResetConfirm(false);
-            }}
-          />
-        )}
-        {pendingRestorableState && (
-          <ResumeModal
-            onCancel={() => {
-              cancelResume();
-            }}
-            onConfirm={() => {
-              resumeSession();
-            }}
-          />
-        )}
-      </AnimatePresence>
+      <Modals
+        showResetConfirm={showResetConfirm}
+        setShowResetConfirm={setShowResetConfirm}
+        reset={reset}
+        pendingRestorableState={!!pendingRestorableState}
+        cancelResume={cancelResume}
+        resumeSession={resumeSession}
+      />
     </div>
+  );
+};
+
+/**
+ * 各種モーダルを管理するコンポーネント
+ */
+interface ModalsProps {
+  showResetConfirm: boolean;
+  setShowResetConfirm: (show: boolean) => void;
+  reset: () => void;
+  pendingRestorableState: boolean;
+  cancelResume: () => void;
+  resumeSession: () => void;
+}
+
+const Modals: React.FC<ModalsProps> = ({
+  showResetConfirm,
+  setShowResetConfirm,
+  reset,
+  pendingRestorableState,
+  cancelResume,
+  resumeSession,
+}) => {
+  return (
+    <AnimatePresence>
+      {showResetConfirm && (
+        <ResetModal
+          onCancel={() => {
+            setShowResetConfirm(false);
+          }}
+          onConfirm={() => {
+            reset();
+            setShowResetConfirm(false);
+          }}
+        />
+      )}
+      {pendingRestorableState && (
+        <ResumeModal
+          onCancel={() => {
+            cancelResume();
+          }}
+          onConfirm={() => {
+            resumeSession();
+          }}
+        />
+      )}
+    </AnimatePresence>
   );
 };

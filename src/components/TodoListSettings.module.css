@@ -208,6 +208,48 @@
   }
 }
 
+@media (height <= 500px) {
+  .settingsContainer {
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .settingsTitle {
+    font-size: 24px;
+  }
+
+  .backButton {
+    width: 44px;
+    height: 44px;
+  }
+
+  .confirmButton {
+    padding: 10px 24px;
+    font-size: 16px;
+  }
+
+  .settingsSection {
+    padding: 16px;
+  }
+
+  .sectionTitle {
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+
+  .titleInputContainer {
+    padding: 8px 16px;
+  }
+
+  .titleInputPrefix {
+    font-size: 24px;
+  }
+
+  .titleSuffix {
+    font-size: 20px;
+  }
+}
+
 .titleInputContainer {
   display: flex;
   gap: 8px;

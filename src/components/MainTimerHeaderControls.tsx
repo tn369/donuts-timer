@@ -154,44 +154,6 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
     );
   };
 
-  const renderModeToggleButton = (isMenu?: boolean) => {
-    if (isSiblingMode) {
-      if (!onExitSiblingMode) return null;
-      return (
-        <motion.button
-          whileHover={{ scale: 1.05, translateY: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            onExitSiblingMode();
-            setIsMenuOpen(false);
-          }}
-          className={isMenu ? styles.menuItem : styles.settingsButton}
-          aria-label="ひとりモードにもどす"
-        >
-          <User size={20} />
-          {isMenu && <span>ひとりモード</span>}
-        </motion.button>
-      );
-    }
-
-    if (!onEnterSiblingMode) return null;
-    return (
-      <motion.button
-        whileHover={{ scale: 1.05, translateY: -2 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          onEnterSiblingMode();
-          setIsMenuOpen(false);
-        }}
-        className={isMenu ? styles.menuItem : styles.settingsButton}
-        aria-label="ふたりモードにきりかえる"
-      >
-        <Users size={24} />
-        {isMenu && <span>ふたりモード</span>}
-      </motion.button>
-    );
-  };
-
   return (
     <div className={styles.topControls}>
       {showSelectionButton && (
@@ -239,58 +201,157 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           className={styles.settingsButton}
           aria-label="タイマーのいろをかえる"
         >
-          <Palette size={isSiblingMode || isCompact ? 20 : 24} color={TIMER_COLORS[timerSettings.color]} />
+          <Palette
+            size={isSiblingMode || isCompact ? 20 : 24}
+            color={TIMER_COLORS[timerSettings.color]}
+          />
         </motion.button>
 
-        <div className={styles.menuContainer}>
-          <motion.button
-            whileHover={{ scale: 1.05, translateY: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-            }}
-            className={`${styles.settingsButton} ${isMenuOpen ? styles.active : ''}`}
-            aria-label="メニューをひらく"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </motion.button>
-
-          <AnimatePresence>
-            {isMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className={styles.menuDropdown}
-              >
-                {renderModeToggleButton(true)}
-                <button
-                  onClick={() => {
-                    setShowResetConfirm(true);
-                    setIsMenuOpen(false);
-                  }}
-                  className={styles.menuItem}
-                  aria-label="リセットする"
-                >
-                  <RotateCcw size={20} />
-                  <span>さいしょから</span>
-                </button>
-                <button
-                  onClick={() => {
-                    handleEditSettings();
-                    setIsMenuOpen(false);
-                  }}
-                  className={styles.menuItem}
-                  aria-label="リストのせってい"
-                >
-                  <Settings size={20} />
-                  <span>リストのせってい</span>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <HeaderMenu
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+          isSiblingMode={isSiblingMode}
+          onEnterSiblingMode={onEnterSiblingMode}
+          onExitSiblingMode={onExitSiblingMode}
+          setShowResetConfirm={setShowResetConfirm}
+          handleEditSettings={handleEditSettings}
+        />
       </div>
+    </div>
+  );
+};
+
+/**
+ * ひとり/ふたりモード切り替えボタン
+ */
+interface ModeToggleButtonProps {
+  isSiblingMode: boolean;
+  onEnterSiblingMode?: () => void;
+  onExitSiblingMode?: () => void;
+  setIsMenuOpen: (open: boolean) => void;
+  isMenu?: boolean;
+}
+
+const ModeToggleButton: React.FC<ModeToggleButtonProps> = ({
+  isSiblingMode,
+  onEnterSiblingMode,
+  onExitSiblingMode,
+  setIsMenuOpen,
+  isMenu = false,
+}) => {
+  if (isSiblingMode) {
+    if (!onExitSiblingMode) return null;
+    return (
+      <motion.button
+        whileHover={{ scale: 1.05, translateY: -2 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => {
+          onExitSiblingMode();
+          setIsMenuOpen(false);
+        }}
+        className={isMenu ? styles.menuItem : styles.settingsButton}
+        aria-label="ひとりモードにもどす"
+      >
+        <User size={20} />
+        {isMenu && <span>ひとりモード</span>}
+      </motion.button>
+    );
+  }
+
+  if (!onEnterSiblingMode) return null;
+  return (
+    <motion.button
+      whileHover={{ scale: 1.05, translateY: -2 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => {
+        onEnterSiblingMode();
+        setIsMenuOpen(false);
+      }}
+      className={isMenu ? styles.menuItem : styles.settingsButton}
+      aria-label="ふたりモードにきりかえる"
+    >
+      <Users size={24} />
+      {isMenu && <span>ふたりモード</span>}
+    </motion.button>
+  );
+};
+
+/**
+ * ヘッダーのドロップダウンメニュー
+ */
+interface HeaderMenuProps {
+  isMenuOpen: boolean;
+  setIsMenuOpen: (open: boolean) => void;
+  isSiblingMode: boolean;
+  onEnterSiblingMode?: () => void;
+  onExitSiblingMode?: () => void;
+  setShowResetConfirm: (show: boolean) => void;
+  handleEditSettings: () => void;
+}
+
+const HeaderMenu: React.FC<HeaderMenuProps> = ({
+  isMenuOpen,
+  setIsMenuOpen,
+  isSiblingMode,
+  onEnterSiblingMode,
+  onExitSiblingMode,
+  setShowResetConfirm,
+  handleEditSettings,
+}) => {
+  return (
+    <div className={styles.menuContainer}>
+      <motion.button
+        whileHover={{ scale: 1.05, translateY: -2 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => {
+          setIsMenuOpen(!isMenuOpen);
+        }}
+        className={`${styles.settingsButton} ${isMenuOpen ? styles.active : ''}`}
+        aria-label="メニューをひらく"
+      >
+        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </motion.button>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className={styles.menuDropdown}
+          >
+            <ModeToggleButton
+              isSiblingMode={isSiblingMode}
+              onEnterSiblingMode={onEnterSiblingMode}
+              onExitSiblingMode={onExitSiblingMode}
+              setIsMenuOpen={setIsMenuOpen}
+              isMenu={true}
+            />
+            <button
+              onClick={() => {
+                setShowResetConfirm(true);
+                setIsMenuOpen(false);
+              }}
+              className={styles.menuItem}
+              aria-label="リセットする"
+            >
+              <RotateCcw size={20} />
+              <span>さいしょから</span>
+            </button>
+            <button
+              onClick={() => {
+                handleEditSettings();
+                setIsMenuOpen(false);
+              }}
+              className={styles.menuItem}
+              aria-label="リストのせってい"
+            >
+              <Settings size={20} />
+              <span>リストのせってい</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

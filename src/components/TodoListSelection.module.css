@@ -101,10 +101,6 @@
   transition: var(--transition-smooth);
 }
 
-.listCard:hover .listCardActions {
-  opacity: 1;
-}
-
 .actionBtn {
   display: flex;
   align-items: center;
@@ -240,4 +236,89 @@
   background: var(--color-primary);
   border-radius: 50%;
   box-shadow: 0 8px 16px rgb(16 185 129 / 30%);
+}
+
+/* Compact styles for landscape/small screens */
+.compact {
+  gap: 20px;
+  padding: 16px 24px;
+}
+
+.compact .selectionTitle {
+  margin-bottom: 12px;
+  font-size: 32px;
+}
+
+.compact .modeToggleContainer {
+  margin-top: 12px;
+}
+
+.compact .modeToggleBtn {
+  padding: 8px 20px;
+  font-size: 16px;
+}
+
+.compact .listGrid {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 8px;
+}
+
+.compact .listCard {
+  min-height: 200px;
+  padding: 20px;
+}
+
+.compact .listIconBg {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+.compact .listIconBg svg {
+  width: 40px;
+  height: 40px;
+}
+
+.compact .listName {
+  margin-bottom: 8px;
+  font-size: 24px;
+}
+
+.compact .listTaskCount {
+  font-size: 16px;
+}
+
+.compact .listCardActions {
+  margin-top: 16px;
+}
+
+.compact .actionBtn {
+  width: 44px;
+  height: 44px;
+}
+
+.compact .actionBtn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.compact .addIconContainer {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 12px;
+}
+
+.compact .addIconContainer svg {
+  width: 40px;
+  height: 40px;
+}
+
+.compact .selectionInstruction {
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.listCard:hover .listCardActions {
+  opacity: 1;
 }

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Copy, Edit2, ListChecks, Plus, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
 
+import { useWindowSize } from '../hooks/useWindowSize';
 import type { TodoList } from '../types';
 import styles from './TodoListSelection.module.css';
 
@@ -35,6 +36,8 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
 }) => {
   const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { height } = useWindowSize();
+  const isCompact = height > 0 && height < 600;
 
   /**
    * カードがクリックされた際のハンドラ
@@ -54,7 +57,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   };
 
   return (
-    <div className={styles.selectionScreen}>
+    <div className={`${styles.selectionScreen} ${isCompact ? styles.compact : ''}`}>
       <div className={styles.selectionHeader}>
         <h1 className={styles.selectionTitle}>
           <ListChecks size={32} />

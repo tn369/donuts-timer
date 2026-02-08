@@ -21,6 +21,14 @@
   background: rgb(0 0 0 / 2%);
 }
 
+@media (orientation: landscape) and (height <= 500px) {
+  .siblingContainer {
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px;
+  }
+}
+
 .siblingItem {
   position: relative;
   display: flex;
