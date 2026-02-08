@@ -1,9 +1,10 @@
 /**
  * やることリストの詳細設定（名前、形状、色、タスク構成、目標時刻）を行うコンポーネント
  */
-import { motion, Reorder, useDragControls } from 'framer-motion';
+import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion';
 import { ArrowLeft, Plus, Save } from 'lucide-react';
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RewardTaskSettings, Task, TodoList } from '../../types';
@@ -135,6 +136,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   onBack,
 }) => {
   const [editedList, setEditedList] = useState<TodoList>({ ...list });
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const handleTitleChange = (title: string) => {
     setEditedList({ ...editedList, title });
@@ -203,10 +205,20 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
     });
   };
 
+  const hasChanges = JSON.stringify(list) !== JSON.stringify(editedList);
+
+  const handleBack = () => {
+    if (hasChanges) {
+      setShowConfirmDialog(true);
+    } else {
+      onBack();
+    }
+  };
+
   return (
     <div className={styles.settingsContainer}>
       <div className={styles.settingsHeader}>
-        <button onClick={onBack} className={styles.backButton}>
+        <button onClick={handleBack} className={styles.backButton}>
           <ArrowLeft size={24} />
         </button>
         <div className={styles.settingsTitle}>
@@ -341,6 +353,48 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           </div>
         </section>
       </div>
+
+      {createPortal(
+        <AnimatePresence>
+          {showConfirmDialog && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.modalBackdrop}
+                onClick={() => setShowConfirmDialog(false)}
+              />
+              <div className={styles.modalContainer}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  className={styles.confirmDialog}
+                >
+                  <div className={styles.confirmDialogMessage}>
+                    へんこう されています。
+                    <br />
+                    ほぞんせずに もどりますか？
+                  </div>
+                  <div className={styles.confirmDialogActions}>
+                    <button
+                      className={`${styles.confirmDialogBtn} ${styles.cancelBtn}`}
+                      onClick={() => setShowConfirmDialog(false)}
+                    >
+                      キャンセル
+                    </button>
+                    <button className={`${styles.confirmDialogBtn} ${styles.leaveBtn}`} onClick={onBack}>
+                      もどる
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
