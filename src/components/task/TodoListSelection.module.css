@@ -77,8 +77,21 @@
   color: var(--color-primary);
 }
 
+.titleContainer {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  justify-content: center;
+}
+
 .listName {
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.titleSuffix {
   font-size: 32px;
   font-weight: 800;
   color: var(--color-text-main);
@@ -288,7 +301,11 @@
 }
 
 .compact .listName {
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  font-size: 24px;
+}
+
+.compact .titleSuffix {
   font-size: 24px;
 }
 

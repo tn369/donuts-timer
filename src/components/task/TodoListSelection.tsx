@@ -140,8 +140,11 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
                     <div className={styles.selectionBadge}>{selectionIndex === 0 ? '1' : '2'}</div>
                   )}
                 </div>
-                <h3 className={styles.listName}>{list.title}</h3>
-                <p className={styles.listSubtitle}>のやることリスト</p>
+                <div className={styles.titleContainer}>
+                  <h3 className={styles.listName}>{list.title}</h3>
+                  <span className={styles.listSubtitle}>の</span>
+                </div>
+                <p className={styles.listSubtitle}>やることリスト</p>
                 <p className={styles.listTaskCount}>
                   {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
                 </p>
