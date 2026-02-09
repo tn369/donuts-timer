@@ -24,6 +24,12 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
   max,
   options,
 }) => {
+  const [displayValue, setDisplayValue] = React.useState<string>(value.toString());
+
+  React.useEffect(() => {
+    setDisplayValue(value.toString());
+  }, [value]);
+
   const handleDecrement = () => {
     if (options) {
       const currentIndex = options.indexOf(value);
@@ -61,6 +67,35 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
     let newValue = value + step;
     if (max !== undefined && newValue > max) newValue = max;
     onChange(newValue);
+  };
+
+  const handleInputChange = (val: string) => {
+    // 数字以外を削除
+    const numericValue = val.replace(/[^0-9]/g, '');
+
+    // 先頭の0を削除（ただし"0"自体の場合は残す）
+    const sanitizedValue = numericValue.replace(/^0+/, '') || (numericValue === '' ? '' : '0');
+
+    setDisplayValue(sanitizedValue);
+
+    if (sanitizedValue !== '') {
+      let num = parseInt(sanitizedValue, 10);
+      if (max !== undefined && num > max) num = max;
+      onChange(num);
+    }
+  };
+
+  const handleBlur = () => {
+    if (displayValue === '') {
+      setDisplayValue(value.toString());
+      onChange(value);
+    } else {
+      // 最終的な値を確定させる
+      let num = parseInt(displayValue, 10);
+      if (max !== undefined && num > max) num = max;
+      setDisplayValue(num.toString());
+      onChange(num);
+    }
   };
 
   const isDecrementDisabled = () => {
@@ -108,12 +143,13 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
           </select>
         ) : (
           <input
-            type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
             className={styles.stepperInput}
-            value={value}
-            onChange={(e) => {
-              onChange(parseInt(e.target.value || '0'));
-            }}
+              value={displayValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onBlur={handleBlur}
             disabled={disabled}
           />
         )}

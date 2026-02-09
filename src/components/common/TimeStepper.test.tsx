@@ -76,4 +76,51 @@ describe('TimeStepper', () => {
       expect(onChange).toHaveBeenCalledWith(0);
     });
   });
+
+  describe('入力のクリアと前ゼロのハンドリング', () => {
+    it('入力を空にした時、onChangeは呼ばれないが表示は空になること', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '' } });
+
+      expect(input).toHaveValue('');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('空の状態から数値を入力した時、前ゼロがつかないこと', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.change(input, { target: { value: '5' } });
+
+      expect(input).toHaveValue('5');
+      expect(onChange).toHaveBeenCalledWith(5);
+    });
+
+    it('フォーカスが外れた時、空の場合は元の値に戻ること', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('10');
+    });
+
+    it('0を入力した時、"0"と表示されること', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '0' } });
+
+      expect(input).toHaveValue('0');
+      expect(onChange).toHaveBeenCalledWith(0);
+    });
+  });
 });
