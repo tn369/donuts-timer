@@ -8,6 +8,7 @@ interface TimeStepperProps {
   unit: string;
   disabled?: boolean;
   step?: number;
+  min?: number;
   max?: number;
   options?: number[];
 }
@@ -21,6 +22,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
   unit,
   disabled,
   step = 5,
+  min = 0,
   max,
   options,
 }) => {
@@ -39,13 +41,13 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
         // 現在の値がオプションにない場合は、最も近い小さい値を探す
         const smallerOptions = options.filter((o) => o < value);
         if (smallerOptions.length > 0) {
-          onChange(Math.max(...smallerOptions));
+          onChange(Math.max(min, ...smallerOptions));
         }
       }
       return;
     }
 
-    const newValue = Math.max(0, value - step);
+    const newValue = Math.max(min, value - step);
     onChange(newValue);
   };
 
@@ -80,6 +82,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
 
     if (sanitizedValue !== '') {
       let num = parseInt(sanitizedValue, 10);
+      if (num < min) num = min;
       if (max !== undefined && num > max) num = max;
       onChange(num);
     }
@@ -87,11 +90,13 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
 
   const handleBlur = () => {
     if (displayValue === '') {
-      setDisplayValue(value.toString());
-      onChange(value);
+      const fallbackValue = Math.max(min, value);
+      setDisplayValue(fallbackValue.toString());
+      onChange(fallbackValue);
     } else {
       // 最終的な値を確定させる
       let num = parseInt(displayValue, 10);
+      if (num < min) num = min;
       if (max !== undefined && num > max) num = max;
       setDisplayValue(num.toString());
       onChange(num);
@@ -103,7 +108,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
     if (options) {
       return options.includes(value) && options.indexOf(value) <= 0;
     }
-    return value <= 0;
+    return value <= min;
   };
 
   const isIncrementDisabled = () => {

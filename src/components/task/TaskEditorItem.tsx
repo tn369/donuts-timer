@@ -265,6 +265,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
                 onTaskChange(task.id, { plannedSeconds: val * 60 });
               }}
               unit="ふん"
+              min={1}
             />
           </div>
         ) : (

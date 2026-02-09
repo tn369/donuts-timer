@@ -123,4 +123,58 @@ describe('TimeStepper', () => {
       expect(onChange).toHaveBeenCalledWith(0);
     });
   });
+
+  describe('min プロパティ', () => {
+    it('minが指定されている時、それ未満には減らせないこと', () => {
+      const onChange = vi.fn();
+      const { rerender } = render(
+        <TimeStepper value={2} onChange={onChange} unit="ふん" min={1} step={1} />
+      );
+
+      const minusButton = screen.getByText('-');
+      expect(minusButton).not.toBeDisabled();
+
+      fireEvent.click(minusButton);
+      expect(onChange).toHaveBeenCalledWith(1);
+
+      // 手動でプロップを更新して再レンダリング
+      rerender(<TimeStepper value={1} onChange={onChange} unit="ふん" min={1} step={1} />);
+      expect(minusButton).toBeDisabled();
+    });
+
+    it('minが指定されている時、直接入力でもmin未満にはならないこと', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" min={1} />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '0' } });
+
+      // onChangeにはmin(1)が渡る
+      expect(onChange).toHaveBeenCalledWith(1);
+    });
+
+    it('Blur時、空の場合はminが適用されること', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" min={5} />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      // 初期値が10なので、空でBlurしたら10に戻る（minを満たしているため）
+      expect(input).toHaveValue('10');
+    });
+
+    it('初期値がmin未満の場合、Blur時にminに補正されること', () => {
+      const onChange = vi.fn();
+      // 極端な例だが、外部から不正な値が入った場合
+      render(<TimeStepper value={0} onChange={onChange} unit="ふん" min={1} />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('1');
+    });
+  });
 });
