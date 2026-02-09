@@ -48,10 +48,10 @@ const COLOR_NAMES: Record<string, string> = {
   green: 'みどり',
   pink: 'ももいろ',
   purple: 'むらさき',
-  orange: 'だいだい',
+  orange: 'オレンジ',
   indigo: 'あい',
-  cyan: 'しあん',
-  lime: 'らいむ',
+  cyan: 'シアン',
+  lime: 'ライム',
 };
 
 /**
@@ -61,11 +61,11 @@ const SHAPE_NAMES: Record<string, string> = {
   circle: 'まる',
   square: 'しかく',
   triangle: 'さんかく',
-  diamond: 'だいや',
+  diamond: 'ダイヤ',
   pentagon: 'ごかく',
   hexagon: 'ろっかく',
   star: 'ほし',
-  heart: 'はーと',
+  heart: 'ハート',
 };
 
 const SHAPES = [
