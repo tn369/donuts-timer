@@ -135,9 +135,6 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   dragControls,
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
-  const [popupDirection, setPopupDirection] = useState<'bottom' | 'top'>('bottom');
-  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
-  const containerRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageClick = () => {
@@ -185,23 +182,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       <button
         type="button"
         className={styles.taskEditorImage}
-        ref={containerRef}
         onClick={() => {
-          if (!showIconSelector && containerRef.current) {
-            const rect = containerRef.current.getBoundingClientRect();
-            setTriggerRect(rect);
-            const viewportHeight = window.innerHeight;
-            const popupHeight = 350;
-
-            const spaceBelow = viewportHeight - rect.bottom;
-            const spaceAbove = rect.top;
-
-            if (spaceBelow < popupHeight && spaceAbove > spaceBelow) {
-              setPopupDirection('top');
-            } else {
-              setPopupDirection('bottom');
-            }
-          }
           setShowIconSelector(!showIconSelector);
         }}
       >
@@ -232,8 +213,6 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
 
         <IconSelectorPopup
           show={showIconSelector}
-          direction={popupDirection}
-          triggerRect={triggerRect}
           task={task}
           allExistingIcons={allExistingIcons}
           onClose={() => {

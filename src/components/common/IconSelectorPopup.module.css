@@ -5,29 +5,25 @@
   z-index: 99;
   width: 100vw;
   height: 100vh;
-  background: transparent;
+  background: rgb(0 0 0 / 40%);
+  backdrop-filter: blur(2px);
 }
 
 .iconSelectorPopup {
   position: fixed;
+  top: 50%;
+  left: 50%;
   z-index: 100;
   display: flex;
   flex-direction: column;
-  width: 280px;
-  max-width: calc(100vw - 32px);
+  width: 60vw;
+  min-width: 320px;
+  max-width: 800px;
   overflow: hidden;
   background: white;
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
-}
-
-.iconSelectorPopup.bottom {
-  transform-origin: top left;
-}
-
-.iconSelectorPopup.top {
-  transform-origin: bottom left;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px rgb(0 0 0 / 30%);
 }
 
 .iconSelectorHeader {
@@ -51,8 +47,8 @@
 }
 
 .iconSelectorContent {
-  max-height: 300px;
-  padding: 12px;
+  max-height: 60vh;
+  padding: 16px;
   overflow-y: auto;
 }
 
@@ -78,8 +74,8 @@
 
 .existingIconsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
 }
 
 .iconOption {

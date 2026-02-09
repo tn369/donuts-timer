@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 
 import type { Task } from '../../types';
@@ -8,10 +8,8 @@ import styles from './IconSelectorPopup.module.css';
 
 interface IconSelectorPopupProps {
   show: boolean;
-  direction: 'bottom' | 'top';
   task: Task;
   allExistingIcons: string[];
-  triggerRect?: DOMRect | null;
   onClose: () => void;
   onIconSelect: (icon: string) => void;
   onImageUpload: () => void;
@@ -22,33 +20,12 @@ interface IconSelectorPopupProps {
  */
 export const IconSelectorPopup: React.FC<IconSelectorPopupProps> = ({
   show,
-  direction,
   task,
   allExistingIcons,
-  triggerRect,
   onClose,
   onIconSelect,
   onImageUpload,
 }) => {
-  const popupStyle = useMemo(() => {
-    if (!triggerRect) return {};
-
-    const left = triggerRect.left;
-    if (direction === 'bottom') {
-      return {
-        position: 'fixed' as const,
-        top: triggerRect.bottom + 8,
-        left,
-      };
-    } else {
-      return {
-        position: 'fixed' as const,
-        bottom: window.innerHeight - triggerRect.top + 8,
-        left,
-      };
-    }
-  }, [triggerRect, direction]);
-
   return createPortal(
     <AnimatePresence>
       {show && (
@@ -61,11 +38,10 @@ export const IconSelectorPopup: React.FC<IconSelectorPopupProps> = ({
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: direction === 'bottom' ? 10 : -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: direction === 'bottom' ? 10 : -10 }}
-            className={`${styles.iconSelectorPopup} ${styles[direction]}`}
-            style={popupStyle}
+            initial={{ opacity: 0, scale: 0.9, x: '-50%', y: '-40%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            exit={{ opacity: 0, scale: 0.9, x: '-50%', y: '-40%' }}
+            className={styles.iconSelectorPopup}
           >
             <div className={styles.iconSelectorHeader}>
               <span>がぞうをえらぶ</span>
