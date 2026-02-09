@@ -45,6 +45,7 @@ describe('TodoListSelection', () => {
     onCopy: vi.fn(),
     onAdd: vi.fn(),
     onDelete: vi.fn(),
+    onReorder: vi.fn(),
   };
 
   it('リストが正しく表示されること', () => {

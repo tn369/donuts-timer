@@ -28,22 +28,24 @@
 }
 
 .listGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   padding: 16px;
+  list-style: none;
 }
 
 .listCard {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 24px;
   align-items: center;
-  min-height: 320px;
-  padding: 32px;
-  text-align: center;
+  min-height: 100px;
+  padding: 16px 32px;
+  text-align: left;
   cursor: pointer;
   background: var(--clay-bg);
   border: 1px solid rgb(255 255 255 / 50%);
@@ -54,7 +56,7 @@
 
 .listName {
   margin-bottom: 0;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--color-text-main);
 }
@@ -69,16 +71,16 @@
 .listCard.addNew:hover {
   background: rgb(16 185 129 / 3%);
   border-color: var(--color-primary);
-  box-shadow: var(--clay-shadow);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
 }
 
 .addIconContainer {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 16px;
+  width: 56px;
+  height: 56px;
   color: var(--color-primary);
   background: white;
   border-radius: 50%;
@@ -139,6 +141,13 @@
 .compact {
   gap: 20px;
   padding: 16px 24px;
+}
+
+.listCardContent {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: center;
 }
 
 .compact .selectionTitle {

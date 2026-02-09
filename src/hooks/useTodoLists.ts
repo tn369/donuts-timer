@@ -226,10 +226,17 @@ export const useTodoLists = () => {
       if (currentState) {
         saveExecutionState({ ...currentState, mode: 'single', isAutoResume: true });
       }
-
       setActiveLists([list]);
       setIsSiblingMode(false);
     }
+  };
+
+  /**
+   * リストの順番を並び替える
+   */
+  const reorderTodoLists = (newLists: TodoList[]) => {
+    setTodoLists(newLists);
+    saveTodoLists(newLists);
   };
 
   return {
@@ -243,6 +250,7 @@ export const useTodoLists = () => {
     exitSiblingMode,
     getAllUniqueIcons,
     isSiblingMode,
+    reorderTodoLists,
     saveList,
     selectList,
     selectSiblingLists,

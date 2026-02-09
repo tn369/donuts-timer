@@ -328,4 +328,31 @@ describe('useTodoLists', () => {
     expect(copied.tasks[1].id).toBe('reward-task');
     expect(copied.tasks[1].status).toBe('todo');
   });
+
+  it('should reorder lists and save when reorderTodoLists is called', () => {
+    vi.mocked(storage.loadTodoLists).mockReturnValue([
+      {
+        id: 'l1',
+        title: 'L1',
+        tasks: [],
+        targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
+      },
+      {
+        id: 'l2',
+        title: 'L2',
+        tasks: [],
+        targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
+      },
+    ]);
+    const { result } = renderHook(() => useTodoLists());
+
+    const reordered = [result.current.todoLists[1], result.current.todoLists[0]];
+
+    act(() => {
+      result.current.reorderTodoLists(reordered);
+    });
+
+    expect(result.current.todoLists).toEqual(reordered);
+    expect(storage.saveTodoLists).toHaveBeenCalledWith(reordered);
+  });
 });

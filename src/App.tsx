@@ -35,6 +35,7 @@ function App() {
     duplicateActiveListForSiblingMode,
     exitSiblingMode,
     isSiblingMode,
+    reorderTodoLists,
     saveList,
     selectList,
     selectSiblingLists,
@@ -83,6 +84,7 @@ function App() {
         onCopy={copyList}
         onAdd={handleAddNewList}
         onDelete={deleteList}
+        onReorder={reorderTodoLists}
       />
     );
   }

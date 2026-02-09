@@ -1,7 +1,7 @@
 /**
  * やることリストを選択、追加、編集、削除するための選択画面コンポーネント。1人モードと2人モードの切り替えが可能。
  */
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion';
 import { AlertTriangle, ListChecks, Plus, User, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -23,6 +23,7 @@ interface TodoListSelectionProps {
   onCopy: (listId: string) => void; // リストコピーボタンが押された時のコールバック
   onAdd: () => void; // 新規作成ボタンが押された時のコールバック
   onDelete: (listId: string) => void; // リスト削除ボタンが押された時のコールバック
+  onReorder: (newLists: TodoList[]) => void; // リストの順番が変更された時のコールバック
 }
 
 /**
@@ -36,6 +37,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   onCopy,
   onAdd,
   onDelete,
+  onReorder,
 }) => {
   const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -118,29 +120,47 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
         )}
       </AnimatePresence>
 
-      <div className={styles.listGrid}>
+      <Reorder.Group axis="y" values={lists} onReorder={onReorder} className={styles.listGrid}>
         {lists.map((list) => {
           const isSelected = selectedIds.includes(list.id);
           const selectionIndex = selectedIds.indexOf(list.id);
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const dragControls = useDragControls();
 
           return (
-            <TodoListCard
+            <Reorder.Item
               key={list.id}
-              list={list}
-              isSelected={isSelected}
-              selectionIndex={selectionIndex}
-              isSiblingModeSelect={isSiblingModeSelect}
-              onClick={() => { handleCardClick(list.id); }}
-              onCopy={() => { onCopy(list.id); }}
-              onEdit={() => { onEdit(list.id); }}
-              onDeleteRequest={() => { setDeleteConfirmListId(list.id); }}
-              isCompact={isCompact}
-            />
+              value={list}
+              dragListener={false}
+              dragControls={dragControls}
+            >
+              <TodoListCard
+                list={list}
+                isSelected={isSelected}
+                selectionIndex={selectionIndex}
+                isSiblingModeSelect={isSiblingModeSelect}
+                onClick={() => {
+                  handleCardClick(list.id);
+                }}
+                onCopy={() => {
+                  onCopy(list.id);
+                }}
+                onEdit={() => {
+                  onEdit(list.id);
+                }}
+                onDeleteRequest={() => {
+                  setDeleteConfirmListId(list.id);
+                }}
+                isCompact={isCompact}
+                dragControls={!isSiblingModeSelect ? dragControls : undefined}
+              />
+            </Reorder.Item>
           );
         })}
 
         {!isSiblingModeSelect && (
           <motion.div
+            layout
             className={`${styles.listCard} ${styles.addNew}`}
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -148,13 +168,13 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           >
             <div className={styles.listCardContent}>
               <div className={styles.addIconContainer}>
-                <Plus size={64} />
+                <Plus size={32} />
               </div>
               <h3 className={styles.listName}>あたらしく つくる</h3>
             </div>
           </motion.div>
         )}
-      </div>
+      </Reorder.Group>
 
       {createPortal(
         <AnimatePresence>

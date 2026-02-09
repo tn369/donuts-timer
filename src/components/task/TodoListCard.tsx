@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { Copy, Edit2, ListChecks, Trash2 } from 'lucide-react';
+import { type DragControls } from 'framer-motion';
+import { Copy, Edit2, GripVertical, ListChecks, Trash2 } from 'lucide-react';
 import React from 'react';
 
 import type { Task, TodoList } from '../../types';
@@ -15,6 +15,7 @@ interface TodoListCardProps {
   onEdit: () => void;
   onDeleteRequest: () => void;
   isCompact?: boolean;
+  dragControls?: DragControls;
 }
 
 export const TodoListCard: React.FC<TodoListCardProps> = ({
@@ -27,17 +28,34 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
   onEdit,
   onDeleteRequest,
   isCompact = false,
+  dragControls,
 }) => {
   return (
-    <motion.div
+    <div
       className={`${styles.listCard} ${isSelected ? styles.selected : ''} ${
         isCompact ? styles.compact : ''
       }`}
-      whileHover={{ y: -5, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
       aria-label={`${list.title} リストをえらぶ`}
     >
+      {dragControls && (
+        <div
+          className={styles.dragHandle}
+          onPointerDown={(e) => {
+            dragControls.start(e);
+          }}
+        >
+          <GripVertical size={24} />
+        </div>
+      )}
       <div className={styles.listCardContent}>
         <div className={styles.listIconBg}>
           <ListChecks size={56} className={styles.listIcon} />
@@ -45,14 +63,15 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
             <div className={styles.selectionBadge}>{selectionIndex === 0 ? '1' : '2'}</div>
           )}
         </div>
-        <div className={styles.titleContainer}>
-          <h3 className={styles.listName}>{list.title}</h3>
-          <span className={styles.listSubtitle}>の</span>
+        <div className={styles.listInfo}>
+          <div className={styles.titleContainer}>
+            <h3 className={styles.listName}>{list.title}</h3>
+            <span className={styles.listSubtitle}>のやることリスト</span>
+          </div>
+          <p className={styles.listTaskCount}>
+            {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
+          </p>
         </div>
-        <p className={styles.listSubtitle}>やることリスト</p>
-        <p className={styles.listTaskCount}>
-          {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
-        </p>
       </div>
 
       {!isSiblingModeSelect && (
@@ -89,6 +108,6 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
           </button>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };

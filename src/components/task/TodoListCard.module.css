@@ -1,11 +1,12 @@
 .listCard {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 24px;
   align-items: center;
-  min-height: 320px;
-  padding: 32px;
-  text-align: center;
+  min-height: 140px;
+  padding: 24px 32px;
+  text-align: left;
   cursor: pointer;
   background: var(--clay-bg);
   border: 1px solid rgb(255 255 255 / 50%);
@@ -24,22 +25,23 @@
 
 .listCardContent {
   display: flex;
-  flex-direction: column;
+  flex-grow: 1;
+  flex-direction: row;
+  gap: 24px;
   align-items: center;
-  width: 100%;
 }
 
 .listIconBg {
   position: relative;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 128px;
-  height: 128px;
-  margin-bottom: 24px;
+  width: 80px;
+  height: 80px;
   background: linear-gradient(135deg, rgb(16 185 129 / 10%), rgb(16 185 129 / 20%));
-  border-radius: 28px;
-  box-shadow: inset 4px 4px 8px rgb(255 255 255 / 50%);
+  border-radius: 20px;
+  box-shadow: inset 2px 2px 4px rgb(255 255 255 / 50%);
 }
 
 .listIcon {
@@ -50,18 +52,16 @@
   display: flex;
   gap: 4px;
   align-items: baseline;
-  justify-content: center;
 }
 
 .listName {
   margin-bottom: 0;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--color-text-main);
 }
 
 .listSubtitle {
-  margin-bottom: 12px;
   font-size: 20px;
   font-weight: 600;
   color: var(--color-text-muted);
@@ -79,9 +79,28 @@
 .listCardActions {
   display: flex;
   gap: 10px;
-  margin-top: 24px;
   opacity: 1;
   transition: var(--transition-smooth);
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  color: var(--color-text-muted);
+  cursor: grab;
+  border-radius: 8px;
+  transition: var(--transition-smooth);
+}
+
+.dragHandle:hover {
+  color: var(--color-primary);
+  background: rgb(0 0 0 / 5%);
+}
+
+.dragHandle:active {
+  cursor: grabbing;
 }
 
 .actionBtn {
@@ -164,7 +183,13 @@
 
 .compact .listName {
   margin-bottom: 0;
-  font-size: 24px;
+  font-size: 22px;
+}
+
+.listInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .compact .listSubtitle {
