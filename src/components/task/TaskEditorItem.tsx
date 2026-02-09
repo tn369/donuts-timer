@@ -9,6 +9,8 @@ import { IconSelectorPopup } from '../common/IconSelectorPopup';
 import { TimeStepper } from '../common/TimeStepper';
 import styles from './TaskEditorItem.module.css';
 
+const MAX_TASK_NAME_LENGTH = 12;
+
 interface TaskEditorItemProps {
   task: Task;
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
@@ -253,6 +255,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           onChange={(e) => {
             onTaskChange(task.id, { name: e.target.value });
           }}
+          maxLength={MAX_TASK_NAME_LENGTH}
         />
         {task.kind === 'todo' ? (
           <div className={styles.taskTimeInputGroup}>

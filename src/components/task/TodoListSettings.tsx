@@ -92,6 +92,7 @@ const COLORS = [
 ] as const;
 
 const TITLE_SUFFIX = 'のやることリスト';
+const MAX_TITLE_LENGTH = 10;
 const PRESET_TITLES = ['あさ', 'おひる', 'ゆうがた', 'よる', 'しゅくだい', 'おけいこ'];
 
 /**
@@ -247,6 +248,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
                 handleTitleChange(e.target.value + TITLE_SUFFIX);
               }}
               placeholder="なまえ"
+              maxLength={MAX_TITLE_LENGTH}
               onFocus={(e) => {
                 e.target.select();
               }}
