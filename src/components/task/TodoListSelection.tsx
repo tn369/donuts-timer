@@ -2,13 +2,14 @@
  * やることリストを選択、追加、編集、削除するための選択画面コンポーネント。1人モードと2人モードの切り替えが可能。
  */
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, Copy, Edit2, ListChecks, Plus, Trash2, User, Users } from 'lucide-react';
+import { AlertTriangle, ListChecks, Plus, User, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useWindowSize } from '../../hooks/useWindowSize';
-import type { Task, TodoList } from '../../types';
+import type { TodoList } from '../../types';
 import { ConfirmModal } from '../modals/ConfirmModal';
+import { TodoListCard } from './TodoListCard';
 import styles from './TodoListSelection.module.css';
 
 /**
@@ -123,68 +124,18 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
           const selectionIndex = selectedIds.indexOf(list.id);
 
           return (
-            <motion.div
+            <TodoListCard
               key={list.id}
-              className={`${styles.listCard} ${isSelected ? styles.selected : ''}`}
-              whileHover={{ y: -5, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                handleCardClick(list.id);
-              }}
-              aria-label={`${list.title} リストをえらぶ`}
-            >
-              <div className={styles.listCardContent}>
-                <div className={styles.listIconBg}>
-                  <ListChecks size={56} className={styles.listIcon} />
-                  {isSelected && (
-                    <div className={styles.selectionBadge}>{selectionIndex === 0 ? '1' : '2'}</div>
-                  )}
-                </div>
-                <div className={styles.titleContainer}>
-                  <h3 className={styles.listName}>{list.title}</h3>
-                  <span className={styles.listSubtitle}>の</span>
-                </div>
-                <p className={styles.listSubtitle}>やることリスト</p>
-                <p className={styles.listTaskCount}>
-                  {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
-                </p>
-              </div>
-
-              {!isSiblingModeSelect && (
-                <div className={styles.listCardActions}>
-                  <button
-                    className={`${styles.actionBtn} ${styles.copy}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onCopy(list.id);
-                    }}
-                    aria-label="リストを コピーする"
-                  >
-                    <Copy size={24} />
-                  </button>
-                  <button
-                    className={`${styles.actionBtn} ${styles.edit}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(list.id);
-                    }}
-                    aria-label="リストを なおす"
-                  >
-                    <Edit2 size={24} />
-                  </button>
-                  <button
-                    className={`${styles.actionBtn} ${styles.delete}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteConfirmListId(list.id);
-                    }}
-                    aria-label="リストを けす"
-                  >
-                    <Trash2 size={24} />
-                  </button>
-                </div>
-              )}
-            </motion.div>
+              list={list}
+              isSelected={isSelected}
+              selectionIndex={selectionIndex}
+              isSiblingModeSelect={isSiblingModeSelect}
+              onClick={() => { handleCardClick(list.id); }}
+              onCopy={() => { onCopy(list.id); }}
+              onEdit={() => { onEdit(list.id); }}
+              onDeleteRequest={() => { setDeleteConfirmListId(list.id); }}
+              isCompact={isCompact}
+            />
           );
         })}
 
