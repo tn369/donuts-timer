@@ -266,6 +266,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
               }}
               unit="ふん"
               min={1}
+              max={60}
             />
           </div>
         ) : (

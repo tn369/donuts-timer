@@ -153,7 +153,9 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
               pattern="[0-9]*"
             className={styles.stepperInput}
               value={displayValue}
-              onChange={(e) => handleInputChange(e.target.value)}
+              onChange={(e) => {
+                handleInputChange(e.target.value);
+              }}
               onBlur={handleBlur}
             disabled={disabled}
           />
