@@ -147,7 +147,7 @@
   box-shadow: 0 4px 12px rgb(255 77 77 / 30%);
 }
 
-.taskIcon.done {
+.taskIcon.isCompleted {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,7 +159,7 @@
   box-shadow: 0 8px 20px rgb(0 242 254 / 30%);
 }
 
-.taskIcon.done svg {
+.taskIcon.isCompleted svg {
   color: white !important;
 }
 

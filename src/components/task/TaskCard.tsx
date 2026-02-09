@@ -69,7 +69,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
     </div>
     <div className={styles.compactBottom}>
       {isDone ? (
-        <div className={`${styles.taskIcon} ${styles.done} ${styles.compactDone}`}>
+        <div className={`${styles.taskIcon} ${styles.isCompleted} ${styles.compactDone}`}>
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
             <Check size={32} strokeWidth={4} />
           </motion.div>
@@ -140,7 +140,7 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
     )}
 
     {isDone ? (
-      <div className={`${styles.taskIcon} ${styles.done}`}>
+      <div className={`${styles.taskIcon} ${styles.isCompleted}`}>
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
