@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../../types';
@@ -143,5 +144,30 @@ describe('TodoListSelection', () => {
     await waitFor(() => {
       expect(screen.queryByText('このリストを けしても いいですか？')).not.toBeInTheDocument();
     });
+  });
+
+  it('リストをコピーしたときにエラーが発生しないこと (Hook 違反の確認)', () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+
+    // 親コンポーネントの状態管理をシミュレートするためのラッパー
+    const TestWrapper = () => {
+      const [lists, setLists] = React.useState<TodoList[]>(mockLists);
+      const handleCopy = (id: string) => {
+        const listToCopy = lists.find((l) => l.id === id);
+        if (listToCopy) {
+          setLists([...lists, { ...listToCopy, id: `copy-${Date.now()}` }]);
+        }
+      };
+      return <TodoListSelection {...defaultProps} lists={lists} onCopy={handleCopy} />;
+    };
+
+    render(<TestWrapper />);
+
+    // 最初のリストのコピーボタンをクリック
+    const copyButtons = screen.getAllByLabelText('リストを コピーする');
+    fireEvent.click(copyButtons[0]);
+
+    // リストが増えていることを確認 (Hook 違反があるとここでエラーが発生して落ちるはず)
+    expect(screen.getAllByLabelText(/リストをえらぶ/)).toHaveLength(3);
   });
 });

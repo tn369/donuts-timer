@@ -26,6 +26,57 @@ interface TodoListSelectionProps {
   onReorder: (newLists: TodoList[]) => void; // リストの順番が変更された時のコールバック
 }
 
+interface TodoListSelectionItemProps {
+  list: TodoList;
+  selectedIds: string[];
+  isSiblingModeSelect: boolean;
+  onCopy: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDeleteRequest: (id: string) => void;
+  handleCardClick: (id: string) => void;
+  isCompact: boolean;
+}
+
+const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
+  list,
+  selectedIds,
+  isSiblingModeSelect,
+  onCopy,
+  onEdit,
+  onDeleteRequest,
+  handleCardClick,
+  isCompact,
+}) => {
+  const dragControls = useDragControls();
+  const isSelected = selectedIds.includes(list.id);
+  const selectionIndex = selectedIds.indexOf(list.id);
+
+  return (
+    <Reorder.Item key={list.id} value={list} dragListener={false} dragControls={dragControls}>
+      <TodoListCard
+        list={list}
+        isSelected={isSelected}
+        selectionIndex={selectionIndex}
+        isSiblingModeSelect={isSiblingModeSelect}
+        onClick={() => {
+          handleCardClick(list.id);
+        }}
+        onCopy={() => {
+          onCopy(list.id);
+        }}
+        onEdit={() => {
+          onEdit(list.id);
+        }}
+        onDeleteRequest={() => {
+          onDeleteRequest(list.id);
+        }}
+        isCompact={isCompact}
+        dragControls={!isSiblingModeSelect ? dragControls : undefined}
+      />
+    </Reorder.Item>
+  );
+};
+
 /**
  * やることリストの選択画面コンポーネント
  */
@@ -121,42 +172,19 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
       </AnimatePresence>
 
       <Reorder.Group axis="y" values={lists} onReorder={onReorder} className={styles.listGrid}>
-        {lists.map((list) => {
-          const isSelected = selectedIds.includes(list.id);
-          const selectionIndex = selectedIds.indexOf(list.id);
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const dragControls = useDragControls();
-
-          return (
-            <Reorder.Item
-              key={list.id}
-              value={list}
-              dragListener={false}
-              dragControls={dragControls}
-            >
-              <TodoListCard
-                list={list}
-                isSelected={isSelected}
-                selectionIndex={selectionIndex}
-                isSiblingModeSelect={isSiblingModeSelect}
-                onClick={() => {
-                  handleCardClick(list.id);
-                }}
-                onCopy={() => {
-                  onCopy(list.id);
-                }}
-                onEdit={() => {
-                  onEdit(list.id);
-                }}
-                onDeleteRequest={() => {
-                  setDeleteConfirmListId(list.id);
-                }}
-                isCompact={isCompact}
-                dragControls={!isSiblingModeSelect ? dragControls : undefined}
-              />
-            </Reorder.Item>
-          );
-        })}
+        {lists.map((list) => (
+          <TodoListSelectionItem
+            key={list.id}
+            list={list}
+            selectedIds={selectedIds}
+            isSiblingModeSelect={isSiblingModeSelect}
+            onCopy={onCopy}
+            onEdit={onEdit}
+            onDeleteRequest={setDeleteConfirmListId}
+            handleCardClick={handleCardClick}
+            isCompact={isCompact}
+          />
+        ))}
 
         {!isSiblingModeSelect && (
           <motion.div
