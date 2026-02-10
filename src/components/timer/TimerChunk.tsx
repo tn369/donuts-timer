@@ -25,6 +25,8 @@ interface TimerChunkProps {
 
 /**
  * カラー名からCSSクラス名を取得する
+ * @param color 対象のカラー
+ * @returns CSSクラス名
  */
 const getColorClass = (color: TimerColor) => {
   const colorMap: Record<TimerColor, string> = {
@@ -46,6 +48,13 @@ const getColorClass = (color: TimerColor) => {
  * プログレス表示部分の形状を描画する内部コンポーネント
  * ほとんどの図形で butt linecap を使用（視認性向上）
  * ハートのみ round linecap を使用（下部尖端の保護）
+ * @param root0 プロパティオブジェクト
+ * @param root0.renderer 形状レンダラー
+ * @param root0.commonProps 共通のSVG属性
+ * @param root0.perimeter 形状の外周の長さ
+ * @param root0.offset プログレスのオフセット
+ * @param root0.strokeWidth 線の太さ
+ * @returns レンダリングされるJSX要素
  */
 const ProgressShape: React.FC<{
   renderer: ShapeRenderer;
@@ -80,6 +89,11 @@ const ProgressShape: React.FC<{
 
 /**
  * 背景部分の形状を描画する内部コンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.renderer 形状レンダラー
+ * @param root0.commonProps 共通のSVG属性
+ * @param root0.strokeWidth 線の太さ
+ * @returns レンダリングされるJSX要素
  */
 const BgShape: React.FC<{
   renderer: ShapeRenderer;
@@ -99,6 +113,9 @@ const BgShape: React.FC<{
 
 /**
  * 外枠の境界線を描画する内部コンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.renderer 形状レンダラー
+ * @returns レンダリングされるJSX要素
  */
 const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
   const common = {
@@ -116,6 +133,16 @@ const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
 
 /**
  * タイマーの1つのチャンク（5分単位など）を表示するコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.capacity このチャンクの最大秒数
+ * @param root0.currentRemaining このチャンクの残り秒数
+ * @param root0.size 表示サイズ
+ * @param root0.strokeWidth 線の太さ
+ * @param root0.shape 形状
+ * @param root0.color カラー
+ * @param root0.isOverdue 時間超過しているかどうか
+ * @param root0.children 中央に表示する要素
+ * @returns レンダリングされるJSX要素
  */
 export const TimerChunk: React.FC<TimerChunkProps> = ({
   capacity,

@@ -22,6 +22,11 @@ interface TaskEditorItemProps {
 
 /**
  * 時間指定モードのエディタ
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 対象のタスク
+ * @param root0.onTaskChange タスク変更時のイベントハンドラ
+ * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
+ * @returns レンダリングされるJSX要素
  */
 const DurationModeEditor: React.FC<{
   task: Task;
@@ -58,6 +63,10 @@ const DurationModeEditor: React.FC<{
 
 /**
  * 目標時刻モードのエディタ
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 対象のタスク
+ * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
+ * @returns レンダリングされるJSX要素
  */
 const TargetTimeModeEditor: React.FC<{
   task: Task;
@@ -106,6 +115,11 @@ const TargetTimeModeEditor: React.FC<{
 
 /**
  * 報酬設定エディタコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 対象のタスク
+ * @param root0.onTaskChange タスク変更時のイベントハンドラ
+ * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
+ * @returns レンダリングされるJSX要素
  */
 const RewardSettingsEditor: React.FC<{
   task: Task;
@@ -125,6 +139,14 @@ const RewardSettingsEditor: React.FC<{
 
 /**
  * 個別のタスク（または目標時刻）を編集するためのコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 対象のタスク
+ * @param root0.onTaskChange タスク変更時のイベントハンドラ
+ * @param root0.onRemoveTask タスク削除時のイベントハンドラ
+ * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
+ * @param root0.allExistingIcons 既存の全アイコンURLリスト
+ * @param root0.dragControls ドラッグ制御用
+ * @returns レンダリングされるJSX要素
  */
 export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   task,

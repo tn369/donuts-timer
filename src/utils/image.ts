@@ -3,13 +3,6 @@
  */
 
 /**
- * 画像を指定された最大幅と高さにリサイズする
- * @param dataUrl 画像のData URL
- * @param maxWidth 最大幅
- * @param maxHeight 最大高さ
- * @returns リサイズされた画像のData URLを解決するPromise
- */
-/**
  * 画像を指定された最大幅と高さにリサイズし、圧縮する
  * @param dataUrl 画像のData URL
  * @param maxWidth 最大幅 (デフォルト 200)

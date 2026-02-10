@@ -31,6 +31,16 @@ interface MainTimerViewProps {
 
 /**
  * タイマー実行画面のメインコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.initialList 表示する初期リスト
+ * @param root0.onBackToSelection リスト選択に戻るコールバック
+ * @param root0.onEditSettings 設定画面を開くコールバック
+ * @param root0.showSelectionButton リスト選択に戻るボタンを表示するか
+ * @param root0.isSiblingMode 2画面モードかどうか
+ * @param root0.timerMode タイマーのモード（single/sibling-0/sibling-1）
+ * @param root0.onEnterSiblingMode ふたりモードへ切り替えるコールバック
+ * @param root0.onExitSiblingMode ひとりモードへ切り替えるコールバック
+ * @returns レンダリングされるJSX要素
  */
 export const MainTimerView: React.FC<MainTimerViewProps> = ({
   initialList,
@@ -138,9 +148,6 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   );
 };
 
-/**
- * 各種モーダルを管理するコンポーネント
- */
 interface ModalsProps {
   showResetConfirm: boolean;
   setShowResetConfirm: (show: boolean) => void;
@@ -150,6 +157,17 @@ interface ModalsProps {
   resumeSession: () => void;
 }
 
+/**
+ * 各種モーダルを管理するコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.showResetConfirm リセット確認表示フラグ
+ * @param root0.setShowResetConfirm リセット確認表示のセット関数
+ * @param root0.reset リセット実行関数
+ * @param root0.pendingRestorableState 復元待ちの状態があるか
+ * @param root0.cancelResume 復元キャンセル関数
+ * @param root0.resumeSession 復元実行関数
+ * @returns レンダリングされるJSX要素
+ */
 const Modals: React.FC<ModalsProps> = ({
   showResetConfirm,
   setShowResetConfirm,

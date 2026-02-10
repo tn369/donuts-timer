@@ -7,6 +7,8 @@ import type { Action, State } from './types';
 
 /**
  * 1秒ごとの更新処理と、ブラウザの可視性変更を監視するフック
+ * @param state 現在の状態
+ * @param dispatch dispatch関数
  */
 export function useTimerInterval(state: State, dispatch: React.Dispatch<Action>) {
   useEffect(() => {

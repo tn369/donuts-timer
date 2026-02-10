@@ -16,6 +16,10 @@ interface ResetModalProps {
 
 /**
  * リセット確認モーダルコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.onCancel キャンセル時のコールバック
+ * @param root0.onConfirm 確定時のコールバック
+ * @returns レンダリングされるJSX要素
  */
 export const ResetModal: React.FC<ResetModalProps> = ({ onCancel, onConfirm }) => {
   return (

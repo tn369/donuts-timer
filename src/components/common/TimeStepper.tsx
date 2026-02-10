@@ -15,6 +15,16 @@ interface TimeStepperProps {
 
 /**
  * 数値を増減させるためのステッパーコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.value 現在の値
+ * @param root0.onChange 値変更時のイベントハンドラ
+ * @param root0.unit 単位（分など）
+ * @param root0.disabled 無効フラグ
+ * @param root0.step 増減幅
+ * @param root0.min 最小値
+ * @param root0.max 最大値
+ * @param root0.options 選択肢（あればプルダウン形式になる）
+ * @returns レンダリングされるJSX要素
  */
 export const TimeStepper: React.FC<TimeStepperProps> = ({
   value,

@@ -36,6 +36,15 @@ interface TaskCardViewProps extends TaskCardProps {
 
 /**
  * コンパクト表示用のレイアウト
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 表示対象のタスク
+ * @param root0.shape タイマーの形状
+ * @param root0.color タイマーの色
+ * @param root0.remaining 残り時間
+ * @param root0.isDone 完了しているか
+ * @param root0.isOverdue 時間超過しているか
+ * @param root0.dragControls ドラッグ制御用
+ * @returns レンダリングされるJSX要素
  */
 const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   task,
@@ -91,6 +100,16 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
 
 /**
  * 通常表示用のレイアウト
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 表示対象のタスク
+ * @param root0.isSelected 選択中かどうか
+ * @param root0.shape タイマーの形状
+ * @param root0.color タイマーの色
+ * @param root0.remaining 残り時間
+ * @param root0.isDone 完了しているか
+ * @param root0.isOverdue 時間超過しているか
+ * @param root0.dragControls ドラッグ制御用
+ * @returns レンダリングされるJSX要素
  */
 const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   task,
@@ -168,6 +187,12 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
 
 /**
  * カードのCSSクラス名を生成する
+ * @param isSelected 選択中かどうか
+ * @param isDone 完了しているか
+ * @param isOverdue 時間超過しているか
+ * @param isCompact コンパクト表示かどうか
+ * @param isReward ご褒美タスクかどうか
+ * @returns クラス名文字列
  */
 const getCardClassName = (
   isSelected: boolean,
@@ -190,6 +215,11 @@ const getCardClassName = (
 
 /**
  * タスクの重要度（時間）に応じたflex-grow値を計算する
+ * @param status タスクの状態
+ * @param elapsed 経過時間
+ * @param planned 予定時間
+ * @param actual 実際の所要時間
+ * @returns flex-grow値
  */
 const getFlexGrow = (status: string, elapsed: number, planned: number, actual: number) => {
   return Math.min(
@@ -200,6 +230,8 @@ const getFlexGrow = (status: string, elapsed: number, planned: number, actual: n
 
 /**
  * 完了時のステータス文字列を取得する
+ * @param task 対象のタスク
+ * @returns ステータス文字列
  */
 const getStatusText = (task: Task) => {
   return task.kind === 'reward' ? 'おわり' : 'できた！';
@@ -207,6 +239,16 @@ const getStatusText = (task: Task) => {
 
 /**
  * タスクカードコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 表示対象のタスク
+ * @param root0.isSelected 選択中かどうか
+ * @param root0.isSelectable 選択可能かどうか
+ * @param root0.onSelect 選択時のコールバック
+ * @param root0.shape タイマーの形状
+ * @param root0.color タイマーの色
+ * @param root0.isCompact コンパクト表示かどうか
+ * @param root0.dragControls ドラッグ制御用
+ * @returns レンダリングされるJSX要素
  */
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,

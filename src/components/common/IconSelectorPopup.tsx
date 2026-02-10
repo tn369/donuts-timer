@@ -17,6 +17,14 @@ interface IconSelectorPopupProps {
 
 /**
  * アイコン選択ポップアップコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.show 表示フラグ
+ * @param root0.task 対象のタスク
+ * @param root0.allExistingIcons 既存の全アイコンURLリスト
+ * @param root0.onClose 閉じるイベントハンドラ
+ * @param root0.onIconSelect アイコン選択イベントハンドラ
+ * @param root0.onImageUpload 画像アップロードイベントハンドラ
+ * @returns レンダリングされるJSX要素
  */
 export const IconSelectorPopup: React.FC<IconSelectorPopupProps> = ({
   show,

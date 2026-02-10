@@ -27,6 +27,7 @@ const initialState: State = {
 /**
  * ひとつのタイマー（または2画面のうちの片方）の全ロジックを管理するフック
  * @param mode タイマーの動作モード（永続化キーの識別に利用）
+ * @returns タイマーの状態と操作関数
  */
 export function useTaskTimer(mode: TimerMode = 'single') {
   const [state, dispatch] = useReducer(timerReducer, initialState);

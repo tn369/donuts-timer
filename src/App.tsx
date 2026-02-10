@@ -13,6 +13,7 @@ import type { TodoList } from './types';
 
 /**
  * アプリケーションのメインコンポーネント
+ * @returns レンダリングされるJSX要素
  */
 function App() {
   const {

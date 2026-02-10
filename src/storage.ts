@@ -82,7 +82,7 @@ const migrateTodoList = (list: TodoList): TodoList => {
 /**
  * localStorageからすべてのやることリストを読み込み
  * @param fallbackLists 読み込み失敗時のデフォルト値
- * @returns 読み込まれたリスト
+ * @returns 読み込まれたリストの配列
  */
 export const loadTodoLists = (fallbackLists: TodoList[] = []): TodoList[] => {
   try {
@@ -121,7 +121,7 @@ export const loadActiveListId = (): string | null => {
 
 /**
  * 現在選択されているリストIDを保存
- * @param id リストID
+ * @param id リストID（消去する場合はnull）
  */
 export const saveActiveListId = (id: string | null): void => {
   if (id) {
@@ -133,7 +133,7 @@ export const saveActiveListId = (id: string | null): void => {
 
 /**
  * 実行状態を保存する
- * @param state 実行状態
+ * @param state 実行状態オブジェクト
  */
 export const saveExecutionState = (state: ExecutionState): void => {
   try {

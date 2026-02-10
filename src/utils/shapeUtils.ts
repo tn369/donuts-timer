@@ -57,25 +57,37 @@ export abstract class ShapeRenderer {
    * SVG要素のタイプ ('circle' | 'rect' | 'path')
    */
   abstract readonly svgElementType: 'circle' | 'rect' | 'path';
+  /**
+   * 形状の外周の長さを取得する
+   * @returns 外周の長さ（ピクセル）
+   */
   abstract getPerimeter(): number;
+  /**
+   * 目盛りの数を取得する
+   * @returns 目盛りの数
+   */
   abstract getTicksCount(): number;
 
   /**
    * 背景用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
    */
   abstract getBackgroundProps(): SVGRenderProps;
   /**
    * プログレス表示用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
    */
   abstract getProgressProps(): SVGRenderProps;
   /**
    * 外枠用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
    */
   abstract getOuterProps(): SVGRenderProps;
   /**
    * 目盛り用のSVG属性を取得する
    * @param index 目盛りのインデックス
    * @param rotationDegree 1目盛りあたりの回転角度
+   * @returns SVG属性のプロパティ
    */
   getTickProps(index: number, rotationDegree: number): SVGRenderProps {
     return {
@@ -89,6 +101,7 @@ export abstract class ShapeRenderer {
 
   /**
    * stroke-linecapの値を取得する
+   * @returns 'butt' または 'round'
    */
   getLinecap(): 'butt' | 'round' {
     return 'butt';
@@ -96,6 +109,7 @@ export abstract class ShapeRenderer {
 
   /**
    * プログレス描画時の追加transform値を取得する
+   * @returns transform属性の文字列、またはundefined
    */
   getProgressTransform(): string | undefined {
     return undefined;
@@ -103,6 +117,7 @@ export abstract class ShapeRenderer {
 
   /**
    * pathLength属性の値を取得する（path要素用）
+   * @returns pathLengthの値、またはundefined
    */
   getPathLength(): number | undefined {
     return undefined;
@@ -110,6 +125,7 @@ export abstract class ShapeRenderer {
 
   /**
    * strokeLinejoin属性が必要かどうか
+   * @returns 必要ならtrue
    */
   needsStrokeLinejoin(): boolean {
     return false;
@@ -118,9 +134,17 @@ export abstract class ShapeRenderer {
 
 export class CircleRenderer extends ShapeRenderer {
   readonly svgElementType = 'circle' as const;
+  /**
+   * 形状の外周の長さを取得する
+   * @returns 外周の長さ（ピクセル）
+   */
   getPerimeter() {
     return 2 * Math.PI * this.radius;
   }
+  /**
+   * 目盛りの数を取得する
+   * @returns 目盛りの数
+   */
   getTicksCount() {
     return 4;
   }
@@ -129,15 +153,33 @@ export class CircleRenderer extends ShapeRenderer {
     return `rotate(-90 ${this.center} ${this.center})`;
   }
 
+  /**
+   * 背景用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getBackgroundProps(): SVGRenderProps {
     return { cx: this.center, cy: this.center, r: this.radius };
   }
+  /**
+   * プログレス表示用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getProgressProps(): SVGRenderProps {
     return { cx: this.center, cy: this.center, r: this.radius };
   }
+  /**
+   * 外枠用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getOuterProps(): SVGRenderProps {
     return { cx: this.center, cy: this.center, r: this.radius + 1 };
   }
+  /**
+   * 目盛り用のSVG属性を取得する
+   * @param index 目盛りのインデックス
+   * @param rotationDegree 1目盛りあたりの回転角度
+   * @returns SVG属性のプロパティ
+   */
   getTickProps(index: number, rotationDegree: number): SVGRenderProps {
     return {
       x1: this.center,
@@ -164,6 +206,9 @@ export class SquareRenderer extends ShapeRenderer {
   /**
    * 上辺中央から時計回りに四角形を描画するパスを生成
    * これにより butt linecap でも角が切れない
+   * @param offset オフセット
+   * @param side 一辺の長さ
+   * @returns SVGパス文字列
    */
   private createSquarePath(offset: number, side: number): string {
     const cx = this.center;
@@ -179,23 +224,47 @@ export class SquareRenderer extends ShapeRenderer {
     return this.getPerimeter();
   }
 
+  /**
+   * strokeLinejoin属性が必要かどうか
+   * @returns 必要ならtrue
+   */
   override needsStrokeLinejoin(): boolean {
     return true;
   }
 
+  /**
+   * 形状の外周の長さを取得する
+   * @returns 外周の長さ（ピクセル）
+   */
   getPerimeter() {
     return 4 * this.side;
   }
+  /**
+   * 目盛りの数を取得する
+   * @returns 目盛りの数
+   */
   getTicksCount() {
     return 4;
   }
 
+  /**
+   * 背景用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getBackgroundProps(): SVGRenderProps {
     return { d: this.path };
   }
+  /**
+   * プログレス表示用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getProgressProps(): SVGRenderProps {
     return { d: this.path };
   }
+  /**
+   * 外枠用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getOuterProps(): SVGRenderProps {
     return { d: this.outerPath };
   }
@@ -208,27 +277,55 @@ export class PathRenderer extends ShapeRenderer {
   protected perimeter = 0;
   protected ticksCount = 5;
 
+  /**
+   * pathLength属性の値を取得する（path要素用）
+   * @returns pathLengthの値、またはundefined
+   */
   override getPathLength(): number {
     return this.perimeter;
   }
 
+  /**
+   * strokeLinejoin属性が必要かどうか
+   * @returns 必要ならtrue
+   */
   override needsStrokeLinejoin(): boolean {
     return true;
   }
 
+  /**
+   * 形状の外周の長さを取得する
+   * @returns 外周の長さ（ピクセル）
+   */
   getPerimeter() {
     return this.perimeter;
   }
+  /**
+   * 目盛りの数を取得する
+   * @returns 目盛りの数
+   */
   getTicksCount() {
     return this.ticksCount;
   }
 
+  /**
+   * 背景用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getBackgroundProps(): SVGRenderProps {
     return { d: this.path };
   }
+  /**
+   * プログレス表示用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getProgressProps(): SVGRenderProps {
     return { d: this.path };
   }
+  /**
+   * 外枠用のSVG属性を取得する
+   * @returns SVG属性のプロパティ
+   */
   getOuterProps(): SVGRenderProps {
     return { d: this.outerPath };
   }
@@ -258,6 +355,7 @@ export class HeartRenderer extends PathRenderer {
 
   /**
    * ハート形状は下部尖端保護のため round linecap を使用
+   * @returns 'round'
    */
   override getLinecap(): 'butt' | 'round' {
     return 'round';

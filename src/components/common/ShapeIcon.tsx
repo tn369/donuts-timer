@@ -17,6 +17,12 @@ interface ShapeIconProps {
 
 /**
  * 形状アイコンを表示するコンポーネント。設定画面やコントロールバーで使用される。
+ * @param root0 プロパティオブジェクト
+ * @param root0.shape 表示する形状
+ * @param root0.size サイズ
+ * @param root0.color 色
+ * @param root0.className クラス名
+ * @returns レンダリングされるJSX要素
  */
 export const ShapeIcon: React.FC<ShapeIconProps> = ({
   shape,
@@ -29,6 +35,10 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
 
   /**
    * 形状の頂点座標を計算する
+   * @param sides 頂点数
+   * @param rotation 回転（ラジアン）
+   * @param isStar 星型にするかどうか
+   * @returns 座標文字列
    */
   const getPoints = (sides: number, rotation: number = -Math.PI / 2, isStar = false) => {
     const pts: string[] = [];
@@ -51,6 +61,7 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
 
   /**
    * 形状に応じたSVG要素をレンダリングする
+   * @returns SVG要素
    */
   const renderShape = () => {
     switch (shape) {

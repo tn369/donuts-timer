@@ -14,6 +14,9 @@ import type { Action, State } from './types';
 
 /**
  * タイマーの状態を永続化するためのフック
+ * @param state 現在の状態
+ * @param dispatch dispatch関数
+ * @param mode タイマーのモード（single/sibling-0/sibling-1）
  */
 export function useTimerPersistence(
   state: State,

@@ -17,6 +17,10 @@ interface ResumeModalProps {
 
 /**
  * 復元確認モーダルコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.onCancel 「あたらしく」選択時のコールバック
+ * @param root0.onConfirm 「つづきから」選択時のコールバック
+ * @returns レンダリングされるJSX要素
  */
 export const ResumeModal: React.FC<ResumeModalProps> = ({ onCancel, onConfirm }) => {
   return (

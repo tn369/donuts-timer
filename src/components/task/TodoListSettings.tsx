@@ -98,6 +98,13 @@ const PRESET_TITLES = ['あさ', 'おひる', 'ゆうがた', 'よる', 'しゅ�
 /**
  * ドラッグ可能な個別のタスクアイテムコンポーネント
  * Hook(useDragControls) をループ外（このコンポーネント内）で呼び出すために抽出
+ * @param root0 プロパティオブジェクト
+ * @param root0.task 対象のタスク
+ * @param root0.onTaskChange タスク変更時のイベントハンドラ
+ * @param root0.onRemoveTask タスク削除時のイベントハンドラ
+ * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
+ * @param root0.allExistingIcons 既存の全アイコンURLリスト
+ * @returns レンダリングされるJSX要素
  */
 const ReorderableTaskItem: React.FC<{
   task: Task;
@@ -124,6 +131,12 @@ const ReorderableTaskItem: React.FC<{
 
 /**
  * やることリストの設定画面コンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.list 編集対象のリスト
+ * @param root0.allExistingIcons 既存の全アイコンURLリスト
+ * @param root0.onSave 保存時のコールバック
+ * @param root0.onBack 戻るボタンのコールバック
+ * @returns レンダリングされるJSX要素
  */
 export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   list,

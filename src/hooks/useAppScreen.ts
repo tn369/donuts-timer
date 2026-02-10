@@ -17,6 +17,7 @@ export type SettingsSource = 'selection' | 'main';
 
 /**
  * 初期表示画面を決定する
+ * @returns 初期画面のタイプ
  */
 const getInitialScreen = (): CurrentScreen => {
   const loadedLists = loadTodoLists(DEFAULT_TODO_LISTS);
@@ -30,6 +31,7 @@ const getInitialScreen = (): CurrentScreen => {
 
 /**
  * アプリケーションの画面状態と画面遷移ロジックを管理するフック
+ * @returns 画面遷移に関連する状態と関数
  */
 export const useAppScreen = () => {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>(getInitialScreen);

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 /**
  * ウィンドウのサイズを監視するカスタムフック
+ * @returns 現在のウィンドウの幅と高さ
  */
 export const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({

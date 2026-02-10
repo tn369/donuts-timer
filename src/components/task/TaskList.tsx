@@ -25,6 +25,17 @@ interface TaskListProps {
 
 /**
  * タスクカードを並べて表示するリストコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.tasks タスク一覧
+ * @param root0.selectedTaskId 選択中のタスクID
+ * @param root0.isTaskSelectable タスクが選択可能かどうかの判定関数
+ * @param root0.onSelectTask タスクが選択された時のコールバック
+ * @param root0.shape タイマーの形状
+ * @param root0.color タイマーの色
+ * @param root0.isCompact コンパクト表示にするかどうか
+ * @param root0.onReorderTasks タスクを並び替える時のコールバック
+ * @param root0.isReorderEnabled タスクの並び替えが可能かどうか
+ * @returns レンダリングされるJSX要素
  */
 export const TaskList: React.FC<TaskListProps> = ({
   tasks,

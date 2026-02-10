@@ -26,6 +26,9 @@ interface TodoListSelectionProps {
   onReorder: (newLists: TodoList[]) => void; // リストの順番が変更された時のコールバック
 }
 
+/**
+ * TodoListSelectionItemのプロパティ
+ */
 interface TodoListSelectionItemProps {
   list: TodoList;
   selectedIds: string[];
@@ -37,6 +40,19 @@ interface TodoListSelectionItemProps {
   isCompact: boolean;
 }
 
+/**
+ * リスト選択画面の個別アイテムコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.list 表示するリスト
+ * @param root0.selectedIds 選択中のリストIDリスト
+ * @param root0.isSiblingModeSelect 2人モード選択中かどうか
+ * @param root0.onCopy コピー時のコールバック
+ * @param root0.onEdit 編集時のコールバック
+ * @param root0.onDeleteRequest 削除リクエスト時のコールバック
+ * @param root0.handleCardClick カードクリック時のハンドラ
+ * @param root0.isCompact コンパクト表示かどうか
+ * @returns レンダリングされるJSX要素
+ */
 const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
   list,
   selectedIds,
@@ -79,6 +95,16 @@ const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
 
 /**
  * やることリストの選択画面コンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.lists 表示するリスト一覧
+ * @param root0.onSelect リストが選択された時のコールバック
+ * @param root0.onSelectSibling 2画面モードで2つのリストが選択された時のコールバック
+ * @param root0.onEdit リスト編集ボタンが押された時のコールバック
+ * @param root0.onCopy リストコピーボタンが押された時のコールバック
+ * @param root0.onAdd 新規作成ボタンが押された時のコールバック
+ * @param root0.onDelete リスト削除ボタンが押された時のコールバック
+ * @param root0.onReorder リストの順番が変更された時のコールバック
+ * @returns レンダリングされるJSX要素
  */
 export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   lists,
@@ -106,6 +132,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
 
   /**
    * カードがクリックされた際のハンドラ
+   * @param listId クリックされたリストのID
    */
   const handleCardClick = (listId: string) => {
     if (isSiblingModeSelect) {

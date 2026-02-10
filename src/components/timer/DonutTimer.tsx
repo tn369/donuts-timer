@@ -26,6 +26,10 @@ const MAX_DISPLAY_CHUNKS = 10; // 最大表示チャンク数
 
 /**
  * チャンク数に基づいて基本メトリクスを計算する
+ * @param count チャンク数
+ * @param size 基本サイズ
+ * @param strokeWidth 基本の線の太さ
+ * @returns 計算されたサイズと線の太さ
  */
 const getBaseMetrics = (count: number, size: number, strokeWidth: number) => {
   if (count === 1) return { size, stroke: strokeWidth };
@@ -37,6 +41,8 @@ const getBaseMetrics = (count: number, size: number, strokeWidth: number) => {
 
 /**
  * 合計秒数をチャンクに分割する
+ * @param totalSeconds 合計秒数
+ * @returns チャンクの容量リスト（秒）
  */
 const calculateChunks = (totalSeconds: number) => {
   const chunks: number[] = [];
@@ -52,6 +58,10 @@ const calculateChunks = (totalSeconds: number) => {
 
 /**
  * 各チャンクの残り時間を計算する
+ * @param chunks チャンクの容量リスト
+ * @param elapsedSeconds 既に経過した秒数
+ * @param totalSeconds 全体の予定秒数
+ * @returns 各チャンクの残り秒数リスト
  */
 const calculateChunkRemaining = (
   chunks: number[],
@@ -71,6 +81,16 @@ const calculateChunkRemaining = (
 
 /**
  * ドーナツ型（または多角形）のタイマーを表示するコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.totalSeconds 合計予定秒数
+ * @param root0.elapsedSeconds 経過秒数
+ * @param root0.size 表示サイズ
+ * @param root0.strokeWidth 線の太さ
+ * @param root0.isOverdue 時間超過しているかどうか
+ * @param root0.shape タイマーの形状
+ * @param root0.color タイマーの色
+ * @param root0.children 中央に表示する子要素
+ * @returns レンダリングされるJSX要素
  */
 export const DonutTimer: React.FC<DonutTimerProps> = ({
   totalSeconds,

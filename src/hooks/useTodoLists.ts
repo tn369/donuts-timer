@@ -17,6 +17,8 @@ import type { TodoList } from '../types';
 
 /**
  * リスト内のタスクをマイグレーションする（アイコンの補完など）
+ * @param list 対象のリスト
+ * @returns 変換後のリスト
  */
 const migrateTodoList = (list: TodoList): TodoList => ({
   ...list,
@@ -25,6 +27,7 @@ const migrateTodoList = (list: TodoList): TodoList => ({
 
 /**
  * 新規作成時のデフォルトリストを生成する
+ * @returns デフォルトのリスト
  */
 const createDefaultList = (): TodoList => ({
   id: uuid_v4(),
@@ -55,6 +58,8 @@ const createDefaultList = (): TodoList => ({
 
 /**
  * リストをコピーする
+ * @param list 対象のリスト
+ * @returns コピーされたリスト
  */
 const copyTodoList = (list: TodoList): TodoList => ({
   ...list,
@@ -71,6 +76,7 @@ const copyTodoList = (list: TodoList): TodoList => ({
 
 /**
  * やることリストのデータ操作と選択状態を管理するフック
+ * @returns リスト操作に関連する状態と関数
  */
 export const useTodoLists = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
@@ -98,6 +104,7 @@ export const useTodoLists = () => {
 
   /**
    * リストを選択する（1人モード）
+   * @param listId 選択するリストのID
    */
   const selectList = (listId: string) => {
     const list = todoLists.find((item) => item.id === listId);
@@ -110,6 +117,8 @@ export const useTodoLists = () => {
 
   /**
    * 2つのリストを選択する（2人モード）
+   * @param id1 1人目のリストID
+   * @param id2 2人目のリストID
    */
   const selectSiblingLists = (id1: string, id2: string) => {
     const list1 = todoLists.find((item) => item.id === id1);
@@ -122,6 +131,7 @@ export const useTodoLists = () => {
 
   /**
    * 新しいリストを追加する
+   * @returns 追加されたリスト
    */
   const addNewList = () => {
     const newList = createDefaultList();
@@ -133,6 +143,7 @@ export const useTodoLists = () => {
 
   /**
    * 一時的なリストを作成する（保存しない）
+   * @returns 生成されたリスト
    */
   const createTemporaryList = () => {
     return createDefaultList();
@@ -140,6 +151,7 @@ export const useTodoLists = () => {
 
   /**
    * リストを削除する
+   * @param listId 削除するリストのID
    */
   const deleteList = (listId: string) => {
     const updated = todoLists.filter((list) => list.id !== listId);
@@ -149,6 +161,7 @@ export const useTodoLists = () => {
 
   /**
    * リストをコピーして追加する
+   * @param listId コピー元のリストID
    */
   const copyList = (listId: string) => {
     const original = todoLists.find((list) => list.id === listId);
@@ -162,6 +175,7 @@ export const useTodoLists = () => {
   /**
    * リストの内容を保存する
    * リストがtodoListsに存在しない場合は新規追加として扱う
+   * @param updatedList 更新後のリスト
    */
   const saveList = (updatedList: TodoList) => {
     const existingIndex = todoLists.findIndex((list) => list.id === updatedList.id);
@@ -191,6 +205,7 @@ export const useTodoLists = () => {
 
   /**
    * 全リストで使用されているユニークなアイコン一覧を取得する
+   * @returns アイコンURLのリスト
    */
   const getAllUniqueIcons = () =>
     Array.from(
@@ -233,6 +248,7 @@ export const useTodoLists = () => {
 
   /**
    * リストの順番を並び替える
+   * @param newLists 並び替え後のリスト一覧
    */
   const reorderTodoLists = (newLists: TodoList[]) => {
     setTodoLists(newLists);

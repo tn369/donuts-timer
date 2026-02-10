@@ -23,6 +23,13 @@ interface ControlsProps {
 
 /**
  * スタート/ストップボタンの内部コンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.isRunning タイマーが動作中かどうか
+ * @param root0.onStart スタート時のハンドラ
+ * @param root0.onStop ストップ時のハンドラ
+ * @param root0.disabled 無効フラグ
+ * @param root0.isSmall 小さい表示にするかどうか
+ * @returns レンダリングされるJSX要素
  */
 const StartStopButton: React.FC<{
   isRunning: boolean;
@@ -62,6 +69,16 @@ const StartStopButton: React.FC<{
 
 /**
  * タイマー操作用のボタン群を表示するコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.isRunning タイマーが動作中かどうか
+ * @param root0.onStart スタート時のハンドラ
+ * @param root0.onStop ストップ時のハンドラ
+ * @param root0.onReset リセット時のハンドラ
+ * @param root0.canStartOrStop スタート/ストップ操作が可能かどうか
+ * @param root0.isCompact コンパクト表示にするかどうか
+ * @param root0.isSmall 小さい表示にするかどうか
+ * @param root0.hideReset リセットボタンを非表示にするかどうか
+ * @returns レンダリングされるJSX要素
  */
 export const Controls: React.FC<ControlsProps> = ({
   isRunning,

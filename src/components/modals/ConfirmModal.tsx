@@ -21,6 +21,15 @@ interface ConfirmModalProps {
 
 /**
  * 汎用確認モーダルコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.title ダイアログのタイトル
+ * @param root0.cancelText キャンセルボタンのテキスト
+ * @param root0.confirmText 確認ボタンのテキスト
+ * @param root0.confirmStyle 確認ボタンのスタイル
+ * @param root0.icon オプションのアイコン
+ * @param root0.onCancel キャンセル時のコールバック
+ * @param root0.onConfirm 確定時のコールバック
+ * @returns レンダリングされるJSX要素
  */
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   title,

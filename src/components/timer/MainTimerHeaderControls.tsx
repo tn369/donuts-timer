@@ -74,6 +74,24 @@ interface HeaderControlsProps {
 
 /**
  * タイマー画面上部のヘッダーコントロールコンポーネント
+ * @param root0 プロパティオブジェクト
+ * @param root0.showSelectionButton リスト選択に戻るボタンを表示するか
+ * @param root0.onBackToSelection リスト選択に戻る際のコールバック
+ * @param root0.isSiblingMode 2画面モードかどうか
+ * @param root0.isRunning タイマーが動作中かどうか
+ * @param root0.startTimer スタートボタンのコールバック
+ * @param root0.stopTimer ストップボタンのコールバック
+ * @param root0.setShowResetConfirm リセット確認ダイアログの表示制御
+ * @param root0.canStartOrStop スタート/ストップが可能か
+ * @param root0.fastForward 早送り（デバッグ用）のコールバック
+ * @param root0.timerSettings タイマーの見た目設定
+ * @param root0.setTimerSettings 設定変更用の関数
+ * @param root0.activeList 現在アクティブなリスト
+ * @param root0.onEditSettings 設定画面を開くコールバック
+ * @param root0.onEnterSiblingMode ふたりモードへ切り替えるコールバック
+ * @param root0.onExitSiblingMode ひとりモードへ切り替えるコールバック
+ * @param root0.isCompact コンパクト表示かどうか
+ * @returns レンダリングされるJSX要素
  */
 export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   showSelectionButton,
@@ -198,7 +216,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
 };
 
 /**
- * ひとり/ふたりモード切り替えボタン
+ * ひとり/ふたりモード切り替えボタンのラッパーコンポーネント
  */
 interface ModeToggleButtonProps {
   isSiblingMode: boolean;
@@ -209,16 +227,22 @@ interface ModeToggleButtonProps {
   isCompact?: boolean;
 }
 
-const SiblingModeButton: React.FC<{
-  onExitSiblingMode: () => void;
-  setIsMenuOpen: (open: boolean) => void;
-  isMenu: boolean;
-}> = ({ onExitSiblingMode, setIsMenuOpen, isMenu }) => (
+/**
+ * ひとりモードに戻すボタン
+ * @param root0 プロパティオブジェクト
+ * @param root0.onExitSiblingMode ひとりモードへ切り替えるコールバック
+ * @param root0.setIsMenuOpen メニューの開閉制御
+ * @param root0.isMenu メニュー内表示かどうか
+ * @returns レンダリングされるJSX要素
+ */
+const SiblingModeButton: React.FC<
+  Pick<ModeToggleButtonProps, 'onExitSiblingMode' | 'setIsMenuOpen' | 'isMenu'>
+> = ({ onExitSiblingMode, setIsMenuOpen, isMenu }) => (
   <motion.button
     whileHover={{ scale: 1.05, translateY: -2 }}
     whileTap={{ scale: 0.95 }}
     onClick={() => {
-      onExitSiblingMode();
+      onExitSiblingMode?.();
       setIsMenuOpen(false);
     }}
     className={isMenu ? styles.menuItem : styles.settingsButton}
@@ -229,16 +253,22 @@ const SiblingModeButton: React.FC<{
   </motion.button>
 );
 
-const SoloModeButton: React.FC<{
-  onEnterSiblingMode: () => void;
-  setIsMenuOpen: (open: boolean) => void;
-  isMenu: boolean;
-}> = ({ onEnterSiblingMode, setIsMenuOpen, isMenu }) => (
+/**
+ * ふたりモードに切り替えるボタン
+ * @param root0 プロパティオブジェクト
+ * @param root0.onEnterSiblingMode ふたりモードへ切り替えるコールバック
+ * @param root0.setIsMenuOpen メニューの開閉制御
+ * @param root0.isMenu メニュー内表示かどうか
+ * @returns レンダリングされるJSX要素
+ */
+const SoloModeButton: React.FC<
+  Pick<ModeToggleButtonProps, 'onEnterSiblingMode' | 'setIsMenuOpen' | 'isMenu'>
+> = ({ onEnterSiblingMode, setIsMenuOpen, isMenu }) => (
   <motion.button
     whileHover={{ scale: 1.05, translateY: -2 }}
     whileTap={{ scale: 0.95 }}
     onClick={() => {
-      onEnterSiblingMode();
+      onEnterSiblingMode?.();
       setIsMenuOpen(false);
     }}
     className={isMenu ? styles.menuItem : styles.settingsButton}
@@ -282,7 +312,7 @@ const ModeToggleButton: React.FC<ModeToggleButtonProps> = ({
 };
 
 /**
- * ヘッダーのドロップダウンメニュー
+ * ヘッダーのドロップダウンメニューのプロパティ
  */
 interface HeaderMenuProps {
   isMenuOpen: boolean;
@@ -295,6 +325,19 @@ interface HeaderMenuProps {
   isCompact?: boolean;
 }
 
+/**
+ * ヘッダーのドロップダウンメニュー
+ * @param root0 プロパティオブジェクト
+ * @param root0.isMenuOpen メニューが開いているかどうか
+ * @param root0.setIsMenuOpen メニューの開閉制御
+ * @param root0.isSiblingMode 2人モードかどうか
+ * @param root0.onEnterSiblingMode 2人モードへ切り替えるコールバック
+ * @param root0.onExitSiblingMode 1人モードへ切り替えるコールバック
+ * @param root0.setShowResetConfirm リセット確認ダイアログの表示制御
+ * @param root0.handleEditSettings 設定編集時のハンドラ
+ * @param root0.isCompact コンパクト表示かどうか
+ * @returns レンダリングされるJSX要素
+ */
 const HeaderMenu: React.FC<HeaderMenuProps> = ({
   isMenuOpen,
   setIsMenuOpen,
