@@ -42,7 +42,7 @@
   height: 60px;
   padding: 0 24px;
   overflow: hidden;
-  font-family: Gaegu, cursive;
+  font-family: Outfit, sans-serif;
   font-size: 24px;
   font-weight: 700;
   color: var(--color-text-main);
@@ -142,7 +142,7 @@
   align-items: center;
   width: 100%;
   padding: 16px 20px;
-  font-family: Gaegu, cursive;
+  font-family: Outfit, sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: var(--color-text-main);
