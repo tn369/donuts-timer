@@ -63,7 +63,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
       <div className={styles.compactText}>
         <div className={styles.taskName}>{task.name}</div>
         <div className={styles.taskTime}>
-          {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
+          {isDone ? getStatusText(task) : formatTime(remaining)}
         </div>
       </div>
     </div>
@@ -162,9 +162,7 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
     )}
 
     <div className={styles.taskName}>{task.name}</div>
-    <div className={styles.taskTime}>
-      {isDone ? (task.kind === 'reward' ? 'おわり' : 'できた！') : formatTime(remaining)}
-    </div>
+    <div className={styles.taskTime}>{isDone ? getStatusText(task) : formatTime(remaining)}</div>
   </>
 );
 
@@ -198,6 +196,13 @@ const getFlexGrow = (status: string, elapsed: number, planned: number, actual: n
     2.5,
     Math.pow((status === 'done' ? actual : Math.max(planned, elapsed)) / 60, 0.3)
   );
+};
+
+/**
+ * 完了時のステータス文字列を取得する
+ */
+const getStatusText = (task: Task) => {
+  return task.kind === 'reward' ? 'おわり' : 'できた！';
 };
 
 /**

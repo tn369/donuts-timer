@@ -37,7 +37,10 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
     const innerR = r * 0.45;
 
     for (let i = 0; i < totalPoints; i++) {
-      const currentR = isStar ? (i % 2 === 0 ? r : innerR) : r;
+      let currentR = r;
+      if (isStar) {
+        currentR = i % 2 === 0 ? r : innerR;
+      }
       const angle = rotation + (i * 2 * Math.PI) / totalPoints;
       const x = center + currentR * Math.cos(angle);
       const y = center + currentR * Math.sin(angle);
@@ -51,10 +54,6 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
    */
   const renderShape = () => {
     switch (shape) {
-      case 'circle':
-        return (
-          <circle cx={center} cy={center} r={radius} fill="none" stroke={color} strokeWidth="2" />
-        );
       case 'square':
         return (
           <rect
@@ -128,6 +127,7 @@ export const ShapeIcon: React.FC<ShapeIconProps> = ({
             strokeLinejoin="round"
           />
         );
+      case 'circle':
       default:
         return (
           <circle cx={center} cy={center} r={radius} fill="none" stroke={color} strokeWidth="2" />

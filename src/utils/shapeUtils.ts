@@ -77,7 +77,15 @@ export abstract class ShapeRenderer {
    * @param index 目盛りのインデックス
    * @param rotationDegree 1目盛りあたりの回転角度
    */
-  abstract getTickProps(index: number, rotationDegree: number): SVGRenderProps;
+  getTickProps(index: number, rotationDegree: number): SVGRenderProps {
+    return {
+      x1: this.center,
+      y1: this.strokeWidth / 2,
+      x2: this.center,
+      y2: this.strokeWidth,
+      transform: `rotate(${index * rotationDegree} ${this.center} ${this.center})`,
+    };
+  }
 
   /**
    * stroke-linecapの値を取得する
@@ -191,15 +199,6 @@ export class SquareRenderer extends ShapeRenderer {
   getOuterProps(): SVGRenderProps {
     return { d: this.outerPath };
   }
-  getTickProps(index: number, rotationDegree: number): SVGRenderProps {
-    return {
-      x1: this.center,
-      y1: this.strokeWidth / 2,
-      x2: this.center,
-      y2: this.strokeWidth,
-      transform: `rotate(${index * rotationDegree} ${this.center} ${this.center})`,
-    };
-  }
 }
 
 export class PathRenderer extends ShapeRenderer {
@@ -232,15 +231,6 @@ export class PathRenderer extends ShapeRenderer {
   }
   getOuterProps(): SVGRenderProps {
     return { d: this.outerPath };
-  }
-  getTickProps(index: number, rotationDegree: number): SVGRenderProps {
-    return {
-      x1: this.center,
-      y1: this.strokeWidth / 2,
-      x2: this.center,
-      y2: this.strokeWidth,
-      transform: `rotate(${index * rotationDegree} ${this.center} ${this.center})`,
-    };
   }
 }
 

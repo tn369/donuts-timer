@@ -73,7 +73,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
 
   const handleInputChange = (val: string) => {
     // 数字以外を削除
-    const numericValue = val.replace(/[^0-9]/g, '');
+    const numericValue = val.replace(/\D/g, '');
 
     // 先頭の0を削除（ただし"0"自体の場合は残す）
     const sanitizedValue = numericValue.replace(/^0+/, '') || (numericValue === '' ? '' : '0');

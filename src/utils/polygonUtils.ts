@@ -27,7 +27,10 @@ export const getShapePoints = (
   const totalPoints = isStarShape ? sides * 2 : sides;
   const innerRadius = radius * 0.45;
   for (let j = 0; j < totalPoints; j++) {
-    const currentRadius = isStarShape ? (j % 2 === 0 ? radius : innerRadius) : radius;
+    let currentRadius = radius;
+    if (isStarShape) {
+      currentRadius = j % 2 === 0 ? radius : innerRadius;
+    }
     const angle = rotation + (j * 2 * Math.PI) / totalPoints;
     pts.push({
       x: center + currentRadius * Math.cos(angle),
