@@ -20,7 +20,6 @@ describe('IconSelectorPopup', () => {
     render(
       <IconSelectorPopup
         show={true}
-        direction="bottom"
         task={mockTask}
         allExistingIcons={[]}
         onClose={vi.fn()}
@@ -37,7 +36,6 @@ describe('IconSelectorPopup', () => {
     render(
       <IconSelectorPopup
         show={true}
-        direction="bottom"
         task={mockTask}
         allExistingIcons={[]}
         onClose={onClose}
@@ -57,7 +55,6 @@ describe('IconSelectorPopup', () => {
     render(
       <IconSelectorPopup
         show={true}
-        direction="bottom"
         task={mockTask}
         allExistingIcons={[]}
         onClose={onClose}

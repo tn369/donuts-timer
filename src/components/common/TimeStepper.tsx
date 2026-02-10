@@ -148,15 +148,15 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
           </select>
         ) : (
           <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             className={styles.stepperInput}
-              value={displayValue}
-              onChange={(e) => {
-                handleInputChange(e.target.value);
-              }}
-              onBlur={handleBlur}
+            value={displayValue}
+            onChange={(e) => {
+              handleInputChange(e.target.value);
+            }}
+            onBlur={handleBlur}
             disabled={disabled}
           />
         )}
