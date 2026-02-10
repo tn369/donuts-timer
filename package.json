@@ -11,9 +11,23 @@
     "lint:css": "stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare": "husky"
   },
   "packageManager": "pnpm@10.2.1",
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.css": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,html}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.26.2",
@@ -47,6 +61,8 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^16.5.0",
     "happy-dom": "^20.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "stylelint": "^16.26.1",
     "stylelint-config-recess-order": "^7.6.0",
