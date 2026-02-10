@@ -171,7 +171,11 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
   `.trim();
 
   return (
-    <div className={styles.donutTimer} style={{ width: size, height: size }}>
+    <div
+      className={styles.donutTimer}
+      style={{ width: size, height: size }}
+      data-testid="timer-chunk"
+    >
       <svg
         width={size}
         height={size}
@@ -182,7 +186,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
         <BgShape
           renderer={renderer}
           commonProps={{
-            className: styles.donutTimerBg,
+            className: `${styles.donutTimerBg} ${isOverdue ? styles.overdue : ''}`.trim(),
             fill: 'none',
             ...renderer.getBackgroundProps(),
           }}
