@@ -9,6 +9,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
 import sonarjs from 'eslint-plugin-sonarjs';
+import jsdoc from 'eslint-plugin-jsdoc';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -23,6 +24,7 @@ export default tseslint.config(
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
       sonarjs.configs.recommended,
+      jsdoc.configs['flat/recommended-typescript-error'],
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -40,6 +42,7 @@ export default tseslint.config(
       'jsx-a11y': jsxA11y,
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
+      jsdoc,
     },
     rules: {
       ...react.configs.recommended.rules,
