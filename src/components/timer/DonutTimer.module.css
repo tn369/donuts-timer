@@ -57,43 +57,43 @@
 }
 
 .colorRed {
-  stroke: #ff4d4d;
+  stroke: var(--timer-red);
 }
 
 .colorBlue {
-  stroke: #4facfe;
+  stroke: var(--timer-blue);
 }
 
 .colorYellow {
-  stroke: #ffb347;
+  stroke: var(--timer-yellow);
 }
 
 .colorGreen {
-  stroke: #10b981;
+  stroke: var(--timer-green);
 }
 
 .colorPink {
-  stroke: #ff7eb3;
+  stroke: var(--timer-pink);
 }
 
 .colorPurple {
-  stroke: #a18cd1;
+  stroke: var(--timer-purple);
 }
 
 .colorOrange {
-  stroke: #f97316;
+  stroke: var(--timer-orange);
 }
 
 .colorIndigo {
-  stroke: #6366f1;
+  stroke: var(--timer-indigo);
 }
 
 .colorCyan {
-  stroke: #06b6d4;
+  stroke: var(--timer-cyan);
 }
 
 .colorLime {
-  stroke: #84cc16;
+  stroke: var(--timer-lime);
 }
 
 .overdue {

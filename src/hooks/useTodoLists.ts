@@ -1,105 +1,40 @@
 /**
  * やることリストの一覧管理、保存、選択状態を管理するカスタムフック
  */
-import { useState } from 'react';
-import { v4 as uuid_v4 } from 'uuid';
+import { useMemo, useState } from 'react';
 
-import { DEFAULT_TODO_LISTS, migrateTasksWithDefaultIcons, PRESET_IMAGES } from '../constants';
 import {
   loadActiveListId,
   loadExecutionState,
-  loadTodoLists,
   saveActiveListId,
   saveExecutionState,
-  saveTodoLists,
 } from '../storage';
 import type { TodoList } from '../types';
-
-/**
- * リスト内のタスクをマイグレーションする（アイコンの補完など）
- * @param list 対象のリスト
- * @returns 変換後のリスト
- */
-const migrateTodoList = (list: TodoList): TodoList => ({
-  ...list,
-  tasks: migrateTasksWithDefaultIcons(list.tasks),
-});
-
-/**
- * 新規作成時のデフォルトリストを生成する
- * @returns デフォルトのリスト
- */
-const createDefaultList = (): TodoList => ({
-  id: uuid_v4(),
-  title: 'あさ',
-  tasks: migrateTasksWithDefaultIcons([
-    {
-      id: uuid_v4(),
-      name: 'トイレ',
-      icon: '',
-      plannedSeconds: 5 * 60,
-      kind: 'todo',
-      status: 'todo',
-      elapsedSeconds: 0,
-      actualSeconds: 0,
-    },
-    {
-      id: 'reward-task',
-      name: 'あそぶ',
-      icon: '',
-      plannedSeconds: 15 * 60,
-      kind: 'reward',
-      status: 'todo',
-      elapsedSeconds: 0,
-      actualSeconds: 0,
-    },
-  ]),
-});
-
-/**
- * リストをコピーする
- * @param list 対象のリスト
- * @returns コピーされたリスト
- */
-const copyTodoList = (list: TodoList): TodoList => ({
-  ...list,
-  id: uuid_v4(),
-  title: `${list.title} (コピー)`,
-  tasks: list.tasks.map((task) => ({
-    ...task,
-    id: task.kind === 'reward' ? 'reward-task' : uuid_v4(),
-    status: 'todo',
-    elapsedSeconds: 0,
-    actualSeconds: 0,
-  })),
-});
+import { createDefaultList, getAllUniqueIcons } from '../utils/todoListUtils';
+import { useTodoListsData } from './useTodoListsData';
 
 /**
  * やることリストのデータ操作と選択状態を管理するフック
  * @returns リスト操作に関連する状態と関数
  */
 export const useTodoLists = () => {
-  const [todoLists, setTodoLists] = useState<TodoList[]>(() => {
-    const loaded = loadTodoLists(DEFAULT_TODO_LISTS);
-    const migrated = loaded.map(migrateTodoList);
+  const { todoLists, addNewList, deleteList, copyList, saveList, reorderTodoLists } =
+    useTodoListsData();
 
-    if (JSON.stringify(migrated) !== JSON.stringify(loaded)) {
-      saveTodoLists(migrated);
-    }
-
-    return migrated;
-  });
-  const [activeLists, setActiveLists] = useState<TodoList[]>(() => {
-    const loadedLists = loadTodoLists(DEFAULT_TODO_LISTS);
+  const [activeListIds, setActiveListIds] = useState<string[]>(() => {
     const activeId = loadActiveListId();
     if (activeId) {
-      const active = loadedLists.find((list) => list.id === activeId);
-      if (active) {
-        return [migrateTodoList(active)];
-      }
+      return [activeId];
     }
     return [];
   });
+
+  const activeLists = useMemo(() => {
+    return activeListIds
+      .map((id) => todoLists.find((l) => l.id === id))
+      .filter((list): list is TodoList => !!list);
+  }, [activeListIds, todoLists]);
+
   const [isSiblingMode, setIsSiblingMode] = useState(false);
 
   /**
@@ -109,7 +44,7 @@ export const useTodoLists = () => {
   const selectList = (listId: string) => {
     const list = todoLists.find((item) => item.id === listId);
     if (list) {
-      setActiveLists([list]);
+      setActiveListIds([listId]);
       saveActiveListId(listId);
       setIsSiblingMode(false);
     }
@@ -124,74 +59,9 @@ export const useTodoLists = () => {
     const list1 = todoLists.find((item) => item.id === id1);
     const list2 = todoLists.find((item) => item.id === id2);
     if (list1 && list2) {
-      setActiveLists([list1, list2]);
+      setActiveListIds([id1, id2]);
       setIsSiblingMode(true);
     }
-  };
-
-  /**
-   * 新しいリストを追加する
-   * @returns 追加されたリスト
-   */
-  const addNewList = () => {
-    const newList = createDefaultList();
-    const updated = [...todoLists, newList];
-    setTodoLists(updated);
-    saveTodoLists(updated);
-    return newList;
-  };
-
-  /**
-   * 一時的なリストを作成する（保存しない）
-   * @returns 生成されたリスト
-   */
-  const createTemporaryList = () => {
-    return createDefaultList();
-  };
-
-  /**
-   * リストを削除する
-   * @param listId 削除するリストのID
-   */
-  const deleteList = (listId: string) => {
-    const updated = todoLists.filter((list) => list.id !== listId);
-    setTodoLists(updated);
-    saveTodoLists(updated);
-  };
-
-  /**
-   * リストをコピーして追加する
-   * @param listId コピー元のリストID
-   */
-  const copyList = (listId: string) => {
-    const original = todoLists.find((list) => list.id === listId);
-    if (original) {
-      const updated = [...todoLists, copyTodoList(original)];
-      setTodoLists(updated);
-      saveTodoLists(updated);
-    }
-  };
-
-  /**
-   * リストの内容を保存する
-   * リストがtodoListsに存在しない場合は新規追加として扱う
-   * @param updatedList 更新後のリスト
-   */
-  const saveList = (updatedList: TodoList) => {
-    const existingIndex = todoLists.findIndex((list) => list.id === updatedList.id);
-    let updatedLists: TodoList[];
-
-    if (existingIndex === -1) {
-      // 新規リストの場合は追加
-      updatedLists = [...todoLists, updatedList];
-    } else {
-      // 既存リストの場合は更新
-      updatedLists = todoLists.map((list) => (list.id === updatedList.id ? updatedList : list));
-    }
-
-    setTodoLists(updatedLists);
-    saveTodoLists(updatedLists);
-    setActiveLists((prev) => prev.map((list) => (list.id === updatedList.id ? updatedList : list)));
   };
 
   /**
@@ -199,18 +69,9 @@ export const useTodoLists = () => {
    */
   const clearActiveList = () => {
     saveActiveListId(null);
-    setActiveLists([]);
+    setActiveListIds([]);
     setIsSiblingMode(false);
   };
-
-  /**
-   * 全リストで使用されているユニークなアイコン一覧を取得する
-   * @returns アイコンURLのリスト
-   */
-  const getAllUniqueIcons = () =>
-    Array.from(
-      new Set([...PRESET_IMAGES, ...todoLists.flatMap((list) => list.tasks.map((t) => t.icon))])
-    ).filter((icon) => icon !== '');
 
   /**
    * 現在のリストを複製して2人モードに切り替える
@@ -225,7 +86,7 @@ export const useTodoLists = () => {
         saveExecutionState({ ...currentState, mode: 'sibling-1', isAutoResume: true });
       }
 
-      setActiveLists([list, list]);
+      setActiveListIds([list.id, list.id]);
       setIsSiblingMode(true);
     }
   };
@@ -241,18 +102,9 @@ export const useTodoLists = () => {
       if (currentState) {
         saveExecutionState({ ...currentState, mode: 'single', isAutoResume: true });
       }
-      setActiveLists([list]);
+      setActiveListIds([list.id]);
       setIsSiblingMode(false);
     }
-  };
-
-  /**
-   * リストの順番を並び替える
-   * @param newLists 並び替え後のリスト一覧
-   */
-  const reorderTodoLists = (newLists: TodoList[]) => {
-    setTodoLists(newLists);
-    saveTodoLists(newLists);
   };
 
   return {
@@ -260,16 +112,20 @@ export const useTodoLists = () => {
     addNewList,
     clearActiveList,
     copyList,
-    createTemporaryList,
     deleteList,
     duplicateActiveListForSiblingMode,
     exitSiblingMode,
-    getAllUniqueIcons,
+    getAllUniqueIcons: () => getAllUniqueIcons(todoLists),
     isSiblingMode,
     reorderTodoLists,
     saveList,
     selectList,
     selectSiblingLists,
     todoLists,
+    // Note: createTemporaryList is used in App.tsx but was previously just a wrapper around createDefaultList
+    createTemporaryList: () => {
+      // We import createDefaultList from utils and export it as createTemporaryList to keep the API
+      return createDefaultList();
+    },
   };
 };
