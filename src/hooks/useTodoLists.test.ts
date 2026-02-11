@@ -32,7 +32,8 @@ describe('useTodoLists', () => {
     ]);
   });
 
-  it('should select single list when selectList is called', () => {
+  it('should select a single list when selectList is called', () => {
+    // selectListが呼ばれたときに単一のリストを選択すること
     const { result } = renderHook(() => useTodoLists());
 
     act(() => {

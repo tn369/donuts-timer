@@ -85,16 +85,19 @@ describe('storage utility', () => {
   });
 
   describe('loadActiveListId / saveActiveListId', () => {
-    it('should load null when no active list id is stored', () => {
+    it('should return null when no active list id is stored', () => {
+      // 保存されているリストIDがない場合はnullを返すこと
       expect(loadActiveListId()).toBeNull();
     });
 
-    it('should save and load active list id', () => {
+    it('should correctly save and load the active list id', () => {
+      // リストIDを正しく保存し、読み込めること
       saveActiveListId('list-123');
       expect(loadActiveListId()).toBe('list-123');
     });
 
-    it('should remove active list id when saving null', () => {
+    it('should remove the active list id from storage when saving null', () => {
+      // nullを保存したときに、保存されているIDを削除すること
       saveActiveListId('list-123');
       saveActiveListId(null);
       expect(loadActiveListId()).toBeNull();

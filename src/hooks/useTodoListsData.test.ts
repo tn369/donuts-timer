@@ -15,7 +15,8 @@ describe('useTodoListsData', () => {
     vi.clearAllMocks();
   });
 
-  it('should load lists from storage on init', () => {
+  it('should load lists from storage on initialization', () => {
+    // 初期化時にストレージからリストを読み込むこと
     const mockLists = [{ id: 'l1', title: 'L1', tasks: [] }];
     vi.mocked(storage.loadTodoLists).mockReturnValue(mockLists);
 
@@ -26,6 +27,7 @@ describe('useTodoListsData', () => {
   });
 
   it('should add a new list', () => {
+    // 新しいリストを追加できること
     vi.mocked(storage.loadTodoLists).mockReturnValue([]);
     const { result } = renderHook(() => useTodoListsData());
 

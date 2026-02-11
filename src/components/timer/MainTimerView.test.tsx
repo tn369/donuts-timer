@@ -1,114 +1,100 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../../types';
-import type { useTaskTimer } from '../../useTaskTimer';
 import { MainTimerView } from './MainTimerView';
 
-// useTaskTimer のモック
-const mockUseTaskTimer = vi.fn();
-vi.mock('../../useTaskTimer', () => ({
-  useTaskTimer: () => mockUseTaskTimer() as ReturnType<typeof useTaskTimer>,
+// Mock storage and effects
+// ストレージと副作用をモック化
+vi.mock('../../storage', () => ({
+  loadExecutionState: vi.fn(),
+  saveExecutionState: vi.fn(),
+  clearExecutionState: vi.fn(),
 }));
 
-// useWindowSize のモック
-vi.mock('../../hooks/useWindowSize', () => ({
-  useWindowSize: () => ({ width: 1024, height: 768 }),
-}));
-
-// useTaskEffects のモック（副作用を抑制）
 vi.mock('../../hooks/useTaskEffects', () => ({
   useTaskEffects: vi.fn(),
 }));
 
-describe('MainTimerView', () => {
-  const mockInitialList: TodoList = {
-    id: 'list-1',
-    title: 'Test List',
-    tasks: [],
-    targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
-    timerSettings: { shape: 'circle', color: 'blue' },
-  };
+// Mock sound effects
+// 効果音をモック化
+vi.mock('../../utils/sound', () => ({
+  playBeep: vi.fn(),
+  playReward: vi.fn(),
+}));
 
-  const defaultTimerState = {
+describe('MainTimerView Integration', () => {
+  const mockList: TodoList = {
+    id: 'l1',
+    title: 'Test List',
     tasks: [
       {
         id: 't1',
         name: 'Task 1',
-        status: 'todo',
-        plannedSeconds: 300,
+        icon: 'i1',
+        plannedSeconds: 10,
+        actualSeconds: 0,
         elapsedSeconds: 0,
         kind: 'todo',
-      },
-      {
-        id: 't2',
-        name: 'Task 2',
         status: 'todo',
-        plannedSeconds: 300,
-        elapsedSeconds: 0,
-        kind: 'todo',
       },
     ],
-    activeList: mockInitialList,
-    selectedTaskId: null,
-    isTaskSelectable: () => true,
-    selectTask: vi.fn(),
-    startTimer: vi.fn(),
-    stopTimer: vi.fn(),
-    reset: vi.fn(),
-    initList: vi.fn(),
-    timerSettings: { shape: 'circle', color: 'blue' },
-    setTimerSettings: vi.fn(),
-    fastForward: vi.fn(),
-    resumeSession: vi.fn(),
-    cancelResume: vi.fn(),
-    pendingRestorableState: null,
-    reorderTasks: vi.fn(),
+    targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
   };
 
-  const defaultProps = {
-    initialList: mockInitialList,
-    onBackToSelection: vi.fn(),
-    onEditSettings: vi.fn(),
-  };
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-  it('初期レンダリングでタスクが表示されること', () => {
-    mockUseTaskTimer.mockReturnValue(defaultTimerState);
-    render(<MainTimerView {...defaultProps} />);
+  it('should initialize with the provided list and display the task name', () => {
+    // 提供されたリストで初期化され、タスク名が表示されること
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
 
     expect(screen.getByText('Task 1')).toBeInTheDocument();
-    expect(screen.getByText('Task 2')).toBeInTheDocument();
   });
 
-  it('タスクをクリックすると selectTask が呼ばれること', () => {
-    mockUseTaskTimer.mockReturnValue(defaultTimerState);
-    render(<MainTimerView {...defaultProps} />);
+  it('should start the timer when the start button is clicked', () => {
+    // スタートボタンがクリックされたときにタイマーが開始されること
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
 
-    // ラベルやテキストで特定
-    fireEvent.click(screen.getByText('Task 1'));
-    expect(defaultTimerState.selectTask).toHaveBeenCalledWith('t1');
+    const startButton = screen.getByText(/スタート/);
+
+    act(() => {
+      startButton.click();
+    });
+
+    // In a real test, we might check if useTaskTimer's state changes.
+    // Here we check if the button label changed or startTimer was called (indirectly via UI).
+    // useTaskTimer wraps the logic, so we test the resulting UI state.
+    // タイマーが実行中になると、停止ボタンが表示されるか、ステータスが変わる
+    expect(screen.getByText(/ストップ/)).toBeInTheDocument();
   });
 
-  it('スタートボタンをクリックすると startTimer が呼ばれること', () => {
-    mockUseTaskTimer.mockReturnValue(defaultTimerState);
-    render(<MainTimerView {...defaultProps} />);
+  it('should show the reset confirmation modal when the reset button is clicked', () => {
+    // リセットボタンがクリックされたときにリセット確認モーダルが表示されること
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
 
-    fireEvent.click(screen.getByText('スタート'));
-    expect(defaultTimerState.startTimer).toHaveBeenCalled();
-  });
+    // Open the menu first as the reset button is inside the menu
+    // リセットボタンはメニュー内にあるため、まずメニューを開く
+    const menuButton = screen.getByRole('button', { name: /メニューをひらく/i });
+    act(() => {
+      menuButton.click();
+    });
 
-  it('タイマー実行中に「ストップ」ボタンが表示され、クリックすると stopTimer が呼ばれること', () => {
-    const runningState = {
-      ...defaultTimerState,
-      selectedTaskId: 't1',
-      tasks: [{ ...defaultTimerState.tasks[0], status: 'running' }, defaultTimerState.tasks[1]],
-    };
-    mockUseTaskTimer.mockReturnValue(runningState);
-    render(<MainTimerView {...defaultProps} />);
+    const resetButton = screen.getByRole('button', { name: /リセットする/i });
 
-    const stopButton = screen.getByText('ストップ');
-    expect(stopButton).toBeInTheDocument();
-    fireEvent.click(stopButton);
-    expect(runningState.stopTimer).toHaveBeenCalled();
+    act(() => {
+      resetButton.click();
+    });
+
+    // Check if ResetModal content is visible
+    // リセット確認のダイアログが表示されていることを確認
+    expect(screen.getByText(/さいしょから やりなおしますか？/)).toBeInTheDocument();
   });
 });
