@@ -112,7 +112,6 @@ export const playCelebrationSound = () => {
 
     osc.type = type;
     osc.frequency.setValueAtTime(freq, startTime);
-    osc.frequency.exponentialRampToValueAtTime(freq * 1.05, startTime + duration);
 
     gain.gain.setValueAtTime(0, startTime);
     gain.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
