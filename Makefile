@@ -1,10 +1,10 @@
-NPM = npx pnpm
-TSC = npx tsc
-VITE = npx vite
-VITEST = npx vitest
-PRETTIER = npx prettier
-ESLINT = npx eslint
-STYLELINT = npx stylelint
+NPM = pnpm
+TSC = pnpm exec tsc
+VITE = pnpm exec vite
+VITEST = pnpm exec vitest
+PRETTIER = pnpm exec prettier
+ESLINT = pnpm exec eslint
+STYLELINT = pnpm exec stylelint
 
 .PHONY: help install dev build lint format fix test tdd coverage preview clean type-check ci
 

@@ -23,6 +23,49 @@ interface TaskListProps {
   isReorderEnabled?: boolean; // タスクの並び替えが可能かどうか
 }
 
+interface ReorderableTaskItemProps {
+  task: Task;
+  selectedTaskId: string | null;
+  isTaskSelectable: (taskId: string) => boolean;
+  onSelectTask: (taskId: string) => void;
+  shape?: TimerShape;
+  color?: TimerColor;
+  isCompact: boolean;
+}
+
+const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
+  task,
+  selectedTaskId,
+  isTaskSelectable,
+  onSelectTask,
+  shape,
+  color,
+  isCompact,
+}) => {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      key={task.id}
+      value={task}
+      className={styles.taskWrapper}
+      dragListener={false}
+      dragControls={dragControls}
+    >
+      <TaskCard
+        task={task}
+        isSelected={task.id === selectedTaskId}
+        isSelectable={isTaskSelectable(task.id)}
+        onSelect={onSelectTask}
+        shape={shape}
+        color={color}
+        isCompact={isCompact}
+        dragControls={dragControls}
+      />
+    </Reorder.Item>
+  );
+};
+
 /**
  * タスクカードを並べて表示するリストコンポーネント
  * @param root0 プロパティオブジェクト
@@ -92,30 +135,18 @@ export const TaskList: React.FC<TaskListProps> = ({
       onReorder={handleReorder}
       className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}
     >
-      {tasks.map((task) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const dragControls = useDragControls();
-        return (
-          <Reorder.Item
-            key={task.id}
-            value={task}
-            className={styles.taskWrapper}
-            dragListener={false}
-            dragControls={dragControls}
-          >
-            <TaskCard
-              task={task}
-              isSelected={task.id === selectedTaskId}
-              isSelectable={isTaskSelectable(task.id)}
-              onSelect={onSelectTask}
-              shape={shape}
-              color={color}
-              isCompact={isCompact}
-              dragControls={dragControls}
-            />
-          </Reorder.Item>
-        );
-      })}
+      {tasks.map((task) => (
+        <ReorderableTaskItem
+          key={task.id}
+          task={task}
+          selectedTaskId={selectedTaskId}
+          isTaskSelectable={isTaskSelectable}
+          onSelectTask={onSelectTask}
+          shape={shape}
+          color={color}
+          isCompact={isCompact}
+        />
+      ))}
     </Reorder.Group>
   );
 };
