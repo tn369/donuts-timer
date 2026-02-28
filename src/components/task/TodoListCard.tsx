@@ -15,9 +15,57 @@ interface TodoListCardProps {
   onEdit: () => void;
   onDeleteRequest: () => void;
   isCompact?: boolean;
+  isSimpleView?: boolean;
   dragControls?: DragControls;
 }
 
+interface TaskSummaryProps {
+  list: TodoList;
+}
+
+interface SimpleTaskPreviewProps {
+  list: TodoList;
+}
+
+const TaskSummary: React.FC<TaskSummaryProps> = ({ list }) => {
+  const formatMinutes = (plannedSeconds: number): string => {
+    const minutes = Math.max(0, Math.ceil(plannedSeconds / 60));
+    return `${minutes}ふん`;
+  };
+
+  return (
+    <div className={styles.taskSummaryList}>
+      {list.tasks.map((task) => (
+        <div key={task.id} className={styles.taskSummaryItem}>
+          {task.kind === 'reward' && <span className={styles.rewardBadge}>ごほうび</span>}
+          <span className={styles.taskSummaryName}>{task.name}</span>
+          <span className={styles.taskSummaryTime}>{formatMinutes(task.plannedSeconds)}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const SimpleTaskPreview: React.FC<SimpleTaskPreviewProps> = ({ list }) => {
+  return (
+    <div className={styles.simpleTaskPreview}>
+      <div className={styles.simpleTaskImages}>
+        {list.tasks.map((task) => (
+          <div key={task.id} className={styles.simpleTaskImageFrame}>
+            {task.icon ? (
+              <img src={task.icon} alt={task.name} className={styles.simpleTaskImage} />
+            ) : (
+              <ListChecks size={20} className={styles.simpleTaskFallbackIcon} />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* eslint-disable complexity */
+// 通常表示とシンプル表示の両対応により分岐が増えるため、このコンポーネントのみ複雑度制約を緩和する
 export const TodoListCard: React.FC<TodoListCardProps> = ({
   list,
   isSelected,
@@ -28,13 +76,9 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
   onEdit,
   onDeleteRequest,
   isCompact = false,
+  isSimpleView = false,
   dragControls,
 }) => {
-  const formatMinutes = (plannedSeconds: number): string => {
-    const minutes = Math.max(0, Math.ceil(plannedSeconds / 60));
-    return `${minutes}ふん`;
-  };
-
   return (
     <div
       className={`${styles.listCard} ${isSelected ? styles.selected : ''} ${
@@ -71,17 +115,9 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
         <div className={styles.listInfo}>
           <div className={styles.titleContainer}>
             <h3 className={styles.listName}>{list.title}</h3>
-            <span className={styles.listSubtitle}>のやることリスト</span>
+            {!isSimpleView && <span className={styles.listSubtitle}>のやることリスト</span>}
           </div>
-          <div className={styles.taskSummaryList}>
-            {list.tasks.map((task) => (
-              <div key={task.id} className={styles.taskSummaryItem}>
-                {task.kind === 'reward' && <span className={styles.rewardBadge}>ごほうび</span>}
-                <span className={styles.taskSummaryName}>{task.name}</span>
-                <span className={styles.taskSummaryTime}>{formatMinutes(task.plannedSeconds)}</span>
-              </div>
-            ))}
-          </div>
+          {isSimpleView ? <SimpleTaskPreview list={list} /> : <TaskSummary list={list} />}
         </div>
       </div>
 
@@ -122,3 +158,4 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
     </div>
   );
 };
+/* eslint-enable complexity */

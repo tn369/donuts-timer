@@ -11,7 +11,7 @@ const mockList: TodoList = {
     {
       id: 't1',
       name: '顔を洗う',
-      icon: '',
+      icon: 'icon1.png',
       kind: 'todo',
       status: 'todo',
       plannedSeconds: 300,
@@ -21,7 +21,7 @@ const mockList: TodoList = {
     {
       id: 't2',
       name: 'あそぶ',
-      icon: '',
+      icon: 'icon2.png',
       kind: 'reward',
       status: 'todo',
       plannedSeconds: 900,
@@ -132,5 +132,39 @@ describe('TodoListCard', () => {
     const { container } = render(<TodoListCard {...defaultProps} isCompact={true} />);
     const card = container.querySelector('[class*="listCard"]');
     expect(card?.className).toContain('compact');
+  });
+
+  it('isSimpleView が true のとき、表示可能な画像をすべて表示すること', () => {
+    const listWithMoreTasks: TodoList = {
+      ...mockList,
+      tasks: [
+        ...mockList.tasks,
+        {
+          id: 't3',
+          name: 'かばん',
+          icon: 'icon3.png',
+          kind: 'todo',
+          status: 'todo',
+          plannedSeconds: 300,
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+        },
+      ],
+    };
+
+    render(<TodoListCard {...defaultProps} list={listWithMoreTasks} isSimpleView={true} />);
+
+    expect(screen.getByAltText('顔を洗う')).toBeInTheDocument();
+    expect(screen.getByAltText('あそぶ')).toBeInTheDocument();
+    expect(screen.getByAltText('かばん')).toBeInTheDocument();
+    expect(screen.queryByText('+1')).not.toBeInTheDocument();
+  });
+
+  it('isSimpleView が true のとき、タスク名と時間は表示されないこと', () => {
+    render(<TodoListCard {...defaultProps} isSimpleView={true} />);
+
+    expect(screen.queryByText('顔を洗う')).not.toBeInTheDocument();
+    expect(screen.queryByText('5ふん')).not.toBeInTheDocument();
+    expect(screen.queryByText('ごほうび')).not.toBeInTheDocument();
   });
 });

@@ -5,9 +5,11 @@ import {
   loadActiveListId,
   loadExecutionState,
   loadTodoLists,
+  loadUiSettings,
   saveActiveListId,
   saveExecutionState,
   saveTodoLists,
+  saveUiSettings,
 } from './storage';
 import type { TodoList } from './types';
 
@@ -258,6 +260,27 @@ describe('storage utility', () => {
       localStorage.setItem('task-timer-execution-state', '{}');
       clearExecutionState();
       expect(localStorage.getItem('task-timer-execution-state')).toBeNull();
+    });
+  });
+
+  describe('loadUiSettings / saveUiSettings', () => {
+    it('should return default settings when not stored', () => {
+      expect(loadUiSettings()).toEqual({ simpleListView: false });
+    });
+
+    it('should save and load ui settings', () => {
+      saveUiSettings({ simpleListView: true });
+      expect(loadUiSettings()).toEqual({ simpleListView: true });
+    });
+
+    it('should return defaults and log error when JSON is invalid', () => {
+      localStorage.setItem('task-timer-ui-settings', 'invalid-json');
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => void 0);
+
+      expect(loadUiSettings()).toEqual({ simpleListView: false });
+      expect(spy).toHaveBeenCalled();
+
+      spy.mockRestore();
     });
   });
 });

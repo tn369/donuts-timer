@@ -1,14 +1,23 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../../types';
 import { TodoListSelection } from './TodoListSelection';
 
 // useWindowSize のモック
 const mockUseWindowSize = vi.fn<() => { width: number; height: number }>();
+const mockLoadUiSettings = vi.fn<() => { simpleListView: boolean }>();
+const mockSaveUiSettings = vi.fn<(settings: { simpleListView: boolean }) => void>();
+
 vi.mock('../../hooks/useWindowSize', () => ({
   useWindowSize: () => mockUseWindowSize(),
+}));
+vi.mock('../../storage', () => ({
+  loadUiSettings: () => mockLoadUiSettings(),
+  saveUiSettings: (settings: { simpleListView: boolean }) => {
+    mockSaveUiSettings(settings);
+  },
 }));
 
 const mockLists: TodoList[] = [
@@ -48,6 +57,11 @@ describe('TodoListSelection', () => {
     onDelete: vi.fn(),
     onReorder: vi.fn(),
   };
+
+  beforeEach(() => {
+    mockLoadUiSettings.mockReturnValue({ simpleListView: false });
+    mockSaveUiSettings.mockReset();
+  });
 
   it('リストが正しく表示されること', () => {
     mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
@@ -169,5 +183,23 @@ describe('TodoListSelection', () => {
 
     // リストが増えていることを確認 (Hook 違反があるとここでエラーが発生して落ちるはず)
     expect(screen.getAllByLabelText(/リストをえらぶ/)).toHaveLength(3);
+  });
+
+  it('保存済み設定がONのとき、シンプル表示トグルがONで表示されること', () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+    mockLoadUiSettings.mockReturnValue({ simpleListView: true });
+    render(<TodoListSelection {...defaultProps} />);
+
+    const simpleToggle = screen.getByRole('button', { name: /かんたん ひょうじ/ });
+    expect(simpleToggle.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('シンプル表示トグルを押すと、設定が保存されること', () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+    render(<TodoListSelection {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /かんたん ひょうじ/ }));
+
+    expect(mockSaveUiSettings).toHaveBeenCalledWith({ simpleListView: true });
   });
 });

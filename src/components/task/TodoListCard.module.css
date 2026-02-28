@@ -222,6 +222,51 @@
   border-radius: 999px;
 }
 
+.simpleTaskPreview {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.simpleTaskImages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.simpleTaskImageFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 70%);
+  border: 1px solid rgb(0 0 0 / 8%);
+  border-radius: 14px;
+}
+
+.simpleTaskImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.simpleTaskFallbackIcon {
+  color: var(--color-text-muted);
+}
+
+.moreTasksBadge {
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  background: rgb(0 0 0 / 6%);
+  border-radius: 999px;
+}
+
 .compact .listSubtitle {
   margin-bottom: 8px;
   font-size: 16px;
@@ -238,6 +283,11 @@
 
 .compact .listCardActions {
   margin-top: 16px;
+}
+
+.compact .simpleTaskImageFrame {
+  width: 40px;
+  height: 40px;
 }
 
 .compact .actionBtn {

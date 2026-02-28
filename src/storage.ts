@@ -6,6 +6,11 @@ import type { Task, TodoList } from './types';
 const LISTS_STORAGE_KEY = 'task-timer-lists';
 const ACTIVE_LIST_ID_KEY = 'task-timer-active-id';
 const EXECUTION_STATE_KEY = 'task-timer-execution-state';
+const UI_SETTINGS_KEY = 'task-timer-ui-settings';
+
+export interface UiSettings {
+  simpleListView: boolean;
+}
 
 /**
  * タイマーの表示モード
@@ -201,4 +206,37 @@ export const clearExecutionState = (listId?: string, mode?: TimerMode): void => 
     localStorage.removeItem(getExecutionStateKey(listId, 'sibling-1'));
   }
   localStorage.removeItem(EXECUTION_STATE_KEY);
+};
+
+/**
+ * UI設定を読み込む
+ * @returns UI設定
+ */
+export const loadUiSettings = (): UiSettings => {
+  try {
+    const stored = localStorage.getItem(UI_SETTINGS_KEY);
+    if (!stored) {
+      return { simpleListView: false };
+    }
+
+    const parsed = JSON.parse(stored) as Partial<UiSettings>;
+    return {
+      simpleListView: parsed.simpleListView ?? false,
+    };
+  } catch (error) {
+    console.error('Failed to load ui settings:', error);
+    return { simpleListView: false };
+  }
+};
+
+/**
+ * UI設定を保存する
+ * @param settings UI設定
+ */
+export const saveUiSettings = (settings: UiSettings): void => {
+  try {
+    localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(settings));
+  } catch (error) {
+    console.error('Failed to save ui settings:', error);
+  }
 };
