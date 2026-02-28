@@ -1,8 +1,14 @@
 /**
  * タイマーの各種状態遷移（時間更新、タスク選択、開始/停止など）を管理するリデューサー
  */
+import { toAppTasks, toDomainList, toDomainTasks } from '../domain/timer/mappers/taskMapper';
+import {
+  getBaseRewardSeconds as getBaseRewardSecondsPolicy,
+  updateRewardTime as updateRewardTimePolicy,
+} from '../domain/timer/policies/rewardPolicy';
+import { canSelectRewardTaskAtIndex } from '../domain/timer/policies/selectabilityPolicy';
+import { restoreSession } from '../domain/timer/services/sessionTransition';
 import type { Task, TodoList } from '../types';
-import { calculateRewardSeconds, calculateRewardSecondsFromTargetTime } from '../utils/task';
 import type { Action, State } from './types';
 
 /**
@@ -11,8 +17,7 @@ import type { Action, State } from './types';
  * @returns 基本のごほうび時間（秒）
  */
 export function getBaseRewardSeconds(list: TodoList | null): number {
-  const rewardTask = list?.tasks.find((t) => t.kind === 'reward');
-  return rewardTask ? rewardTask.plannedSeconds : 15 * 60; // fallback to 15 mins
+  return getBaseRewardSecondsPolicy(toDomainList(list));
 }
 
 /**
@@ -23,59 +28,7 @@ export function getBaseRewardSeconds(list: TodoList | null): number {
  * @returns 更新されたタスク一覧
  */
 export function updateRewardTime(tasks: Task[], baseRewardSeconds: number): Task[] {
-  const rewardTask = tasks.find((t) => t.kind === 'reward');
-  if (!rewardTask) return tasks;
-
-  const rewardElapsed = rewardTask.elapsedSeconds;
-  const rewardSettings = rewardTask.rewardSettings;
-
-  let newRewardSeconds: number;
-
-  if (rewardSettings?.mode === 'target-time') {
-    newRewardSeconds =
-      calculateRewardTimeFromTargetReward(tasks, rewardSettings, new Date()) + rewardElapsed;
-  } else {
-    newRewardSeconds = calculateRewardSeconds(tasks, baseRewardSeconds);
-  }
-
-  return tasks.map((t) => (t.kind === 'reward' ? { ...t, plannedSeconds: newRewardSeconds } : t));
-}
-
-/**
- * 目標時刻モードでのごほうび時間計算（ごほうびタスクのrewardSettings利用版）
- * @param tasks タスク一覧
- * @param settings 報酬設定
- * @param settings.targetHour 目標時
- * @param settings.targetMinute 目標分
- * @param now 現在時刻
- * @returns 計算されたごほうび時間（秒）
- */
-function calculateRewardTimeFromTargetReward(
-  tasks: Task[],
-  settings: { targetHour?: number; targetMinute?: number },
-  now: Date
-): number {
-  let todoTasksSeconds = 0;
-
-  tasks.forEach((t) => {
-    if (t.kind !== 'todo') return;
-
-    if (t.status === 'todo') {
-      todoTasksSeconds += t.plannedSeconds;
-    } else if (t.status === 'running' || t.status === 'paused') {
-      const remaining = t.plannedSeconds - t.elapsedSeconds;
-      if (remaining > 0) {
-        todoTasksSeconds += remaining;
-      }
-    }
-  });
-
-  return calculateRewardSecondsFromTargetTime(
-    settings.targetHour ?? 0,
-    settings.targetMinute ?? 0,
-    now,
-    todoTasksSeconds
-  );
+  return toAppTasks(updateRewardTimePolicy(toDomainTasks(tasks), baseRewardSeconds));
 }
 
 /**
@@ -225,8 +178,8 @@ function handleTodoTaskClick(
   let updatedTasks = [...state.tasks];
 
   if (tappedTask.kind === 'reward') {
-    const hasIncompleteBefore = updatedTasks.slice(0, tappedIndex).some((t) => t.status !== 'done');
-    if (hasIncompleteBefore) {
+    const canSelectReward = canSelectRewardTaskAtIndex(toDomainTasks(updatedTasks), tappedIndex);
+    if (!canSelectReward) {
       return null;
     }
   }
@@ -494,35 +447,19 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
 
     const { tasks, selectedTaskId, isTimerRunning, lastTickTimestamp } =
       state.pendingRestorableState;
-
-    // 既存のタスク定義（名前、予定時間など）を維持しつつ、保存された実行状態（ステータス、経過時間など）を復元する
-    const mergedTasks =
-      state.tasks.length > 0
-        ? state.tasks.map((task) => {
-            const savedTask = tasks.find((t) => t.id === task.id);
-            if (savedTask) {
-              return {
-                ...task,
-                status: savedTask.status,
-                elapsedSeconds: savedTask.elapsedSeconds,
-                actualSeconds: savedTask.actualSeconds,
-              };
-            }
-            return task;
-          })
-        : tasks;
-
-    const finalSelectedTaskId = mergedTasks.some((t) => t.id === selectedTaskId)
-      ? selectedTaskId
-      : null;
-
-    const finalIsTimerRunning = !!(finalSelectedTaskId && isTimerRunning);
+    const restored = restoreSession(
+      toDomainTasks(state.tasks),
+      toDomainTasks(tasks),
+      selectedTaskId,
+      isTimerRunning
+    );
+    const mergedTasks = toAppTasks(restored.tasks);
 
     return {
       ...state,
       tasks: updateRewardTime(mergedTasks, getBaseRewardSeconds(state.activeList)),
-      selectedTaskId: finalSelectedTaskId,
-      isTimerRunning: finalIsTimerRunning,
+      selectedTaskId: restored.selectedTaskId,
+      isTimerRunning: restored.isTimerRunning,
       lastTickTimestamp,
       pendingRestorableState: null,
     };
@@ -533,33 +470,19 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   }),
   AUTO_RESTORE: (state, action) => {
     const { tasks, selectedTaskId, isTimerRunning, lastTickTimestamp } = action;
-    const mergedTasks =
-      state.tasks.length > 0
-        ? state.tasks.map((task) => {
-            const savedTask = tasks.find((t) => t.id === task.id);
-            if (savedTask) {
-              return {
-                ...task,
-                status: savedTask.status,
-                elapsedSeconds: savedTask.elapsedSeconds,
-                actualSeconds: savedTask.actualSeconds,
-              };
-            }
-            return task;
-          })
-        : tasks;
-
-    const finalSelectedTaskId = mergedTasks.some((t) => t.id === selectedTaskId)
-      ? selectedTaskId
-      : null;
-
-    const finalIsTimerRunning = !!(finalSelectedTaskId && isTimerRunning);
+    const restored = restoreSession(
+      toDomainTasks(state.tasks),
+      toDomainTasks(tasks),
+      selectedTaskId,
+      isTimerRunning
+    );
+    const mergedTasks = toAppTasks(restored.tasks);
 
     return {
       ...state,
       tasks: updateRewardTime(mergedTasks, getBaseRewardSeconds(state.activeList)),
-      selectedTaskId: finalSelectedTaskId,
-      isTimerRunning: finalIsTimerRunning,
+      selectedTaskId: restored.selectedTaskId,
+      isTimerRunning: restored.isTimerRunning,
       lastTickTimestamp,
       pendingRestorableState: null,
     };

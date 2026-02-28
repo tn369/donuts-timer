@@ -3,6 +3,8 @@
  */
 import { useCallback, useReducer } from 'react';
 
+import { toDomainTasks } from './domain/timer/mappers/taskMapper';
+import { isTaskSelectable as isTaskSelectablePolicy } from './domain/timer/policies/selectabilityPolicy';
 import { clearExecutionState, type TimerMode } from './storage';
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from './types';
 import { timerReducer } from './useTaskTimer/reducer';
@@ -77,21 +79,7 @@ export function useTaskTimer(mode: TimerMode = 'single') {
    */
   const isTaskSelectable = useCallback(
     (taskId: string): boolean => {
-      const taskIndex = state.tasks.findIndex((t) => t.id === taskId);
-      if (taskIndex === -1) return false;
-
-      const task = state.tasks[taskIndex];
-
-      // 既に完了しているタスクは常に選択可能（戻るため）
-      if (task.status === 'done') return true;
-
-      // ごほうびタスクの場合、前のタスクが全て完了している必要がある
-      if (task.kind === 'reward') {
-        return state.tasks.slice(0, taskIndex).every((t) => t.status === 'done');
-      }
-
-      // それ以外の未完了タスクは自由に選択可能
-      return true;
+      return isTaskSelectablePolicy(toDomainTasks(state.tasks), taskId);
     },
     [state.tasks]
   );
