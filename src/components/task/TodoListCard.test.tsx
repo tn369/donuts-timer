@@ -57,6 +57,15 @@ describe('TodoListCard', () => {
     expect(screen.getByText('15ふん')).toBeInTheDocument();
   });
 
+  it('ごほうびタスクは「ごほうび」バッジが内容より先に表示されること', () => {
+    render(<TodoListCard {...defaultProps} />);
+    const rewardBadge = screen.getByText('ごほうび');
+    const rewardContent = screen.getByText('あそぶ');
+    expect(
+      rewardBadge.compareDocumentPosition(rewardContent) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
   it('旧タスク数テキストが表示されないこと', () => {
     render(<TodoListCard {...defaultProps} />);
     expect(screen.queryByText(/この やること/)).not.toBeInTheDocument();

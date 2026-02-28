@@ -76,8 +76,8 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
           <div className={styles.taskSummaryList}>
             {list.tasks.map((task) => (
               <div key={task.id} className={styles.taskSummaryItem}>
-                <span className={styles.taskSummaryName}>{task.name}</span>
                 {task.kind === 'reward' && <span className={styles.rewardBadge}>ごほうび</span>}
+                <span className={styles.taskSummaryName}>{task.name}</span>
                 <span className={styles.taskSummaryTime}>{formatMinutes(task.plannedSeconds)}</span>
               </div>
             ))}
