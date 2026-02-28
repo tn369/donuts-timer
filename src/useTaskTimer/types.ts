@@ -2,7 +2,7 @@
  * タイマーの内部状態（State）と、状態を更新するためのアクション（Action）の型定義
  */
 import type { DomainTargetTimeSettings, DomainTask, DomainTodoList } from '../domain/timer/model';
-import type { TimerSettings } from '../types';
+import type { RewardGainNotice, TimerSettings } from '../types';
 
 /**
  * 復元待ちの状態データ
@@ -26,6 +26,7 @@ export interface State {
   timerSettings: TimerSettings; // タイマーの見た目設定
   lastTickTimestamp: number | null; // 前回の時刻更新時のタイムスタンプ
   pendingRestorableState: RestorableState | null; // 確認待ちの復元データ
+  rewardGainNotice: RewardGainNotice | null; // 完了時に増えたごほうび時間の通知
 }
 
 /**
@@ -53,6 +54,7 @@ export type Action =
     }
   | { type: 'RESTORE_SESSION' }
   | { type: 'CANCEL_RESTORE' }
+  | { type: 'CLEAR_REWARD_GAIN_NOTICE' }
   | {
       type: 'AUTO_RESTORE';
       tasks: DomainTask[];

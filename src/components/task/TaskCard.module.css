@@ -234,6 +234,37 @@
   animation: reward-float 3s infinite ease-in-out;
 }
 
+.rewardGainBubble {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  left: 12px;
+  z-index: 30;
+  padding: 8px 12px;
+  font-family: Outfit, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #9d174d;
+  text-align: center;
+  word-break: keep-all;
+  background: linear-gradient(135deg, #fff1f7 0%, #ffe4f1 100%);
+  border: 3px solid #f472b6;
+  border-radius: 16px;
+  box-shadow:
+    0 10px 20px rgb(244 114 182 / 22%),
+    0 2px 0 rgb(255 255 255 / 80%) inset;
+}
+
+.compact .rewardGainBubble {
+  top: 6px;
+  right: 8px;
+  left: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  border-width: 2px;
+}
+
 @keyframes reward-float {
   0%,
   100% {

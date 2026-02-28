@@ -29,6 +29,7 @@ const initialState: State = {
   timerSettings: { shape: 'circle', color: 'blue' },
   lastTickTimestamp: null,
   pendingRestorableState: null,
+  rewardGainNotice: null,
 };
 
 /**
@@ -139,6 +140,10 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     }
   }, [state.activeList, mode]);
 
+  const clearRewardGainNotice = useCallback(() => {
+    dispatch({ type: 'CLEAR_REWARD_GAIN_NOTICE' });
+  }, []);
+
   /**
    * タスクの順序を入れ替える
    */
@@ -176,6 +181,7 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     fastForward,
     resumeSession,
     cancelResume,
+    clearRewardGainNotice,
     reorderTasks,
   };
 }

@@ -165,4 +165,59 @@ describe('MainTimerView Integration', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('あと 3ふん');
   });
+
+  it('should show reward gain notice on reward card after completing a todo task', () => {
+    vi.useFakeTimers();
+
+    const listWithReward: TodoList = {
+      ...mockList,
+      tasks: [
+        {
+          id: 't1',
+          name: 'はみがき',
+          icon: 'i1',
+          plannedSeconds: 10,
+          actualSeconds: 0,
+          elapsedSeconds: 0,
+          kind: 'todo',
+          status: 'todo',
+        },
+        {
+          id: 'reward-1',
+          name: 'あそぶ',
+          icon: 'i2',
+          plannedSeconds: 60,
+          actualSeconds: 0,
+          elapsedSeconds: 0,
+          kind: 'reward',
+          status: 'todo',
+        },
+      ],
+    };
+
+    render(
+      <MainTimerView
+        initialList={listWithReward}
+        onBackToSelection={vi.fn()}
+        onEditSettings={vi.fn()}
+      />
+    );
+
+    act(() => {
+      screen.getByText(/スタート/).click();
+    });
+
+    act(() => {
+      screen.getByText('はみがき').click();
+    });
+
+    expect(screen.getByText(/あそぶの じかんが 10びょう ふえたよ！/)).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(2500);
+    });
+
+    expect(screen.queryByText(/あそぶの じかんが 10びょう ふえたよ！/)).not.toBeInTheDocument();
+    vi.useRealTimers();
+  });
 });

@@ -1,6 +1,7 @@
 /**
  * タイマーの各種状態遷移（時間更新、タスク選択、開始/停止など）を管理するリデューサー
  */
+import { deriveRewardGainNotice } from '../domain/timer/policies/rewardGainNoticePolicy';
 import {
   applyActiveListRuntime,
   type DomainRuntimeState,
@@ -42,17 +43,29 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     withRuntimeState(state, tickRuntime(toRuntimeState(state), action.now, state.activeList)),
 
   SELECT_TASK: (state, action) =>
-    withRuntimeState(
-      state,
-      selectTaskRuntime(toRuntimeState(state), action.taskId, action.now, state.activeList)
-    ),
+    (() => {
+      const nextRuntimeState = selectTaskRuntime(
+        toRuntimeState(state),
+        action.taskId,
+        action.now,
+        state.activeList
+      );
+
+      return {
+        ...withRuntimeState(state, nextRuntimeState),
+        rewardGainNotice: deriveRewardGainNotice(state.tasks, nextRuntimeState.tasks, action.now),
+      };
+    })(),
 
   START: (state, action) =>
     withRuntimeState(state, startRuntime(toRuntimeState(state), action.now)),
 
   STOP: (state) => withRuntimeState(state, stopRuntime(toRuntimeState(state))),
 
-  RESET: (state) => withRuntimeState(state, resetRuntime(toRuntimeState(state), state.activeList)),
+  RESET: (state) => ({
+    ...withRuntimeState(state, resetRuntime(toRuntimeState(state), state.activeList)),
+    rewardGainNotice: null,
+  }),
 
   UPDATE_ACTIVE_LIST: (state, action) => {
     const runtimeState = applyActiveListRuntime(toRuntimeState(state), action.list);
@@ -60,6 +73,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
       ...withRuntimeState(state, runtimeState),
       activeList: action.list,
       targetTimeSettings: action.list.targetTimeSettings,
+      rewardGainNotice: null,
     };
   },
 
@@ -72,6 +86,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
       targetTimeSettings: action.list.targetTimeSettings,
       timerSettings: action.list.timerSettings ?? { shape: 'circle', color: 'blue' },
       pendingRestorableState: null,
+      rewardGainNotice: null,
     };
   },
 
@@ -103,12 +118,14 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     return {
       ...withRuntimeState(state, runtimeState),
       pendingRestorableState: null,
+      rewardGainNotice: null,
     };
   },
 
   CANCEL_RESTORE: (state) => ({
     ...state,
     pendingRestorableState: null,
+    rewardGainNotice: null,
   }),
 
   AUTO_RESTORE: (state, action) => {
@@ -126,8 +143,14 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     return {
       ...withRuntimeState(state, runtimeState),
       pendingRestorableState: null,
+      rewardGainNotice: null,
     };
   },
+
+  CLEAR_REWARD_GAIN_NOTICE: (state) => ({
+    ...state,
+    rewardGainNotice: null,
+  }),
 
   SET_TARGET_TIME_SETTINGS: (state, action) => {
     const runtimeState = refreshRewardRuntime(toRuntimeState(state), state.activeList);

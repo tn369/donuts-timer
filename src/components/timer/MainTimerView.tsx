@@ -85,7 +85,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     resumeSession,
     cancelResume,
     pendingRestorableState,
+    rewardGainNotice,
     reorderTasks,
+    clearRewardGainNotice,
   } = useTaskTimer(timerMode);
 
   const { height } = useWindowSize();
@@ -133,6 +135,20 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
 
   const isSingleTaskFocus = isTimerRunning && visibleTasks.length === 1;
 
+  useEffect(() => {
+    if (!rewardGainNotice) {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      clearRewardGainNotice();
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [rewardGainNotice, clearRewardGainNotice]);
+
   return (
     <div
       className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''} ${
@@ -175,6 +191,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         onReorderTasks={reorderTasks}
         isReorderEnabled={true}
         isSingleTaskFocus={isSingleTaskFocus}
+        rewardGainNotice={rewardGainNotice}
       />
 
       <Modals

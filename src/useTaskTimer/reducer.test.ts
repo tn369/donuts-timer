@@ -27,6 +27,7 @@ const initialState: State = {
   timerSettings: { shape: 'circle', color: 'blue' },
   lastTickTimestamp: null,
   pendingRestorableState: null,
+  rewardGainNotice: null,
 };
 
 describe('timerReducer', () => {
@@ -371,6 +372,57 @@ describe('timerReducer', () => {
       expect(newState.tasks[1].status).toBe('todo');
       expect(newState.isTimerRunning).toBe(false);
       expect(newState.lastTickTimestamp).toBeNull();
+    });
+
+    it('should set reward gain notice when todo completion increases reward seconds', () => {
+      const todoTask: Task = {
+        ...mockTask,
+        id: 'todo-1',
+        name: 'はみがき',
+        status: 'running',
+        plannedSeconds: 600,
+        elapsedSeconds: 300,
+      };
+      const rewardTask: Task = {
+        ...mockTask,
+        id: 'reward-1',
+        name: 'ごほうび',
+        kind: 'reward',
+        status: 'todo',
+        plannedSeconds: 900,
+      };
+      const state: State = {
+        ...initialState,
+        tasks: [todoTask, rewardTask],
+        selectedTaskId: 'todo-1',
+        isTimerRunning: true,
+      };
+      const action: Action = { type: 'SELECT_TASK', taskId: 'todo-1', now: 1000 };
+
+      const newState = timerReducer(state, action);
+
+      expect(newState.rewardGainNotice).toEqual({
+        taskId: 'todo-1',
+        taskName: 'はみがき',
+        deltaSeconds: 300,
+        occurredAt: 1000,
+      });
+    });
+
+    it('should clear reward gain notice when CLEAR_REWARD_GAIN_NOTICE is dispatched', () => {
+      const stateWithNotice: State = {
+        ...initialState,
+        rewardGainNotice: {
+          taskId: 'todo-1',
+          taskName: 'はみがき',
+          deltaSeconds: 180,
+          occurredAt: 1000,
+        },
+      };
+
+      const newState = timerReducer(stateWithNotice, { type: 'CLEAR_REWARD_GAIN_NOTICE' });
+
+      expect(newState.rewardGainNotice).toBeNull();
     });
   });
 

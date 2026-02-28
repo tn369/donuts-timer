@@ -13,6 +13,7 @@ const baseState: State = {
   timerSettings: { shape: 'circle', color: 'blue' },
   lastTickTimestamp: null,
   pendingRestorableState: null,
+  rewardGainNotice: null,
 };
 
 describe('useTimerInterval', () => {

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Camera, Check, GripVertical } from 'lucide-react';
 import React from 'react';
 
-import type { Task, TimerColor, TimerShape } from '../../types';
+import type { RewardGainNotice, Task, TimerColor, TimerShape } from '../../types';
 import { formatTime } from '../../utils/time';
 import { DonutTimer } from '../timer/DonutTimer';
 import styles from './TaskCard.module.css';
@@ -24,6 +24,7 @@ interface TaskCardProps {
   isCompact?: boolean; // コンパクト表示にするかどうか
   dragControls?: DragControls; // ドラッグ制御用
   isSingleTaskFocus?: boolean; // 実行中フォーカス表示かどうか
+  rewardGainNotice?: RewardGainNotice | null; // ごほうび増加通知
 }
 
 /**
@@ -245,6 +246,23 @@ const getStatusText = (task: Task) => {
   return task.kind === 'reward' ? 'おわり' : 'できた！';
 };
 
+const formatRewardGainText = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+
+  if (mins > 0 && secs > 0) {
+    return `${mins}ふん${secs}びょう`;
+  }
+  if (mins > 0) {
+    return `${mins}ふん`;
+  }
+  return `${secs}びょう`;
+};
+
+const getRewardGainMessage = (rewardTaskName: string, deltaSeconds: number): string => {
+  return `${rewardTaskName}の じかんが ${formatRewardGainText(deltaSeconds)} ふえたよ！`;
+};
+
 /**
  * タスクカードコンポーネント
  * @param root0 プロパティオブジェクト
@@ -257,8 +275,11 @@ const getStatusText = (task: Task) => {
  * @param root0.isCompact コンパクト表示かどうか
  * @param root0.dragControls ドラッグ制御用
  * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
+ * @param root0.rewardGainNotice ごほうび時間増加の通知データ
  * @returns レンダリングされるJSX要素
  */
+// 複数の表示状態とアニメーション条件をまとめるため、このコンポーネントのみ複雑度を緩和する
+/* eslint-disable complexity */
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   isSelected,
@@ -269,11 +290,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   isCompact = false,
   dragControls,
   isSingleTaskFocus = false,
+  rewardGainNotice = null,
 }) => {
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
   const isOverdue = !isDone && task.elapsedSeconds > task.plannedSeconds;
   const isReward = task.kind === 'reward';
+  const shouldShowRewardGainNotice =
+    isReward && rewardGainNotice && rewardGainNotice.deltaSeconds > 0;
 
   const cardClassName = getCardClassName(
     isSelected,
@@ -322,7 +346,20 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         if (isSelectable) onSelect(task.id);
       }}
     >
+      {shouldShowRewardGainNotice && (
+        <motion.div
+          className={styles.rewardGainBubble}
+          initial={{ opacity: 0, y: 16, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -8, scale: 0.95 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          aria-live="polite"
+        >
+          {getRewardGainMessage(task.name, rewardGainNotice.deltaSeconds)}
+        </motion.div>
+      )}
       {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardNormal {...viewProps} />}
     </motion.div>
   );
 };
+/* eslint-enable complexity */

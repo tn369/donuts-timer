@@ -24,6 +24,16 @@ export interface RewardTaskSettings {
 }
 
 /**
+ * ごほうび時間が増えたことを表示するための通知データ
+ */
+export interface RewardGainNotice {
+  taskId: string;
+  taskName: string;
+  deltaSeconds: number;
+  occurredAt: number;
+}
+
+/**
  * 目標時刻設定
  */
 export interface TargetTimeSettings {
