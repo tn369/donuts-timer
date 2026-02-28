@@ -111,15 +111,12 @@ const handleActiveTaskClick = (state: DomainRuntimeState): DomainRuntimeState =>
   const tappedTask = state.tasks[tappedIndex];
   const updatedTasks = [...state.tasks];
   let nextTaskIdToSelect: string | null = state.selectedTaskId;
-  let nextIsTimerRunning = state.isTimerRunning;
+  let nextIsTimerRunning: boolean;
 
   if (state.isTimerRunning) {
     updatedTasks[tappedIndex] = markTaskDone(tappedTask);
-
     nextTaskIdToSelect = getNextIncompleteTaskId(updatedTasks, tappedIndex);
-    if (!nextTaskIdToSelect) {
-      nextIsTimerRunning = false;
-    }
+    nextIsTimerRunning = false;
   } else {
     nextIsTimerRunning = true;
   }

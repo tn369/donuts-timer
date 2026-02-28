@@ -350,7 +350,7 @@ describe('timerReducer', () => {
       expect(newState.selectedTaskId).toBeNull(); // Should not change
     });
 
-    it('should auto-select next task when current task is completed', () => {
+    it('should select next task but stop timer when current task is completed', () => {
       // Arrange
       const task1: Task = { ...mockTask, id: '1', status: 'running' };
       const task2: Task = { ...mockTask, id: '2', status: 'todo' };
@@ -368,7 +368,9 @@ describe('timerReducer', () => {
       // Assert
       expect(newState.tasks[0].status).toBe('done');
       expect(newState.selectedTaskId).toBe('2');
-      expect(newState.tasks[1].status).toBe('running');
+      expect(newState.tasks[1].status).toBe('todo');
+      expect(newState.isTimerRunning).toBe(false);
+      expect(newState.lastTickTimestamp).toBeNull();
     });
   });
 
