@@ -7,15 +7,17 @@ import { TodoListSelection } from './TodoListSelection';
 
 // useWindowSize のモック
 const mockUseWindowSize = vi.fn<() => { width: number; height: number }>();
-const mockLoadUiSettings = vi.fn<() => { simpleListView: boolean }>();
-const mockSaveUiSettings = vi.fn<(settings: { simpleListView: boolean }) => void>();
+const mockLoadUiSettings =
+  vi.fn<() => { simpleListView: boolean; countdownWarningEnabled: boolean }>();
+const mockSaveUiSettings =
+  vi.fn<(settings: { simpleListView: boolean; countdownWarningEnabled: boolean }) => void>();
 
 vi.mock('../../hooks/useWindowSize', () => ({
   useWindowSize: () => mockUseWindowSize(),
 }));
 vi.mock('../../storage', () => ({
   loadUiSettings: () => mockLoadUiSettings(),
-  saveUiSettings: (settings: { simpleListView: boolean }) => {
+  saveUiSettings: (settings: { simpleListView: boolean; countdownWarningEnabled: boolean }) => {
     mockSaveUiSettings(settings);
   },
 }));
@@ -59,7 +61,7 @@ describe('TodoListSelection', () => {
   };
 
   beforeEach(() => {
-    mockLoadUiSettings.mockReturnValue({ simpleListView: false });
+    mockLoadUiSettings.mockReturnValue({ simpleListView: false, countdownWarningEnabled: true });
     mockSaveUiSettings.mockReset();
   });
 
@@ -187,7 +189,7 @@ describe('TodoListSelection', () => {
 
   it('保存済み設定がONのとき、シンプル表示トグルがONで表示されること', () => {
     mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
-    mockLoadUiSettings.mockReturnValue({ simpleListView: true });
+    mockLoadUiSettings.mockReturnValue({ simpleListView: true, countdownWarningEnabled: true });
     render(<TodoListSelection {...defaultProps} />);
 
     const simpleToggle = screen.getByRole('button', { name: /かんたん ひょうじ/ });
@@ -200,6 +202,9 @@ describe('TodoListSelection', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /かんたん ひょうじ/ }));
 
-    expect(mockSaveUiSettings).toHaveBeenCalledWith({ simpleListView: true });
+    expect(mockSaveUiSettings).toHaveBeenCalledWith({
+      simpleListView: true,
+      countdownWarningEnabled: true,
+    });
   });
 });

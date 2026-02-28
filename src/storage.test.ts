@@ -265,19 +265,24 @@ describe('storage utility', () => {
 
   describe('loadUiSettings / saveUiSettings', () => {
     it('should return default settings when not stored', () => {
-      expect(loadUiSettings()).toEqual({ simpleListView: false });
+      expect(loadUiSettings()).toEqual({ simpleListView: false, countdownWarningEnabled: true });
     });
 
     it('should save and load ui settings', () => {
-      saveUiSettings({ simpleListView: true });
-      expect(loadUiSettings()).toEqual({ simpleListView: true });
+      saveUiSettings({ simpleListView: true, countdownWarningEnabled: false });
+      expect(loadUiSettings()).toEqual({ simpleListView: true, countdownWarningEnabled: false });
+    });
+
+    it('should keep countdownWarningEnabled default true when reading old data', () => {
+      localStorage.setItem('task-timer-ui-settings', JSON.stringify({ simpleListView: true }));
+      expect(loadUiSettings()).toEqual({ simpleListView: true, countdownWarningEnabled: true });
     });
 
     it('should return defaults and log error when JSON is invalid', () => {
       localStorage.setItem('task-timer-ui-settings', 'invalid-json');
       const spy = vi.spyOn(console, 'error').mockImplementation(() => void 0);
 
-      expect(loadUiSettings()).toEqual({ simpleListView: false });
+      expect(loadUiSettings()).toEqual({ simpleListView: false, countdownWarningEnabled: true });
       expect(spy).toHaveBeenCalled();
 
       spy.mockRestore();

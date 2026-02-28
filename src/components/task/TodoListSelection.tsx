@@ -160,7 +160,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   const toggleSimpleView = () => {
     const nextValue = !isSimpleView;
     setIsSimpleView(nextValue);
-    saveUiSettings({ simpleListView: nextValue });
+    saveUiSettings({ ...loadUiSettings(), simpleListView: nextValue });
   };
 
   /**

@@ -131,3 +131,33 @@ export const playCelebrationSound = () => {
   playFestiveNote(783.99, now + tempo * 2, 0.4, 'triangle'); // G5
   playFestiveNote(1046.5, now + tempo * 3, 0.8, 'triangle'); // C6
 };
+
+/**
+ * 終了前予告用の短い効果音を再生する
+ */
+export const playCountdownWarningSound = () => {
+  const AudioContextClass = window.AudioContext;
+  const ctx = new AudioContextClass();
+  const now = ctx.currentTime;
+
+  const playNote = (freq: number, startTime: number, duration: number) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.08, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+
+  playNote(784, now, 0.12);
+  playNote(988, now + 0.14, 0.12);
+};

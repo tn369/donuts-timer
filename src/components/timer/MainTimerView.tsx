@@ -4,9 +4,10 @@
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { useCountdownWarning } from '../../hooks/useCountdownWarning';
 import { useTaskEffects } from '../../hooks/useTaskEffects';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import { type TimerMode } from '../../storage';
+import { loadUiSettings, type TimerMode } from '../../storage';
 import type { Task, TodoList } from '../../types';
 import { useTaskTimer } from '../../useTaskTimer';
 import { ResetModal } from '../modals/ResetModal';
@@ -56,6 +57,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     tasks,
     activeList,
     selectedTaskId,
+    isTimerRunning,
     isTaskSelectable,
     selectTask,
     startTimer,
@@ -76,6 +78,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   const isCompactLayout = isSiblingMode || isAutoCompact;
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+  const [countdownWarningEnabled] = useState<boolean>(
+    () => loadUiSettings().countdownWarningEnabled
+  );
 
   // 初回ロード
   useEffect(() => {
@@ -98,6 +103,13 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     }
     return tasks.some((t) => t.status !== 'done');
   }, [isRunning, selectedTaskId, selectedTask, tasks]);
+
+  const warningMessage = useCountdownWarning(
+    tasks,
+    selectedTaskId,
+    isTimerRunning,
+    countdownWarningEnabled
+  );
 
   return (
     <div
@@ -123,6 +135,12 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         onExitSiblingMode={onExitSiblingMode}
         isCompact={isAutoCompact}
       />
+
+      {warningMessage && (
+        <div className={styles.warningBanner} role="status" aria-live="polite">
+          {warningMessage}
+        </div>
+      )}
 
       <TaskList
         tasks={tasks}

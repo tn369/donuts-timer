@@ -10,10 +10,19 @@ vi.mock('../../storage', () => ({
   loadExecutionState: vi.fn(),
   saveExecutionState: vi.fn(),
   clearExecutionState: vi.fn(),
+  loadUiSettings: vi.fn(() => ({
+    simpleListView: false,
+    countdownWarningEnabled: true,
+  })),
 }));
 
 vi.mock('../../hooks/useTaskEffects', () => ({
   useTaskEffects: vi.fn(),
+}));
+
+const mockUseCountdownWarning = vi.fn<() => string | null>(() => null);
+vi.mock('../../hooks/useCountdownWarning', () => ({
+  useCountdownWarning: () => mockUseCountdownWarning(),
 }));
 
 // Mock sound effects
@@ -44,6 +53,7 @@ describe('MainTimerView Integration', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseCountdownWarning.mockReturnValue(null);
   });
 
   it('should initialize with the provided list and display the task name', () => {
@@ -96,5 +106,15 @@ describe('MainTimerView Integration', () => {
     // Check if ResetModal content is visible
     // リセット確認のダイアログが表示されていることを確認
     expect(screen.getByText(/さいしょから やりなおしますか？/)).toBeInTheDocument();
+  });
+
+  it('should display countdown warning banner when warning message is provided', () => {
+    mockUseCountdownWarning.mockReturnValue('あと 3ふん');
+
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('あと 3ふん');
   });
 });
