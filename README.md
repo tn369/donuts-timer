@@ -29,6 +29,7 @@
 ## 📚 ドキュメント
 
 - [ペルソナ分析](docs/persona.md)
+- [ユビキタス言語定義](UBIQUITOUS_LANGUAGE.md)
 
 ## 📦 開発
 
