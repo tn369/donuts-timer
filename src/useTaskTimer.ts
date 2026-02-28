@@ -3,7 +3,12 @@
  */
 import { useCallback, useMemo, useReducer } from 'react';
 
-import { toAppTasks } from './domain/timer/mappers/taskMapper';
+import {
+  toAppListFromDomain,
+  toAppTasks,
+  toDomainList,
+  toDomainTasks,
+} from './domain/timer/mappers/taskMapper';
 import { isTaskSelectable as isTaskSelectablePolicy } from './domain/timer/policies/selectabilityPolicy';
 import { clearExecutionState, type TimerMode } from './storage';
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from './types';
@@ -85,7 +90,7 @@ export function useTaskTimer(mode: TimerMode = 'single') {
   );
 
   const setTasks = useCallback((tasks: Task[]) => {
-    dispatch({ type: 'SET_TASKS', tasks });
+    dispatch({ type: 'SET_TASKS', tasks: toDomainTasks(tasks) });
   }, []);
 
   const setTargetTimeSettings = useCallback((settings: TargetTimeSettings) => {
@@ -96,11 +101,15 @@ export function useTaskTimer(mode: TimerMode = 'single') {
    * リストデータでタイマーを初期化する
    */
   const initList = useCallback((list: TodoList) => {
-    dispatch({ type: 'INIT_LIST', list });
+    const domainList = toDomainList(list);
+    if (!domainList) return;
+    dispatch({ type: 'INIT_LIST', list: domainList });
   }, []);
 
   const updateActiveList = useCallback((list: TodoList) => {
-    dispatch({ type: 'UPDATE_ACTIVE_LIST', list });
+    const domainList = toDomainList(list);
+    if (!domainList) return;
+    dispatch({ type: 'UPDATE_ACTIVE_LIST', list: domainList });
   }, []);
 
   /**
@@ -139,10 +148,21 @@ export function useTaskTimer(mode: TimerMode = 'single') {
 
   // hookの公開APIは既存互換のためTask DTOで返す。
   const appTasks = useMemo(() => toAppTasks(state.tasks), [state.tasks]);
+  const appActiveList = useMemo(() => toAppListFromDomain(state.activeList), [state.activeList]);
+  const appPendingRestorableState = useMemo(() => {
+    if (!state.pendingRestorableState) return null;
+
+    return {
+      ...state.pendingRestorableState,
+      tasks: toAppTasks(state.pendingRestorableState.tasks),
+    };
+  }, [state.pendingRestorableState]);
 
   return {
     ...state,
     tasks: appTasks,
+    activeList: appActiveList,
+    pendingRestorableState: appPendingRestorableState,
     isTaskSelectable,
     selectTask,
     startTimer,

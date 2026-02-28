@@ -51,7 +51,19 @@ describe('useTimerInterval', () => {
     const dispatch = vi.fn();
     const state: State = {
       ...baseState,
-      targetTimeSettings: { mode: 'target-time', targetHour: 7, targetMinute: 30 },
+      tasks: [
+        {
+          id: 'reward-1',
+          name: 'Reward',
+          icon: '',
+          plannedSeconds: 600,
+          kind: 'reward',
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+          rewardSettings: { mode: 'target-time', targetHour: 7, targetMinute: 30 },
+        },
+      ],
     };
 
     renderHook(() => {

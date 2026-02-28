@@ -3,6 +3,11 @@
  */
 import { useMemo, useState } from 'react';
 
+import { toAppTasks, toDomainTasks } from '../domain/timer/mappers/taskMapper';
+import {
+  convertSiblingPrimaryToSingle,
+  duplicateSingleSessionForSibling,
+} from '../domain/timer/services/modeTransition';
 import {
   loadActiveListId,
   loadExecutionState,
@@ -82,8 +87,15 @@ export const useTodoLists = () => {
       // 1人モードの実行状態を2人モードの両方にコピーする
       const currentState = loadExecutionState(list.id, 'single');
       if (currentState) {
-        saveExecutionState({ ...currentState, mode: 'sibling-0', isAutoResume: true });
-        saveExecutionState({ ...currentState, mode: 'sibling-1', isAutoResume: true });
+        const [leftState, rightState] = duplicateSingleSessionForSibling({
+          tasks: toDomainTasks(currentState.tasks),
+          selectedTaskId: currentState.selectedTaskId,
+          isTimerRunning: currentState.isTimerRunning,
+          lastTickTimestamp: currentState.lastTickTimestamp,
+          listId: currentState.listId,
+        });
+        saveExecutionState({ ...leftState, tasks: toAppTasks(leftState.tasks) });
+        saveExecutionState({ ...rightState, tasks: toAppTasks(rightState.tasks) });
       }
 
       setActiveListIds([list.id, list.id]);
@@ -100,7 +112,14 @@ export const useTodoLists = () => {
       // 2人モード（左側）の実行状態を1人モードに書き戻す
       const currentState = loadExecutionState(list.id, 'sibling-0');
       if (currentState) {
-        saveExecutionState({ ...currentState, mode: 'single', isAutoResume: true });
+        const singleState = convertSiblingPrimaryToSingle({
+          tasks: toDomainTasks(currentState.tasks),
+          selectedTaskId: currentState.selectedTaskId,
+          isTimerRunning: currentState.isTimerRunning,
+          lastTickTimestamp: currentState.lastTickTimestamp,
+          listId: currentState.listId,
+        });
+        saveExecutionState({ ...singleState, tasks: toAppTasks(singleState.tasks) });
       }
       setActiveListIds([list.id]);
       setIsSiblingMode(false);

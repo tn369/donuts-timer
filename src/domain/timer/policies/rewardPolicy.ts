@@ -100,3 +100,8 @@ export const updateRewardTime = (
     isRewardTask(task) ? { ...task, plannedSeconds: newRewardSeconds } : task
   );
 };
+
+export const isTargetTimeRewardMode = (tasks: DomainTask[]): boolean => {
+  const rewardTask = tasks.find((task) => isRewardTask(task));
+  return rewardTask?.rewardSettings?.mode === 'target-time';
+};

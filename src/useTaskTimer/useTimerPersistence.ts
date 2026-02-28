@@ -3,14 +3,14 @@
  */
 import { useEffect } from 'react';
 
-import { toAppTasks } from '../domain/timer/mappers/taskMapper';
+import { toAppTasks, toDomainTasks } from '../domain/timer/mappers/taskMapper';
+import { shouldDiscardPersistedSession } from '../domain/timer/services/sessionPersistence';
 import {
   clearExecutionState,
   loadExecutionState,
   saveExecutionState,
   type TimerMode,
 } from '../storage';
-import { hasTaskProgress } from '../utils/task';
 import type { Action, State } from './types';
 
 /**
@@ -31,18 +31,8 @@ export function useTimerPersistence(
     const saved = loadExecutionState(state.activeList.id, mode);
     if (saved?.listId !== state.activeList.id) return;
 
-    // すべてのタスクが完了済みかどうかをチェック
-    const allCompleted =
-      saved.tasks.length > 0 && saved.tasks.every((task) => task.status === 'done');
-    if (allCompleted) {
-      // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
-      clearExecutionState(state.activeList.id, mode);
-      return;
-    }
-
-    // 進捗（経過時間がある、または完了しているタスクがある）がある場合のみ復元を提案する
-    if (!hasTaskProgress(saved.tasks)) {
-      // 進捗がない場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
+    const savedTasks = toDomainTasks(saved.tasks);
+    if (shouldDiscardPersistedSession(savedTasks)) {
       clearExecutionState(state.activeList.id, mode);
       return;
     }
@@ -50,7 +40,7 @@ export function useTimerPersistence(
     if (saved.isAutoResume) {
       dispatch({
         type: 'AUTO_RESTORE',
-        tasks: saved.tasks,
+        tasks: savedTasks,
         selectedTaskId: saved.selectedTaskId,
         isTimerRunning: saved.isTimerRunning,
         lastTickTimestamp: saved.lastTickTimestamp,
@@ -59,7 +49,7 @@ export function useTimerPersistence(
     } else {
       dispatch({
         type: 'RESTORE_AVAILABLE',
-        tasks: saved.tasks,
+        tasks: savedTasks,
         selectedTaskId: saved.selectedTaskId,
         isTimerRunning: saved.isTimerRunning,
         lastTickTimestamp: saved.lastTickTimestamp,
