@@ -14,7 +14,11 @@
     black calc(100% - 20px),
     transparent
   );
-  transition: all 0.3s ease;
+  transition:
+    gap 0.3s ease,
+    min-height 0.3s ease,
+    max-height 0.3s ease,
+    padding 0.3s ease;
 }
 
 .taskList.compact {

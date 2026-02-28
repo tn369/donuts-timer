@@ -95,7 +95,7 @@ describe('MainTimerView Integration', () => {
   });
 
   it('should show only the running task while timer is running', () => {
-    render(
+    const { container } = render(
       <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
     );
 
@@ -109,6 +109,7 @@ describe('MainTimerView Integration', () => {
 
     expect(screen.getByText('Task 1')).toBeInTheDocument();
     expect(screen.queryByText('Task 2')).not.toBeInTheDocument();
+    expect(container.querySelector('[class*="singleTaskFocusMode"]')).toBeInTheDocument();
   });
 
   it('should restore all tasks when timer is stopped', () => {

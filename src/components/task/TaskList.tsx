@@ -51,6 +51,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
     <Reorder.Item
       key={task.id}
       value={task}
+      layout="position"
       className={styles.taskWrapper}
       dragListener={false}
       dragControls={dragControls}

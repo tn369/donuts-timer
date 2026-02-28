@@ -259,7 +259,6 @@ const getStatusText = (task: Task) => {
  * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
  * @returns レンダリングされるJSX要素
  */
-/* eslint-disable complexity */
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   isSelected,
@@ -290,7 +289,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     task.plannedSeconds,
     task.actualSeconds
   );
-  const selectedScale = isSingleTaskFocus ? 1 : 1.05;
+  const cardFlexGrow = isSingleTaskFocus ? 1 : flexGrow;
 
   const viewProps: TaskCardViewProps = {
     task,
@@ -308,18 +307,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <motion.div
-      layout
+      layout="position"
       initial={{ opacity: 0, y: 20 }}
       animate={{
         opacity: 1,
         y: 0,
-        scale: isSelected ? selectedScale : 1,
         transition: { duration: 0.3 },
       }}
       whileHover={isSelectable && !isDone ? { y: -5, transition: { duration: 0.2 } } : {}}
       whileTap={isSelectable && !isDone ? { scale: 0.95 } : {}}
       className={cardClassName}
-      style={{ flexGrow }}
+      style={{ flexGrow: cardFlexGrow }}
       onClick={() => {
         if (isSelectable) onSelect(task.id);
       }}
@@ -328,4 +326,3 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     </motion.div>
   );
 };
-/* eslint-enable complexity */
