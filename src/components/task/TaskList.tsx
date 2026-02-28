@@ -21,6 +21,7 @@ interface TaskListProps {
   isCompact?: boolean; // コンパクト表示にするかどうか
   onReorderTasks?: (fromIndex: number, toIndex: number) => void; // タスクを並び替える時のコールバック
   isReorderEnabled?: boolean; // タスクの並び替えが可能かどうか
+  isSingleTaskFocus?: boolean; // 実行中フォーカス表示かどうか
 }
 
 interface ReorderableTaskItemProps {
@@ -31,6 +32,7 @@ interface ReorderableTaskItemProps {
   shape?: TimerShape;
   color?: TimerColor;
   isCompact: boolean;
+  isSingleTaskFocus: boolean;
 }
 
 const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
@@ -41,6 +43,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
   shape,
   color,
   isCompact,
+  isSingleTaskFocus,
 }) => {
   const dragControls = useDragControls();
 
@@ -60,6 +63,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
         shape={shape}
         color={color}
         isCompact={isCompact}
+        isSingleTaskFocus={isSingleTaskFocus}
         dragControls={dragControls}
       />
     </Reorder.Item>
@@ -78,6 +82,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
  * @param root0.isCompact コンパクト表示にするかどうか
  * @param root0.onReorderTasks タスクを並び替える時のコールバック
  * @param root0.isReorderEnabled タスクの並び替えが可能かどうか
+ * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
  * @returns レンダリングされるJSX要素
  */
 export const TaskList: React.FC<TaskListProps> = ({
@@ -90,6 +95,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   isCompact = false,
   onReorderTasks,
   isReorderEnabled = true,
+  isSingleTaskFocus = false,
 }) => {
   const handleReorder = (newTasks: Task[]) => {
     if (!onReorderTasks) return;
@@ -109,7 +115,11 @@ export const TaskList: React.FC<TaskListProps> = ({
   if (!isReorderEnabled || !onReorderTasks) {
     // 並び替えが無効の場合は通常の表示
     return (
-      <div className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}>
+      <div
+        className={`${styles.taskList} ${isCompact ? styles.compact : ''} ${
+          isSingleTaskFocus ? styles.singleTaskFocusMode : ''
+        }`}
+      >
         {tasks.map((task) => (
           <div key={task.id} className={styles.taskWrapper}>
             <TaskCard
@@ -120,6 +130,7 @@ export const TaskList: React.FC<TaskListProps> = ({
               shape={shape}
               color={color}
               isCompact={isCompact}
+              isSingleTaskFocus={isSingleTaskFocus}
             />
           </div>
         ))}
@@ -133,7 +144,9 @@ export const TaskList: React.FC<TaskListProps> = ({
       axis="x"
       values={tasks}
       onReorder={handleReorder}
-      className={`${styles.taskList} ${isCompact ? styles.compact : ''}`}
+      className={`${styles.taskList} ${isCompact ? styles.compact : ''} ${
+        isSingleTaskFocus ? styles.singleTaskFocusMode : ''
+      }`}
     >
       {tasks.map((task) => (
         <ReorderableTaskItem
@@ -145,6 +158,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           shape={shape}
           color={color}
           isCompact={isCompact}
+          isSingleTaskFocus={isSingleTaskFocus}
         />
       ))}
     </Reorder.Group>

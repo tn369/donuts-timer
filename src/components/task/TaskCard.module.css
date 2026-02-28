@@ -275,3 +275,41 @@
   height: 20px;
   border-radius: 10px;
 }
+
+.singleTaskFocus {
+  flex-basis: 100%;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding: 44px 36px;
+  overflow: visible;
+}
+
+.singleTaskFocus .taskImageContainer {
+  height: 220px;
+}
+
+.singleTaskFocus .taskName {
+  font-size: 44px;
+}
+
+.singleTaskFocus .taskTime {
+  padding: 12px 28px;
+  font-size: 28px;
+}
+
+.compact.singleTaskFocus {
+  flex-basis: 100%;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding: 32px 18px 16px;
+}
+
+.compact.singleTaskFocus .taskName {
+  font-size: 28px;
+}
+
+.compact.singleTaskFocus .taskTime {
+  font-size: 20px;
+}

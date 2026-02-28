@@ -30,6 +30,19 @@ interface MainTimerViewProps {
   onExitSiblingMode?: () => void; // ひとりモードへ切り替えるコールバック
 }
 
+const getVisibleTasksForDisplay = (
+  tasks: Task[],
+  isTimerRunning: boolean,
+  selectedTaskId: string | null
+) => {
+  if (!isTimerRunning || !selectedTaskId) {
+    return tasks;
+  }
+
+  const selected = tasks.find((task) => task.id === selectedTaskId);
+  return selected ? [selected] : tasks;
+};
+
 /**
  * タイマー実行画面のメインコンポーネント
  * @param root0 プロパティオブジェクト
@@ -43,6 +56,8 @@ interface MainTimerViewProps {
  * @param root0.onExitSiblingMode ひとりモードへ切り替えるコールバック
  * @returns レンダリングされるJSX要素
  */
+// タイマー画面の操作/表示分岐が集約されるため、このコンポーネントのみ複雑度を緩和する
+/* eslint-disable complexity */
 export const MainTimerView: React.FC<MainTimerViewProps> = ({
   initialList,
   onBackToSelection,
@@ -111,6 +126,13 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     countdownWarningEnabled
   );
 
+  const visibleTasks = useMemo(
+    () => getVisibleTasksForDisplay(tasks, isTimerRunning, selectedTaskId),
+    [tasks, isTimerRunning, selectedTaskId]
+  );
+
+  const isSingleTaskFocus = isTimerRunning && visibleTasks.length === 1;
+
   return (
     <div
       className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''} ${
@@ -143,7 +165,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
       )}
 
       <TaskList
-        tasks={tasks}
+        tasks={visibleTasks}
         selectedTaskId={selectedTaskId}
         isTaskSelectable={isTaskSelectable}
         onSelectTask={selectTask}
@@ -152,6 +174,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         isCompact={isCompactLayout}
         onReorderTasks={reorderTasks}
         isReorderEnabled={true}
+        isSingleTaskFocus={isSingleTaskFocus}
       />
 
       <Modals
@@ -165,6 +188,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
     </div>
   );
 };
+/* eslint-enable complexity */
 
 interface ModalsProps {
   showResetConfirm: boolean;

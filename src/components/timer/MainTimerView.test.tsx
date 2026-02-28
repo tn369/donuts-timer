@@ -47,6 +47,16 @@ describe('MainTimerView Integration', () => {
         kind: 'todo',
         status: 'todo',
       },
+      {
+        id: 't2',
+        name: 'Task 2',
+        icon: 'i2',
+        plannedSeconds: 20,
+        actualSeconds: 0,
+        elapsedSeconds: 0,
+        kind: 'todo',
+        status: 'todo',
+      },
     ],
     targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
   };
@@ -82,6 +92,43 @@ describe('MainTimerView Integration', () => {
     // useTaskTimer wraps the logic, so we test the resulting UI state.
     // タイマーが実行中になると、停止ボタンが表示されるか、ステータスが変わる
     expect(screen.getByText(/ストップ/)).toBeInTheDocument();
+  });
+
+  it('should show only the running task while timer is running', () => {
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
+
+    expect(screen.getByText('Task 1')).toBeInTheDocument();
+    expect(screen.getByText('Task 2')).toBeInTheDocument();
+
+    const startButton = screen.getByText(/スタート/);
+    act(() => {
+      startButton.click();
+    });
+
+    expect(screen.getByText('Task 1')).toBeInTheDocument();
+    expect(screen.queryByText('Task 2')).not.toBeInTheDocument();
+  });
+
+  it('should restore all tasks when timer is stopped', () => {
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
+
+    const startButton = screen.getByText(/スタート/);
+    act(() => {
+      startButton.click();
+    });
+    expect(screen.queryByText('Task 2')).not.toBeInTheDocument();
+
+    const stopButton = screen.getByText(/ストップ/);
+    act(() => {
+      stopButton.click();
+    });
+
+    expect(screen.getByText('Task 1')).toBeInTheDocument();
+    expect(screen.getByText('Task 2')).toBeInTheDocument();
   });
 
   it('should show the reset confirmation modal when the reset button is clicked', () => {

@@ -23,6 +23,7 @@ interface TaskCardProps {
   color?: TimerColor; // タイマーの色
   isCompact?: boolean; // コンパクト表示にするかどうか
   dragControls?: DragControls; // ドラッグ制御用
+  isSingleTaskFocus?: boolean; // 実行中フォーカス表示かどうか
 }
 
 /**
@@ -44,6 +45,7 @@ interface TaskCardViewProps extends TaskCardProps {
  * @param root0.isDone 完了しているか
  * @param root0.isOverdue 時間超過しているか
  * @param root0.dragControls ドラッグ制御用
+ * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
  * @returns レンダリングされるJSX要素
  */
 const TaskCardCompact: React.FC<TaskCardViewProps> = ({
@@ -54,6 +56,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   isDone,
   isOverdue,
   dragControls,
+  isSingleTaskFocus = false,
 }) => (
   <div className={styles.compactLayout}>
     {dragControls && (
@@ -88,8 +91,8 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
           totalSeconds={task.plannedSeconds}
           elapsedSeconds={task.elapsedSeconds}
           isOverdue={isOverdue}
-          size={80}
-          strokeWidth={14}
+          size={isSingleTaskFocus ? 120 : 80}
+          strokeWidth={isSingleTaskFocus ? 18 : 14}
           shape={shape}
           color={color}
         />
@@ -109,8 +112,11 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
  * @param root0.isDone 完了しているか
  * @param root0.isOverdue 時間超過しているか
  * @param root0.dragControls ドラッグ制御用
+ * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
  * @returns レンダリングされるJSX要素
  */
+// 画像/完了/タイマーのUI分岐をまとめているため、この関数のみ複雑度を緩和する
+/* eslint-disable complexity */
 const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   task,
   isSelected,
@@ -120,6 +126,7 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   isDone,
   isOverdue,
   dragControls,
+  isSingleTaskFocus = false,
 }) => (
   <>
     {dragControls && (
@@ -173,8 +180,8 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
         totalSeconds={task.plannedSeconds}
         elapsedSeconds={task.elapsedSeconds}
         isOverdue={isOverdue}
-        size={100}
-        strokeWidth={20}
+        size={isSingleTaskFocus ? 170 : 100}
+        strokeWidth={isSingleTaskFocus ? 30 : 20}
         shape={shape}
         color={color}
       />
@@ -184,6 +191,7 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
     <div className={styles.taskTime}>{isDone ? getStatusText(task) : formatTime(remaining)}</div>
   </>
 );
+/* eslint-enable complexity */
 
 /**
  * カードのCSSクラス名を生成する
@@ -192,6 +200,7 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
  * @param isOverdue 時間超過しているか
  * @param isCompact コンパクト表示かどうか
  * @param isReward ご褒美タスクかどうか
+ * @param isSingleTaskFocus 実行中フォーカス表示かどうか
  * @returns クラス名文字列
  */
 const getCardClassName = (
@@ -199,18 +208,17 @@ const getCardClassName = (
   isDone: boolean,
   isOverdue: boolean,
   isCompact: boolean,
-  isReward: boolean
+  isReward: boolean,
+  isSingleTaskFocus: boolean
 ) => {
-  return [
-    styles.taskCard,
-    isSelected && styles.selected,
-    isDone && styles.done,
-    isOverdue && styles.overdue,
-    isCompact && styles.compact,
-    isReward && styles.reward,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const classNames = [styles.taskCard];
+  if (isSelected) classNames.push(styles.selected);
+  if (isDone) classNames.push(styles.done);
+  if (isOverdue) classNames.push(styles.overdue);
+  if (isCompact) classNames.push(styles.compact);
+  if (isReward) classNames.push(styles.reward);
+  if (isSingleTaskFocus) classNames.push(styles.singleTaskFocus);
+  return classNames.join(' ');
 };
 
 /**
@@ -248,8 +256,10 @@ const getStatusText = (task: Task) => {
  * @param root0.color タイマーの色
  * @param root0.isCompact コンパクト表示かどうか
  * @param root0.dragControls ドラッグ制御用
+ * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
  * @returns レンダリングされるJSX要素
  */
+/* eslint-disable complexity */
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   isSelected,
@@ -259,19 +269,28 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   color,
   isCompact = false,
   dragControls,
+  isSingleTaskFocus = false,
 }) => {
   const remaining = task.plannedSeconds - task.elapsedSeconds;
   const isDone = task.status === 'done';
   const isOverdue = !isDone && task.elapsedSeconds > task.plannedSeconds;
   const isReward = task.kind === 'reward';
 
-  const cardClassName = getCardClassName(isSelected, isDone, isOverdue, isCompact, isReward);
+  const cardClassName = getCardClassName(
+    isSelected,
+    isDone,
+    isOverdue,
+    isCompact,
+    isReward,
+    isSingleTaskFocus
+  );
   const flexGrow = getFlexGrow(
     task.status,
     task.elapsedSeconds,
     task.plannedSeconds,
     task.actualSeconds
   );
+  const selectedScale = isSingleTaskFocus ? 1 : 1.05;
 
   const viewProps: TaskCardViewProps = {
     task,
@@ -284,6 +303,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     isDone,
     isOverdue,
     dragControls,
+    isSingleTaskFocus,
   };
 
   return (
@@ -293,7 +313,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       animate={{
         opacity: 1,
         y: 0,
-        scale: isSelected ? 1.05 : 1,
+        scale: isSelected ? selectedScale : 1,
         transition: { duration: 0.3 },
       }}
       whileHover={isSelectable && !isDone ? { y: -5, transition: { duration: 0.2 } } : {}}
@@ -308,3 +328,4 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     </motion.div>
   );
 };
+/* eslint-enable complexity */

@@ -64,3 +64,17 @@
 .taskWrapper:hover .dragHandle {
   color: #94a3b8;
 }
+
+.taskList.singleTaskFocusMode {
+  justify-content: center;
+  min-height: 320px;
+  max-height: none;
+  padding: 20px 20px 28px;
+  overflow: visible;
+  mask-image: none;
+}
+
+.taskList.singleTaskFocusMode .taskWrapper {
+  flex: 1;
+  width: 100%;
+}
