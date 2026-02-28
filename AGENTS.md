@@ -62,6 +62,8 @@
 
 1. **Lint**: `make lint` (ESLint & Stylelint)
 2. **Format**: `make format` (Prettier)
-3. **Test**: `make test` (Vitest)
+3. **Type Check**: `make type-check` (TypeScript)
+4. **Test**: `make test` (Vitest)
+5. **Build**: `make build` (Vite production build)
 
 これらが通らないコードを提出しないでください。
