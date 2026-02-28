@@ -18,6 +18,19 @@ const mockList: TodoList = {
       elapsedSeconds: 0,
       actualSeconds: 0,
     },
+    {
+      id: 't2',
+      name: 'あそぶ',
+      icon: '',
+      kind: 'reward',
+      status: 'todo',
+      plannedSeconds: 900,
+      elapsedSeconds: 0,
+      actualSeconds: 0,
+      rewardSettings: {
+        mode: 'duration',
+      },
+    },
   ],
   timerSettings: { shape: 'circle', color: 'blue' },
 };
@@ -34,10 +47,35 @@ describe('TodoListCard', () => {
     onDeleteRequest: vi.fn(),
   };
 
-  it('リストのタイトルとタスク数が正しく表示されること', () => {
+  it('リストのタイトルと各タスクの内容が正しく表示されること', () => {
     render(<TodoListCard {...defaultProps} />);
     expect(screen.getByText('朝の準備')).toBeInTheDocument();
-    expect(screen.getByText('1この やること')).toBeInTheDocument();
+    expect(screen.getByText('顔を洗う')).toBeInTheDocument();
+    expect(screen.getByText('5ふん')).toBeInTheDocument();
+    expect(screen.getByText('あそぶ')).toBeInTheDocument();
+    expect(screen.getByText('ごほうび')).toBeInTheDocument();
+    expect(screen.getByText('15ふん')).toBeInTheDocument();
+  });
+
+  it('旧タスク数テキストが表示されないこと', () => {
+    render(<TodoListCard {...defaultProps} />);
+    expect(screen.queryByText(/この やること/)).not.toBeInTheDocument();
+  });
+
+  it('予定時間が 0 秒のタスクは 0ふん と表示されること', () => {
+    const zeroMinuteList: TodoList = {
+      ...mockList,
+      tasks: [
+        {
+          ...mockList.tasks[0],
+          id: 't0',
+          plannedSeconds: 0,
+        },
+      ],
+    };
+
+    render(<TodoListCard {...defaultProps} list={zeroMinuteList} />);
+    expect(screen.getByText('0ふん')).toBeInTheDocument();
   });
 
   it('カードをクリックしたときに onClick が呼ばれること', () => {

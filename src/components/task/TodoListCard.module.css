@@ -67,15 +67,6 @@
   color: var(--color-text-muted);
 }
 
-.listTaskCount {
-  padding: 4px 12px;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: rgb(0 0 0 / 4%);
-  border-radius: 20px;
-}
-
 .listCardActions {
   display: flex;
   gap: 10px;
@@ -188,8 +179,47 @@
 
 .listInfo {
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 96px;
+}
+
+.taskSummaryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.taskSummaryItem {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  background: rgb(0 0 0 / 4%);
+  border-radius: 999px;
+}
+
+.taskSummaryName {
+  font-weight: 700;
+}
+
+.taskSummaryTime {
+  color: var(--color-text-muted);
+}
+
+.rewardBadge {
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-primary);
+  background: rgb(16 185 129 / 12%);
+  border-radius: 999px;
 }
 
 .compact .listSubtitle {
@@ -197,8 +227,13 @@
   font-size: 16px;
 }
 
-.compact .listTaskCount {
-  font-size: 16px;
+.compact .taskSummaryItem {
+  padding: 3px 8px;
+  font-size: 14px;
+}
+
+.compact .rewardBadge {
+  font-size: 12px;
 }
 
 .compact .listCardActions {

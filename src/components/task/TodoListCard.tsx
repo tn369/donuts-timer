@@ -2,7 +2,7 @@ import { type DragControls } from 'framer-motion';
 import { Copy, Edit2, GripVertical, ListChecks, Trash2 } from 'lucide-react';
 import React from 'react';
 
-import type { Task, TodoList } from '../../types';
+import type { TodoList } from '../../types';
 import styles from './TodoListCard.module.css';
 
 interface TodoListCardProps {
@@ -30,6 +30,11 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
   isCompact = false,
   dragControls,
 }) => {
+  const formatMinutes = (plannedSeconds: number): string => {
+    const minutes = Math.max(0, Math.ceil(plannedSeconds / 60));
+    return `${minutes}ふん`;
+  };
+
   return (
     <div
       className={`${styles.listCard} ${isSelected ? styles.selected : ''} ${
@@ -68,9 +73,15 @@ export const TodoListCard: React.FC<TodoListCardProps> = ({
             <h3 className={styles.listName}>{list.title}</h3>
             <span className={styles.listSubtitle}>のやることリスト</span>
           </div>
-          <p className={styles.listTaskCount}>
-            {list.tasks.filter((t: Task) => t.kind === 'todo').length}この やること
-          </p>
+          <div className={styles.taskSummaryList}>
+            {list.tasks.map((task) => (
+              <div key={task.id} className={styles.taskSummaryItem}>
+                <span className={styles.taskSummaryName}>{task.name}</span>
+                {task.kind === 'reward' && <span className={styles.rewardBadge}>ごほうび</span>}
+                <span className={styles.taskSummaryTime}>{formatMinutes(task.plannedSeconds)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
