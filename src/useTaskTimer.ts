@@ -1,9 +1,9 @@
 /**
  * タイマーの実行ロジック、タスクの進捗、永続化を統合して提供するカスタムフック
  */
-import { useCallback, useReducer } from 'react';
+import { useCallback, useMemo, useReducer } from 'react';
 
-import { toDomainTasks } from './domain/timer/mappers/taskMapper';
+import { toAppTasks } from './domain/timer/mappers/taskMapper';
 import { isTaskSelectable as isTaskSelectablePolicy } from './domain/timer/policies/selectabilityPolicy';
 import { clearExecutionState, type TimerMode } from './storage';
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from './types';
@@ -79,7 +79,7 @@ export function useTaskTimer(mode: TimerMode = 'single') {
    */
   const isTaskSelectable = useCallback(
     (taskId: string): boolean => {
-      return isTaskSelectablePolicy(toDomainTasks(state.tasks), taskId);
+      return isTaskSelectablePolicy(state.tasks, taskId);
     },
     [state.tasks]
   );
@@ -137,8 +137,12 @@ export function useTaskTimer(mode: TimerMode = 'single') {
     dispatch({ type: 'REORDER_TASKS', fromIndex, toIndex });
   }, []);
 
+  // hookの公開APIは既存互換のためTask DTOで返す。
+  const appTasks = useMemo(() => toAppTasks(state.tasks), [state.tasks]);
+
   return {
     ...state,
+    tasks: appTasks,
     isTaskSelectable,
     selectTask,
     startTimer,

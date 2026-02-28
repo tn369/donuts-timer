@@ -1,7 +1,17 @@
 /**
  * タイマーの各種状態遷移（時間更新、タスク選択、開始/停止など）を管理するリデューサー
  */
+import {
+  getNextIncompleteTaskId,
+  markTaskDone,
+  markTaskPaused,
+  markTaskRunning,
+  reopenTask,
+  resetTaskProgress,
+  withElapsedSeconds,
+} from '../domain/timer/entities/taskEntity';
 import { toAppTasks, toDomainList, toDomainTasks } from '../domain/timer/mappers/taskMapper';
+import type { DomainTask } from '../domain/timer/model';
 import {
   getBaseRewardSeconds as getBaseRewardSecondsPolicy,
   updateRewardTime as updateRewardTimePolicy,
@@ -31,6 +41,16 @@ export function updateRewardTime(tasks: Task[], baseRewardSeconds: number): Task
   return toAppTasks(updateRewardTimePolicy(toDomainTasks(tasks), baseRewardSeconds));
 }
 
+const updateRewardTimeInState = (
+  tasks: DomainTask[],
+  activeList: TodoList | null,
+  now?: Date
+): DomainTask[] => {
+  // reducer内部はDomainTaskで扱い、ここでのみごほうび再計算を集中させる。
+  const baseRewardSeconds = getBaseRewardSecondsPolicy(toDomainList(activeList));
+  return updateRewardTimePolicy(tasks, baseRewardSeconds, now);
+};
+
 /**
  * 1秒ごとの時間経過処理
  * @param state 現在の状態
@@ -48,26 +68,28 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
   const deltaMs = now - state.lastTickTimestamp;
   const deltaSeconds = Math.floor(deltaMs / 1000);
 
+  // 1秒未満の更新は切り捨て、次回tickへ持ち越す。
   if (deltaSeconds < 1) return state;
 
-  const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
+  const currentIndex = state.tasks.findIndex((task) => task.id === state.selectedTaskId);
   const task = state.tasks[currentIndex];
 
   if (currentIndex === -1 || task.status !== 'running') return state;
 
   const newElapsed = task.elapsedSeconds + deltaSeconds;
-  let updatedTasks = state.tasks.map((t) =>
-    t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
+  let updatedTasks = state.tasks.map((candidate) =>
+    candidate.id === state.selectedTaskId ? withElapsedSeconds(candidate, newElapsed) : candidate
   );
 
-  updatedTasks = updateRewardTime(updatedTasks, getBaseRewardSeconds(state.activeList));
+  updatedTasks = updateRewardTimeInState(updatedTasks, state.activeList);
 
   // ごほうびタスクが時間切れになった場合の自動終了処理
-  const updatedTask = updatedTasks.find((t) => t.id === state.selectedTaskId);
+  const updatedTask = updatedTasks.find((candidate) => candidate.id === state.selectedTaskId);
   if (updatedTask?.kind === 'reward' && updatedTask.elapsedSeconds >= updatedTask.plannedSeconds) {
-    updatedTasks = updatedTasks.map((t) =>
-      t.id === state.selectedTaskId ? { ...t, status: 'done', actualSeconds: t.elapsedSeconds } : t
+    updatedTasks = updatedTasks.map((candidate) =>
+      candidate.id === state.selectedTaskId ? markTaskDone(candidate) : candidate
     );
+
     return {
       ...state,
       tasks: updatedTasks,
@@ -92,41 +114,18 @@ function handleTick(state: State, action: { type: 'TICK'; now: number }): State 
 function handleDoneTaskClick(
   state: State,
   taskId: string
-): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
+): { updatedTasks: DomainTask[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
   let updatedTasks = [...state.tasks];
+
   if (state.selectedTaskId) {
-    updatedTasks = updatedTasks.map((t) =>
-      t.id === state.selectedTaskId && t.status === 'running'
-        ? { ...t, status: 'paused' as const }
-        : t
+    updatedTasks = updatedTasks.map((task) =>
+      task.id === state.selectedTaskId ? markTaskPaused(task) : task
     );
   }
-  updatedTasks = updatedTasks.map((t) =>
-    t.id === taskId ? { ...t, status: 'todo' as const, actualSeconds: 0 } : t
-  );
+
+  updatedTasks = updatedTasks.map((task) => (task.id === taskId ? reopenTask(task) : task));
+
   return { updatedTasks, nextTaskIdToSelect: taskId, nextIsTimerRunning: state.isTimerRunning };
-}
-
-/**
- * 現在のタスクが完了した次に選択すべきタスクIDを取得する
- * @param tasks タスク一覧
- * @param currentIndex 現在のインデックス
- * @returns 次のタスクID、またはnull
- */
-function getNextIncompleteTaskId(tasks: Task[], currentIndex: number): string | null {
-  const nextIncomplete = tasks.slice(currentIndex + 1).find((t) => t.status !== 'done');
-  const allIncomplete = tasks.filter((t) => t.status !== 'done');
-
-  if (nextIncomplete) {
-    if (nextIncomplete.kind === 'reward') {
-      const hasOtherTodo = tasks.some(
-        (t) => t.status !== 'done' && t.kind === 'todo' && t.id !== nextIncomplete.id
-      );
-      return hasOtherTodo ? allIncomplete[0].id : nextIncomplete.id;
-    }
-    return nextIncomplete.id;
-  }
-  return allIncomplete.length > 0 ? allIncomplete[0].id : null;
 }
 
 /**
@@ -138,18 +137,14 @@ function getNextIncompleteTaskId(tasks: Task[], currentIndex: number): string | 
 function handleActiveTaskClick(
   state: State,
   tappedIndex: number
-): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
+): { updatedTasks: DomainTask[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } {
   const tappedTask = state.tasks[tappedIndex];
   const updatedTasks = [...state.tasks];
   let nextTaskIdToSelect = state.selectedTaskId;
   let nextIsTimerRunning = state.isTimerRunning;
 
   if (state.isTimerRunning) {
-    updatedTasks[tappedIndex] = {
-      ...tappedTask,
-      status: 'done' as const,
-      actualSeconds: tappedTask.elapsedSeconds,
-    };
+    updatedTasks[tappedIndex] = markTaskDone(tappedTask);
 
     nextTaskIdToSelect = getNextIncompleteTaskId(updatedTasks, tappedIndex);
     if (!nextTaskIdToSelect) {
@@ -173,22 +168,24 @@ function handleTodoTaskClick(
   state: State,
   taskId: string,
   tappedIndex: number
-): { updatedTasks: Task[]; nextTaskIdToSelect: string | null; nextIsTimerRunning: boolean } | null {
+): {
+  updatedTasks: DomainTask[];
+  nextTaskIdToSelect: string | null;
+  nextIsTimerRunning: boolean;
+} | null {
   const tappedTask = state.tasks[tappedIndex];
   let updatedTasks = [...state.tasks];
 
   if (tappedTask.kind === 'reward') {
-    const canSelectReward = canSelectRewardTaskAtIndex(toDomainTasks(updatedTasks), tappedIndex);
+    const canSelectReward = canSelectRewardTaskAtIndex(updatedTasks, tappedIndex);
     if (!canSelectReward) {
       return null;
     }
   }
 
   if (state.selectedTaskId) {
-    updatedTasks = updatedTasks.map((t) =>
-      t.id === state.selectedTaskId && t.status === 'running'
-        ? { ...t, status: 'paused' as const }
-        : t
+    updatedTasks = updatedTasks.map((task) =>
+      task.id === state.selectedTaskId ? markTaskPaused(task) : task
     );
   }
 
@@ -209,14 +206,14 @@ function handleSelectTask(
   action: { type: 'SELECT_TASK'; taskId: string; now: number }
 ): State {
   const { taskId, now } = action;
-  const tappedIndex = state.tasks.findIndex((t) => t.id === taskId);
+  const tappedIndex = state.tasks.findIndex((task) => task.id === taskId);
   if (tappedIndex === -1) return state;
 
   const tappedTask = state.tasks[tappedIndex];
   const isCurrentTapped = taskId === state.selectedTaskId;
 
   let result: {
-    updatedTasks: Task[];
+    updatedTasks: DomainTask[];
     nextTaskIdToSelect: string | null;
     nextIsTimerRunning: boolean;
   } | null;
@@ -234,11 +231,11 @@ function handleSelectTask(
   let { updatedTasks } = result;
   const { nextTaskIdToSelect, nextIsTimerRunning } = result;
 
-  updatedTasks = updateRewardTime(updatedTasks, getBaseRewardSeconds(state.activeList));
+  updatedTasks = updateRewardTimeInState(updatedTasks, state.activeList);
 
   if (nextTaskIdToSelect && nextIsTimerRunning) {
-    updatedTasks = updatedTasks.map((t) =>
-      t.id === nextTaskIdToSelect ? { ...t, status: 'running' as const } : t
+    updatedTasks = updatedTasks.map((task) =>
+      task.id === nextTaskIdToSelect ? markTaskRunning(task) : task
     );
   }
 
@@ -264,17 +261,14 @@ function handleStart(state: State, action: { type: 'START'; now: number }): Stat
 
   // もしタスクが選択されていない場合は、最初の未完了タスクを探す
   if (!targetTaskId) {
-    const firstIncomplete = state.tasks.find((t) => t.status !== 'done');
+    const firstIncomplete = state.tasks.find((task) => task.status !== 'done');
     if (!firstIncomplete) return state;
     targetTaskId = firstIncomplete.id;
   }
 
-  const updatedTasks = state.tasks.map((task) => {
-    if (task.id === targetTaskId && task.status !== 'done') {
-      return { ...task, status: 'running' as const };
-    }
-    return task;
-  });
+  const updatedTasks = state.tasks.map((task) =>
+    task.id === targetTaskId ? markTaskRunning(task) : task
+  );
 
   return {
     ...state,
@@ -291,9 +285,7 @@ function handleStart(state: State, action: { type: 'START'; now: number }): Stat
  * @returns 新しい状態
  */
 function handleStop(state: State): State {
-  const updatedTasks = state.tasks.map((task) =>
-    task.status === 'running' ? { ...task, status: 'paused' as const } : task
-  );
+  const updatedTasks = state.tasks.map((task) => markTaskPaused(task));
   return {
     ...state,
     tasks: updatedTasks,
@@ -309,15 +301,12 @@ function handleStop(state: State): State {
  */
 function handleReset(state: State): State {
   if (!state.activeList) return state;
-  const resetTasks = state.activeList.tasks.map((task: Task) => ({
-    ...task,
-    elapsedSeconds: 0,
-    actualSeconds: 0,
-    status: 'todo' as const,
-  }));
+
+  const resetTasks = toDomainTasks(state.activeList.tasks).map((task) => resetTaskProgress(task));
+
   return {
     ...state,
-    tasks: updateRewardTime(resetTasks, getBaseRewardSeconds(state.activeList)),
+    tasks: updateRewardTimeInState(resetTasks, state.activeList),
     selectedTaskId: null,
     isTimerRunning: false,
     lastTickTimestamp: null,
@@ -337,9 +326,10 @@ function handleUpdateActiveList(
   action: { type: 'UPDATE_ACTIVE_LIST'; list: TodoList }
 ): State {
   const { list } = action;
-  const updatedTasks = list.tasks.map((newTask: Task) => {
-    const existingTask = state.tasks.find((t) => t.id === newTask.id);
+  const updatedTasks = toDomainTasks(list.tasks).map((newTask) => {
+    const existingTask = state.tasks.find((task) => task.id === newTask.id);
     if (existingTask) {
+      // リスト定義（名前・予定時間）は新しい定義を優先し、進捗は現在状態を維持する。
       return {
         ...newTask,
         status: existingTask.status,
@@ -347,18 +337,15 @@ function handleUpdateActiveList(
         actualSeconds: existingTask.actualSeconds,
       };
     }
-    return {
-      ...newTask,
-      status: 'todo' as const,
-      elapsedSeconds: 0,
-      actualSeconds: 0,
-    };
+
+    return resetTaskProgress(newTask);
   });
+
   return {
     ...state,
     activeList: list,
     targetTimeSettings: list.targetTimeSettings,
-    tasks: updateRewardTime(updatedTasks, getBaseRewardSeconds(list)),
+    tasks: updateRewardTimeInState(updatedTasks, list),
   };
 }
 
@@ -371,15 +358,11 @@ function handleUpdateActiveList(
  */
 function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
   const { list } = action;
-  const initializedTasks = list.tasks.map((t: Task) => ({
-    ...t,
-    status: 'todo' as const,
-    elapsedSeconds: 0,
-    actualSeconds: 0,
-  }));
+  const initializedTasks = toDomainTasks(list.tasks).map((task) => resetTaskProgress(task));
+
   return {
     activeList: list,
-    tasks: updateRewardTime(initializedTasks, getBaseRewardSeconds(list)),
+    tasks: updateRewardTimeInState(initializedTasks, list),
     selectedTaskId: null,
     isTimerRunning: false,
     lastTickTimestamp: null,
@@ -396,7 +379,7 @@ function handleInitList(action: { type: 'INIT_LIST'; list: TodoList }): State {
  */
 function handleFastForward(state: State): State {
   if (!state.selectedTaskId) return state;
-  const currentIndex = state.tasks.findIndex((t) => t.id === state.selectedTaskId);
+  const currentIndex = state.tasks.findIndex((task) => task.id === state.selectedTaskId);
   if (currentIndex === -1) return state;
 
   const task = state.tasks[currentIndex];
@@ -406,11 +389,11 @@ function handleFastForward(state: State): State {
   const skipAmount = Math.max(10, Math.floor(task.plannedSeconds * 0.1));
   const newElapsed = Math.min(task.plannedSeconds, task.elapsedSeconds + skipAmount);
 
-  let updatedTasks = state.tasks.map((t) =>
-    t.id === state.selectedTaskId ? { ...t, elapsedSeconds: newElapsed } : t
+  let updatedTasks = state.tasks.map((candidate) =>
+    candidate.id === state.selectedTaskId ? withElapsedSeconds(candidate, newElapsed) : candidate
   );
 
-  updatedTasks = updateRewardTime(updatedTasks, getBaseRewardSeconds(state.activeList));
+  updatedTasks = updateRewardTimeInState(updatedTasks, state.activeList);
 
   return {
     ...state,
@@ -432,7 +415,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   UPDATE_ACTIVE_LIST: handleUpdateActiveList as Handler<'UPDATE_ACTIVE_LIST'>,
   INIT_LIST: (_state, action) => handleInitList(action),
   SET_TIMER_SETTINGS: (state, action) => ({ ...state, timerSettings: action.settings }),
-  SET_TASKS: (state, action) => ({ ...state, tasks: action.tasks }),
+  SET_TASKS: (state, action) => ({ ...state, tasks: toDomainTasks(action.tasks) }),
   RESTORE_AVAILABLE: (state, action) => ({
     ...state,
     pendingRestorableState: {
@@ -447,17 +430,17 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
 
     const { tasks, selectedTaskId, isTimerRunning, lastTickTimestamp } =
       state.pendingRestorableState;
+    // 復元時は「現在のタスク定義 + 保存済み進捗」を合成する。
     const restored = restoreSession(
-      toDomainTasks(state.tasks),
+      state.tasks,
       toDomainTasks(tasks),
       selectedTaskId,
       isTimerRunning
     );
-    const mergedTasks = toAppTasks(restored.tasks);
 
     return {
       ...state,
-      tasks: updateRewardTime(mergedTasks, getBaseRewardSeconds(state.activeList)),
+      tasks: updateRewardTimeInState(restored.tasks, state.activeList),
       selectedTaskId: restored.selectedTaskId,
       isTimerRunning: restored.isTimerRunning,
       lastTickTimestamp,
@@ -470,17 +453,17 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
   }),
   AUTO_RESTORE: (state, action) => {
     const { tasks, selectedTaskId, isTimerRunning, lastTickTimestamp } = action;
+    // AUTO_RESTOREもRESTORE_SESSIONと同じ合成規則を使う。
     const restored = restoreSession(
-      toDomainTasks(state.tasks),
+      state.tasks,
       toDomainTasks(tasks),
       selectedTaskId,
       isTimerRunning
     );
-    const mergedTasks = toAppTasks(restored.tasks);
 
     return {
       ...state,
-      tasks: updateRewardTime(mergedTasks, getBaseRewardSeconds(state.activeList)),
+      tasks: updateRewardTimeInState(restored.tasks, state.activeList),
       selectedTaskId: restored.selectedTaskId,
       isTimerRunning: restored.isTimerRunning,
       lastTickTimestamp,
@@ -492,12 +475,12 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     return {
       ...state,
       targetTimeSettings: settings,
-      tasks: updateRewardTime(state.tasks, getBaseRewardSeconds(state.activeList)),
+      tasks: updateRewardTimeInState(state.tasks, state.activeList),
     };
   },
   REFRESH_REWARD_TIME: (state) => ({
     ...state,
-    tasks: updateRewardTime(state.tasks, getBaseRewardSeconds(state.activeList)),
+    tasks: updateRewardTimeInState(state.tasks, state.activeList),
   }),
   REORDER_TASKS: (state, action) => {
     const { fromIndex, toIndex } = action;
@@ -519,7 +502,7 @@ const handlers: { [K in Action['type']]?: Handler<K> } = {
     newTasks.splice(toIndex, 0, movedTask);
 
     // Recalculate reward time after reordering
-    const updatedTasks = updateRewardTime(newTasks, getBaseRewardSeconds(state.activeList));
+    const updatedTasks = updateRewardTimeInState(newTasks, state.activeList);
 
     return {
       ...state,

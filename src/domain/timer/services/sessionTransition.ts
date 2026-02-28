@@ -1,10 +1,6 @@
-import type { DomainTask } from '../model';
+import type { DomainTask, DomainTimerSession } from '../model';
 
-export interface RestoredSession {
-  tasks: DomainTask[];
-  selectedTaskId: string | null;
-  isTimerRunning: boolean;
-}
+export type RestoredSession = DomainTimerSession;
 
 export const mergeRestoredTasks = (
   currentTasks: DomainTask[],

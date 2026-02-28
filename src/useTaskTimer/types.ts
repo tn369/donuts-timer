@@ -1,6 +1,7 @@
 /**
  * タイマーの内部状態（State）と、状態を更新するためのアクション（Action）の型定義
  */
+import type { DomainTask } from '../domain/timer/model';
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from '../types';
 
 /**
@@ -17,7 +18,7 @@ export interface RestorableState {
  * タイマーの内部状態
  */
 export interface State {
-  tasks: Task[]; // 現在表示中のタスク一覧
+  tasks: DomainTask[]; // 現在表示中のタスク一覧（ドメインモデル）
   selectedTaskId: string | null; // 現在選択中のタスクID
   isTimerRunning: boolean; // タイマーが動いているかどうか
   targetTimeSettings?: TargetTimeSettings; // 目標時刻/所要時間の設定（後方互換性のため、将来的に削除予定）

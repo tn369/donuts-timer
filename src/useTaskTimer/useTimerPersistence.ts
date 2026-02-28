@@ -3,6 +3,7 @@
  */
 import { useEffect } from 'react';
 
+import { toAppTasks } from '../domain/timer/mappers/taskMapper';
 import {
   clearExecutionState,
   loadExecutionState,
@@ -31,7 +32,8 @@ export function useTimerPersistence(
     if (saved?.listId !== state.activeList.id) return;
 
     // すべてのタスクが完了済みかどうかをチェック
-    const allCompleted = saved.tasks.length > 0 && saved.tasks.every((t) => t.status === 'done');
+    const allCompleted =
+      saved.tasks.length > 0 && saved.tasks.every((task) => task.status === 'done');
     if (allCompleted) {
       // すべて完了している場合は、保存されたステートを破棄して初期状態（リセット状態）のままにする
       clearExecutionState(state.activeList.id, mode);
@@ -68,8 +70,9 @@ export function useTimerPersistence(
   useEffect(() => {
     // ステートが変わるたびに保存（ただし初期化前は避ける）
     if (state.activeList && state.tasks.length > 0) {
+      // 永続化フォーマット互換を保つため、保存時はApp DTOへ戻す。
       saveExecutionState({
-        tasks: state.tasks,
+        tasks: toAppTasks(state.tasks),
         selectedTaskId: state.selectedTaskId,
         isTimerRunning: state.isTimerRunning,
         lastTickTimestamp: state.lastTickTimestamp,

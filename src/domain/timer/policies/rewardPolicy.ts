@@ -1,3 +1,4 @@
+import { isRewardTask } from '../entities/taskEntity';
 import type { DomainTask, DomainTodoList } from '../model';
 
 /**
@@ -17,6 +18,7 @@ const calculateRewardSecondsDuration = (tasks: DomainTask[], baseRewardSeconds: 
     if (task.kind !== 'todo') return;
 
     if (task.status === 'done') {
+      // 早く終われば加点、遅ければ減点（actualSecondsがplannedを超えると減る）。
       totalDelta += task.plannedSeconds - task.actualSeconds;
       return;
     }
@@ -40,6 +42,7 @@ const calculateRewardSecondsFromTargetTime = (
   const target = new Date(now);
   target.setHours(targetHour, targetMinute, 0, 0);
 
+  // 目標時刻が過ぎている場合は「翌日の同時刻」を締切として扱う。
   if (target <= now) {
     target.setDate(target.getDate() + 1);
   }
@@ -75,22 +78,25 @@ export const updateRewardTime = (
   baseRewardSeconds: number,
   now: Date = new Date()
 ): DomainTask[] => {
-  const rewardTask = tasks.find((task) => task.kind === 'reward');
+  const rewardTask = tasks.find((task) => isRewardTask(task));
   if (!rewardTask) return tasks;
 
   const rewardElapsed = rewardTask.elapsedSeconds;
+  const rewardSettings = rewardTask.rewardSettings;
 
+  // target-timeは「締切までの空き時間 - 未完了todo時間」をごほうび予定時間にする。
+  // 既に消費済みのごほうび時間は消えないように加算する。
   const newRewardSeconds =
-    rewardTask.rewardSettings?.mode === 'target-time'
+    rewardSettings?.mode === 'target-time'
       ? calculateRewardSecondsFromTargetTime(
-          rewardTask.rewardSettings.targetHour ?? 0,
-          rewardTask.rewardSettings.targetMinute ?? 0,
+          rewardSettings.targetHour ?? 0,
+          rewardSettings.targetMinute ?? 0,
           now,
           calculateRemainingTodoSeconds(tasks)
         ) + rewardElapsed
       : calculateRewardSecondsDuration(tasks, baseRewardSeconds);
 
   return tasks.map((task) =>
-    task.kind === 'reward' ? { ...task, plannedSeconds: newRewardSeconds } : task
+    isRewardTask(task) ? { ...task, plannedSeconds: newRewardSeconds } : task
   );
 };

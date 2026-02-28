@@ -67,3 +67,30 @@
 5. **Build**: `make build` (Vite production build)
 
 これらが通らないコードを提出しないでください。
+
+### DDD 設計方針
+
+1. **Domain モデルは App DTO から独立させる**
+   - `src/domain/timer/model.ts` の型をドメインの正とする。
+   - `src/types.ts` は UI / Storage との入出力契約（DTO）として扱う。
+
+2. **Entity は関数ベースで実装する**
+   - 本プロジェクトでは React + reducer の immutable 更新を優先するため、Entity はクラス必須ではなく純関数で表現する。
+   - 状態遷移・選択制約などのドメインルールは `src/domain/timer/entities/` に集約する。
+
+3. **境界で変換する（Factory / Mapper）**
+   - App DTO と Domain の相互変換は `src/domain/timer/factories/`（および mapper ラッパー）に集約する。
+   - reducer / policy / service 内で DTO を直接扱わない。
+
+4. **互換性を維持する**
+   - LocalStorage の既存保存フォーマットは維持し、保存時・復元時に境界変換で吸収する。
+   - 外部公開 API（hook の戻り値・コンポーネントとの契約）は原則互換維持。
+
+5. **ロジック配置の原則**
+   - `policies/`: 複数 Entity をまたぐ計算・判定（例: ごほうび時間計算）。
+   - `services/`: セッション復元などのユースケース単位の合成。
+   - `useTaskTimer/reducer.ts`: オーケストレーション専任（ドメインロジックの再実装は禁止）。
+
+6. **テスト方針**
+   - 新しいドメインルール追加時は、まず `entities/` または `policies/` のユニットテストを先に追加（Red）。
+   - reducer テストは振る舞いの非回帰確認に集中し、詳細ロジックの主検証はドメイン層テストで行う。
