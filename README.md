@@ -47,11 +47,17 @@ make build
 # フォーマット
 make format
 
+# フォーマットチェック
+make format-check
+
 # Lint
 make lint
 
 # テスト
 make test
+
+# カバレッジ
+make coverage
 
 # プレビュー
 make preview

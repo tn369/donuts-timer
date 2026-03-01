@@ -16,5 +16,30 @@ export default defineConfig({
       '**/cypress/**',
       '**/.{idea,git,cache,output,temp}/**',
     ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/main.tsx',
+        'src/types.ts',
+        'src/useTaskTimer/types.ts',
+        'src/domain/timer/model.ts',
+      ],
+      thresholds: {
+        lines: 85,
+        statements: 85,
+        branches: 85,
+        functions: 78,
+        autoUpdate: false,
+        perFile: false,
+        'src/domain/timer/**': {
+          lines: 90,
+          statements: 90,
+          branches: 82,
+          functions: 95,
+        },
+      },
+    },
   },
 });

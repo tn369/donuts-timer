@@ -6,7 +6,7 @@ PRETTIER = pnpm exec prettier
 ESLINT = pnpm exec eslint
 STYLELINT = pnpm exec stylelint
 
-.PHONY: help install dev build lint format fix test tdd coverage preview clean type-check ci
+.PHONY: help install dev build lint format format-check fix test tdd coverage preview clean type-check ci
 
 # Default target
 .DEFAULT_GOAL := help
@@ -32,6 +32,9 @@ lint: ## Run linting (JS and CSS)
 format: ## Format code with Prettier
 	$(PRETTIER) --write .
 
+format-check: ## Check code formatting with Prettier
+	$(PRETTIER) --check .
+
 fix: ## Automatically fix linting and formatting issues
 	$(PRETTIER) --write .
 	$(ESLINT) . --fix
@@ -46,7 +49,7 @@ tdd: ## Run tests in watch mode
 coverage: ## Run tests with coverage report
 	$(VITEST) run --coverage
 
-ci: lint type-check test ## Run all checks for CI (lint, type-check, test)
+ci: lint format-check type-check test coverage ## Run all checks for CI (lint, format-check, type-check, test, coverage)
 
 preview: ## Preview production build
 	$(VITE) preview

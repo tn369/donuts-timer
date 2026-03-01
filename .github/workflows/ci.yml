@@ -25,8 +25,14 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
+      - name: Format check
+        run: pnpm run format:check
+
       - name: Type check
         run: pnpm exec tsc -b
 
       - name: Test
         run: pnpm exec vitest --run
+
+      - name: Coverage Gate
+        run: pnpm exec vitest run --coverage
