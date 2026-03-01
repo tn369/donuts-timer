@@ -1,7 +1,7 @@
 /**
  * timerReducerの動作を確認するためのユニットテスト
  */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { TargetTimeSettings, Task, TimerSettings, TodoList } from '../types';
 import { timerReducer } from './reducer';
@@ -124,6 +124,58 @@ describe('timerReducer', () => {
     expect(newState.pendingRestorableState).toBeNull();
   });
 
+  it('should return unchanged state when RESTORE_SESSION is dispatched without pending state', () => {
+    const action: Action = { type: 'RESTORE_SESSION' };
+
+    const newState = timerReducer(initialState, action);
+
+    expect(newState).toBe(initialState);
+  });
+
+  it('should clear pending state and reward notice when CANCEL_RESTORE action is dispatched', () => {
+    const stateWithPending: State = {
+      ...initialState,
+      pendingRestorableState: {
+        tasks: [{ ...mockTask, status: 'paused', elapsedSeconds: 30 }],
+        selectedTaskId: '1',
+        isTimerRunning: false,
+        lastTickTimestamp: 1234,
+      },
+      rewardGainNotice: {
+        taskId: '1',
+        taskName: 'Test Task',
+        deltaSeconds: 120,
+        occurredAt: 999,
+      },
+    };
+
+    const newState = timerReducer(stateWithPending, { type: 'CANCEL_RESTORE' });
+
+    expect(newState.pendingRestorableState).toBeNull();
+    expect(newState.rewardGainNotice).toBeNull();
+  });
+
+  it('should auto restore runtime state when AUTO_RESTORE action is dispatched', () => {
+    const action: Action = {
+      type: 'AUTO_RESTORE',
+      tasks: [{ ...mockTask, status: 'running', elapsedSeconds: 40 }],
+      selectedTaskId: '1',
+      isTimerRunning: true,
+      lastTickTimestamp: 5555,
+    };
+
+    const newState = timerReducer(initialState, action);
+
+    expect(newState.tasks[0].name).toBe('Test Task');
+    expect(newState.tasks[0].plannedSeconds).toBe(300);
+    expect(newState.tasks[0].status).toBe('running');
+    expect(newState.tasks[0].elapsedSeconds).toBe(40);
+    expect(newState.selectedTaskId).toBe('1');
+    expect(newState.isTimerRunning).toBe(true);
+    expect(newState.lastTickTimestamp).toBe(5555);
+    expect(newState.pendingRestorableState).toBeNull();
+  });
+
   it('should update target time settings when SET_TARGET_TIME_SETTINGS action is dispatched', () => {
     // Arrange
     const newTargetSettings: TargetTimeSettings = {
@@ -140,6 +192,46 @@ describe('timerReducer', () => {
     expect(newState.targetTimeSettings).toEqual(newTargetSettings);
     // updateRewardTime is called inside, so we check if it doesn't crash and updates state
     expect(newState.tasks).toBeDefined();
+  });
+
+  it('should refresh reward time when REFRESH_REWARD_TIME action is dispatched', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 0, 1, 9, 50, 0));
+    try {
+      const todoTask: Task = {
+        ...mockTask,
+        id: 'todo-1',
+        plannedSeconds: 300,
+        kind: 'todo',
+        status: 'todo',
+      };
+      const rewardTask: Task = {
+        ...mockTask,
+        id: 'reward-1',
+        kind: 'reward',
+        plannedSeconds: 0,
+        rewardSettings: { mode: 'target-time', targetHour: 10, targetMinute: 0 },
+      };
+      const activeList: TodoList = {
+        id: 'list-1',
+        title: 'Target-time List',
+        tasks: [todoTask, rewardTask],
+        targetTimeSettings: { mode: 'target-time', targetHour: 10, targetMinute: 0 },
+        timerSettings: initialState.timerSettings,
+      };
+      const state: State = {
+        ...initialState,
+        activeList,
+        tasks: [todoTask, rewardTask],
+      };
+
+      const newState = timerReducer(state, { type: 'REFRESH_REWARD_TIME' });
+
+      const updatedReward = newState.tasks.find((task) => task.id === 'reward-1');
+      expect(updatedReward?.plannedSeconds).toBe(300);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should maintain isTimerRunning: false when selecting a done task while stopped', () => {

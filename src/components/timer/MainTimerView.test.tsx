@@ -1,6 +1,7 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import * as storage from '../../storage';
 import type { TodoList } from '../../types';
 import { MainTimerView } from './MainTimerView';
 
@@ -63,6 +64,7 @@ describe('MainTimerView Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseCountdownWarning.mockReturnValue(null);
+    vi.mocked(storage.loadExecutionState).mockReturnValue(null);
   });
 
   it('should initialize with the provided list and display the task name', () => {
@@ -218,5 +220,71 @@ describe('MainTimerView Integration', () => {
 
     expect(screen.queryByText(/あそぶの じかんが 10びょう ふえたよ！/)).not.toBeInTheDocument();
     vi.useRealTimers();
+  });
+
+  it('should resume from previous session when resume modal confirm is clicked', async () => {
+    vi.mocked(storage.loadExecutionState).mockReturnValue({
+      listId: 'l1',
+      tasks: [
+        {
+          ...mockList.tasks[0],
+          status: 'paused',
+          elapsedSeconds: 4,
+        },
+      ],
+      selectedTaskId: 't1',
+      isTimerRunning: false,
+      lastTickTimestamp: null,
+      mode: 'single',
+      isAutoResume: false,
+    });
+
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
+
+    expect(await screen.findByText('まえのつづきからはじめる？')).toBeInTheDocument();
+
+    act(() => {
+      screen.getByText('つづきから').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('まえのつづきからはじめる？')).not.toBeInTheDocument();
+    });
+    expect(storage.clearExecutionState).not.toHaveBeenCalled();
+  });
+
+  it('should clear previous session when resume modal cancel is clicked', async () => {
+    vi.mocked(storage.loadExecutionState).mockReturnValue({
+      listId: 'l1',
+      tasks: [
+        {
+          ...mockList.tasks[0],
+          status: 'paused',
+          elapsedSeconds: 4,
+        },
+      ],
+      selectedTaskId: 't1',
+      isTimerRunning: false,
+      lastTickTimestamp: null,
+      mode: 'single',
+      isAutoResume: false,
+    });
+
+    render(
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
+    );
+
+    expect(await screen.findByText('まえのつづきからはじめる？')).toBeInTheDocument();
+
+    act(() => {
+      screen.getByText('あたらしく').click();
+    });
+
+    expect(storage.clearExecutionState).toHaveBeenCalledWith('l1', 'single');
+    await waitFor(() => {
+      expect(screen.queryByText('まえのつづきからはじめる？')).not.toBeInTheDocument();
+    });
   });
 });
