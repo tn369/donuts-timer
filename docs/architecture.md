@@ -88,4 +88,3 @@ flowchart TD
 
 - [ユビキタス言語定義](../UBIQUITOUS_LANGUAGE.md)
 - [ADR 一覧](./decisions/README.md)
-- [変更履歴](../CHANGELOG.md)
