@@ -179,6 +179,11 @@ describe('MainTimerHeaderControls', () => {
     expect(screen.getByText('スタート')).toBeInTheDocument();
   });
 
+  it('isRunning が true の時、やすむボタンが表示されること', () => {
+    render(<MainTimerHeaderControls {...defaultProps} isRunning={true} />);
+    expect(screen.getByText('やすむ')).toBeInTheDocument();
+  });
+
   it('コンパクト表示（isCompact=true）の時、メニュー内に「ふたりモードにきりかえる」が表示されないこと', () => {
     render(<MainTimerHeaderControls {...defaultProps} isCompact={true} />);
 

@@ -92,7 +92,7 @@ describe('MainTimerView Integration', () => {
     // Here we check if the button label changed or startTimer was called (indirectly via UI).
     // useTaskTimer wraps the logic, so we test the resulting UI state.
     // タイマーが実行中になると、停止ボタンが表示されるか、ステータスが変わる
-    expect(screen.getByText(/ストップ/)).toBeInTheDocument();
+    expect(screen.getByText(/やすむ/)).toBeInTheDocument();
   });
 
   it('should show only the running task while timer is running', () => {
@@ -124,7 +124,7 @@ describe('MainTimerView Integration', () => {
     });
     expect(screen.queryByText('Task 2')).not.toBeInTheDocument();
 
-    const stopButton = screen.getByText(/ストップ/);
+    const stopButton = screen.getByText(/やすむ/);
     act(() => {
       stopButton.click();
     });
@@ -196,30 +196,53 @@ describe('MainTimerView Integration', () => {
       ],
     };
 
+    try {
+      render(
+        <MainTimerView
+          initialList={listWithReward}
+          onBackToSelection={vi.fn()}
+          onEditSettings={vi.fn()}
+        />
+      );
+
+      act(() => {
+        screen.getByText(/スタート/).click();
+      });
+
+      act(() => {
+        screen.getByRole('button', { name: /はみがきをできたにする/ }).click();
+      });
+
+      expect(screen.getByText(/あそぶの じかんが 10びょう ふえたよ！/)).toBeInTheDocument();
+
+      act(() => {
+        vi.advanceTimersByTime(2500);
+      });
+
+      expect(screen.queryByText(/あそぶの じかんが 10びょう ふえたよ！/)).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('should disable drag handles while timer is running and restore when stopped', () => {
     render(
-      <MainTimerView
-        initialList={listWithReward}
-        onBackToSelection={vi.fn()}
-        onEditSettings={vi.fn()}
-      />
+      <MainTimerView initialList={mockList} onBackToSelection={vi.fn()} onEditSettings={vi.fn()} />
     );
+
+    expect(screen.getAllByLabelText('タスクをならびかえる')).toHaveLength(2);
 
     act(() => {
       screen.getByText(/スタート/).click();
     });
 
-    act(() => {
-      screen.getByText('はみがき').click();
-    });
-
-    expect(screen.getByText(/あそぶの じかんが 10びょう ふえたよ！/)).toBeInTheDocument();
+    expect(screen.queryByLabelText('タスクをならびかえる')).not.toBeInTheDocument();
 
     act(() => {
-      vi.advanceTimersByTime(2500);
+      screen.getByText(/やすむ/).click();
     });
 
-    expect(screen.queryByText(/あそぶの じかんが 10びょう ふえたよ！/)).not.toBeInTheDocument();
-    vi.useRealTimers();
+    expect(screen.getAllByLabelText('タスクをならびかえる')).toHaveLength(2);
   });
 
   it('should resume from previous session when resume modal confirm is clicked', async () => {

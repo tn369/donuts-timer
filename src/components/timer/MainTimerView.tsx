@@ -189,7 +189,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         color={timerSettings.color}
         isCompact={isCompactLayout}
         onReorderTasks={reorderTasks}
-        isReorderEnabled={true}
+        isReorderEnabled={!isTimerRunning}
         isSingleTaskFocus={isSingleTaskFocus}
         rewardGainNotice={rewardGainNotice}
       />

@@ -40,24 +40,12 @@ const StartStopButton: React.FC<{
 }> = ({ isRunning, onStart, onStop, disabled, isSmall }) => {
   const buttonClass = isRunning ? styles.btnStop : styles.btnStart;
   const buttonOnClick = isRunning ? onStop : onStart;
-  const buttonText = isRunning ? 'ストップ' : 'スタート';
+  const buttonText = isRunning ? 'やすむ' : 'スタート';
   const Icon = isRunning ? Pause : Play;
-
-  const animation = isRunning
-    ? {
-        boxShadow: [
-          '0 4px 12px rgba(239, 68, 68, 0.2)',
-          '0 4px 18px rgba(239, 68, 68, 0.4)',
-          '0 4px 12px rgba(239, 68, 68, 0.2)',
-        ],
-        transition: { repeat: Infinity, duration: 2 },
-      }
-    : {};
 
   return (
     <ControlButton
       layout
-      animate={animation}
       className={`${styles.btn} ${buttonClass}`}
       onClick={buttonOnClick}
       disabled={disabled}

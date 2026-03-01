@@ -63,6 +63,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
     {dragControls && (
       <div
         className={styles.dragHandle}
+        aria-label="タスクをならびかえる"
         onPointerDown={(e) => {
           dragControls.start(e);
         }}
@@ -133,6 +134,7 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
     {dragControls && (
       <div
         className={styles.dragHandle}
+        aria-label="タスクをならびかえる"
         onPointerDown={(e) => {
           dragControls.start(e);
         }}
@@ -298,6 +300,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const isReward = task.kind === 'reward';
   const shouldShowRewardGainNotice =
     isReward && rewardGainNotice && rewardGainNotice.deltaSeconds > 0;
+  const shouldShowCompleteButton = isSelected && task.status === 'running';
+  const completeButtonText = isReward ? 'おわり' : 'できた！';
+  const completeAriaLabel = isReward ? `${task.name}をおわりにする` : `${task.name}をできたにする`;
 
   const cardClassName = getCardClassName(
     isSelected,
@@ -357,6 +362,19 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         >
           {getRewardGainMessage(task.name, rewardGainNotice.deltaSeconds)}
         </motion.div>
+      )}
+      {shouldShowCompleteButton && (
+        <button
+          type="button"
+          className={styles.completeButton}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect(task.id);
+          }}
+          aria-label={completeAriaLabel}
+        >
+          {completeButtonText}
+        </button>
       )}
       {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardNormal {...viewProps} />}
     </motion.div>
