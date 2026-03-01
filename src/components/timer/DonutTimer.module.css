@@ -2,13 +2,14 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  place-content: center;
   align-items: center;
-  justify-content: center;
   width: 100%;
-  max-height: 240px;
+  min-height: 0;
+  max-height: 100%;
   padding: 8px 4px;
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin-top: 6px;
+  margin-bottom: 6px;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -24,6 +25,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 1 / 1;
   filter: drop-shadow(0 4px 8px rgb(0 0 0 / 6%));
 }

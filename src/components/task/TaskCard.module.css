@@ -3,13 +3,14 @@
   display: flex;
   flex-basis: 240px;
   flex-direction: column;
+  gap: 10px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-width: 220px;
   max-width: 420px;
   height: 100%;
   max-height: 100%;
-  padding: 32px 24px;
+  padding: 24px 20px 18px;
   overflow: hidden;
   text-align: center;
   cursor: pointer;
@@ -26,11 +27,12 @@
 
 .taskCard.compact {
   flex-basis: 180px;
+  gap: 8px;
   min-width: 160px;
   max-width: 220px;
   height: 100%;
   max-height: 100%;
-  padding: 32px 12px 12px;
+  padding: 24px 12px 12px;
 }
 
 .taskCard:hover:not(.done) {
@@ -83,8 +85,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 160px;
-  margin-bottom: 20px;
+  height: clamp(84px, 24vh, 160px);
+  min-height: 72px;
   transition:
     height 0.3s ease,
     margin 0.3s ease;
@@ -110,7 +112,7 @@
 }
 
 .taskName {
-  margin-bottom: 12px;
+  margin-bottom: 0;
   font-family: Outfit, sans-serif;
   font-size: 32px;
   font-weight: 700;
@@ -127,7 +129,7 @@
 
 .taskTime {
   padding: 8px 20px;
-  margin-top: auto;
+  margin-top: 0;
   font-family: Outfit, sans-serif;
   font-size: 20px;
   font-weight: 800;
@@ -157,7 +159,7 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
   background: var(--success-gradient);
   border-radius: 50%;
   box-shadow: 0 8px 20px rgb(0 242 254 / 30%);
@@ -174,6 +176,7 @@
   justify-content: flex-start;
   width: 100%;
   height: 100%;
+  min-height: 0;
 }
 
 .compactTop {
@@ -182,6 +185,7 @@
   gap: 8px;
   align-items: center;
   width: 100%;
+  min-height: 0;
   padding-bottom: 8px;
   border-bottom: 2px solid rgb(0 0 0 / 5%);
 }
@@ -199,7 +203,18 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  min-height: 80px;
+  min-width: 0;
+  min-height: 72px;
+}
+
+.timerSlot {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 
 .taskImageCompact {
@@ -356,15 +371,15 @@
 
 .singleTaskFocus {
   flex-basis: 100%;
+  gap: 14px;
   width: 100%;
   min-width: 0;
   max-width: none;
-  padding: 44px 36px;
-  overflow: visible;
+  padding: 36px 28px 24px;
 }
 
 .singleTaskFocus .taskImageContainer {
-  height: 220px;
+  height: clamp(96px, 30vh, 220px);
 }
 
 .singleTaskFocus .taskName {

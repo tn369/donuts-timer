@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { calculateChunkRemaining, calculateChunks, getBaseMetrics } from './timerLogic';
+import {
+  calculateChunkRemaining,
+  calculateChunks,
+  fitDonutMetricsToBounds,
+  getBaseMetrics,
+} from './timerLogic';
 
 describe('timerLogic', () => {
   describe('calculateChunks', () => {
@@ -54,6 +59,22 @@ describe('timerLogic', () => {
       expect(getBaseMetrics(9, 100, 10)).toEqual({ size: 54, stroke: 7 });
       // 10チャンク以上
       expect(getBaseMetrics(10, 100, 10)).toEqual({ size: 48, stroke: 6 });
+    });
+  });
+
+  describe('fitDonutMetricsToBounds', () => {
+    it('maxDiameterPxがない場合は希望サイズをそのまま返すこと', () => {
+      expect(fitDonutMetricsToBounds(100, 10)).toEqual({ size: 100, stroke: 10 });
+    });
+
+    it('利用可能サイズに合わせてサイズと線幅を縮小すること', () => {
+      expect(fitDonutMetricsToBounds(100, 20, 72)).toEqual({ size: 60, stroke: 12 });
+    });
+
+    it('利用可能サイズが最小サイズより小さい時は利用可能サイズを優先すること', () => {
+      const result = fitDonutMetricsToBounds(100, 10, 30);
+      expect(result.size).toBe(18);
+      expect(result.stroke).toBeCloseTo(1.8);
     });
   });
 });

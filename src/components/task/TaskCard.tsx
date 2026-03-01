@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Camera, Check, GripVertical } from 'lucide-react';
 import React from 'react';
 
+import { useElementSize } from '../../hooks/useElementSize';
 import type { RewardGainNotice, Task, TimerColor, TimerShape } from '../../types';
 import { formatTime } from '../../utils/time';
 import { DonutTimer } from '../timer/DonutTimer';
@@ -58,68 +59,63 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   isOverdue,
   dragControls,
   isSingleTaskFocus = false,
-}) => (
-  <div className={styles.compactLayout}>
-    {dragControls && (
-      <div
-        className={styles.dragHandle}
-        aria-label="タスクをならびかえる"
-        onPointerDown={(e) => {
-          dragControls.start(e);
-        }}
-        style={{ cursor: 'grab' }}
-      >
-        <GripVertical size={16} />
-      </div>
-    )}
-    <div className={styles.compactTop}>
-      {task.icon && <img src={task.icon} alt={task.name} className={styles.taskImageCompact} />}
-      <div className={styles.compactText}>
-        <div className={styles.taskName}>{task.name}</div>
-        <div className={styles.taskTime}>
-          {isDone ? getStatusText(task) : formatTime(remaining)}
-        </div>
-      </div>
-    </div>
-    <div className={styles.compactBottom}>
-      {isDone ? (
-        <div className={`${styles.taskIcon} ${styles.isCompleted} ${styles.compactDone}`}>
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-            <Check size={32} strokeWidth={4} />
-          </motion.div>
-        </div>
-      ) : (
-        <DonutTimer
-          totalSeconds={task.plannedSeconds}
-          elapsedSeconds={task.elapsedSeconds}
-          isOverdue={isOverdue}
-          size={isSingleTaskFocus ? 120 : 80}
-          strokeWidth={isSingleTaskFocus ? 18 : 14}
-          shape={shape}
-          color={color}
-        />
-      )}
-    </div>
-  </div>
-);
+}) => {
+  const { ref: compactBottomRef, size: compactBottomSize } = useElementSize<HTMLDivElement>();
+  const compactTimerMaxDiameter =
+    compactBottomSize.width > 0 && compactBottomSize.height > 0
+      ? Math.min(compactBottomSize.width, compactBottomSize.height) - 8
+      : undefined;
 
-/**
- * 通常表示用のレイアウト
- * @param root0 プロパティオブジェクト
- * @param root0.task 表示対象のタスク
- * @param root0.isSelected 選択中かどうか
- * @param root0.shape タイマーの形状
- * @param root0.color タイマーの色
- * @param root0.remaining 残り時間
- * @param root0.isDone 完了しているか
- * @param root0.isOverdue 時間超過しているか
- * @param root0.dragControls ドラッグ制御用
- * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
- * @returns レンダリングされるJSX要素
- */
+  return (
+    <div className={styles.compactLayout}>
+      {dragControls && (
+        <div
+          className={styles.dragHandle}
+          aria-label="タスクをならびかえる"
+          onPointerDown={(e) => {
+            dragControls.start(e);
+          }}
+          style={{ cursor: 'grab' }}
+        >
+          <GripVertical size={16} />
+        </div>
+      )}
+      <div className={styles.compactTop}>
+        {task.icon && <img src={task.icon} alt={task.name} className={styles.taskImageCompact} />}
+        <div className={styles.compactText}>
+          <div className={styles.taskName}>{task.name}</div>
+          <div className={styles.taskTime}>
+            {isDone ? getStatusText(task) : formatTime(remaining)}
+          </div>
+        </div>
+      </div>
+      <div className={styles.compactBottom} ref={compactBottomRef}>
+        {isDone ? (
+          <div className={`${styles.taskIcon} ${styles.isCompleted} ${styles.compactDone}`}>
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+              <Check size={32} strokeWidth={4} />
+            </motion.div>
+          </div>
+        ) : (
+          <DonutTimer
+            totalSeconds={task.plannedSeconds}
+            elapsedSeconds={task.elapsedSeconds}
+            isOverdue={isOverdue}
+            size={isSingleTaskFocus ? 120 : 80}
+            strokeWidth={isSingleTaskFocus ? 18 : 14}
+            shape={shape}
+            color={color}
+            maxDiameterPx={compactTimerMaxDiameter}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
 // 画像/完了/タイマーのUI分岐をまとめているため、この関数のみ複雑度を緩和する
 /* eslint-disable complexity */
-const TaskCardNormal: React.FC<TaskCardViewProps> = ({
+const TaskCardBody: React.FC<TaskCardViewProps> = ({
   task,
   isSelected,
   shape,
@@ -129,71 +125,82 @@ const TaskCardNormal: React.FC<TaskCardViewProps> = ({
   isOverdue,
   dragControls,
   isSingleTaskFocus = false,
-}) => (
-  <>
-    {dragControls && (
-      <div
-        className={styles.dragHandle}
-        aria-label="タスクをならびかえる"
-        onPointerDown={(e) => {
-          dragControls.start(e);
-        }}
-        style={{ cursor: 'grab' }}
-      >
-        <GripVertical size={20} />
-      </div>
-    )}
-    {!isDone && (
-      <div className={styles.taskImageContainer}>
-        {task.icon ? (
-          <motion.img
-            src={task.icon}
-            alt={task.name}
-            className={styles.taskImage}
-            animate={
-              isSelected && task.elapsedSeconds < task.plannedSeconds
-                ? {
-                    scale: [1, 1.05, 1],
-                    rotate: [0, -2, 2, 0],
-                  }
-                : {}
-            }
-            transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-          />
-        ) : (
-          <div className={styles.placeholderIcon}>
-            <Camera size={48} color="var(--color-primary)" opacity={0.3} />
+}) => {
+  const { ref: timerSlotRef, size: timerSlotSize } = useElementSize<HTMLDivElement>();
+  const timerMaxDiameter =
+    timerSlotSize.width > 0 && timerSlotSize.height > 0
+      ? Math.min(timerSlotSize.width, timerSlotSize.height)
+      : undefined;
+
+  return (
+    <>
+      {dragControls && (
+        <div
+          className={styles.dragHandle}
+          aria-label="タスクをならびかえる"
+          onPointerDown={(e) => {
+            dragControls.start(e);
+          }}
+          style={{ cursor: 'grab' }}
+        >
+          <GripVertical size={20} />
+        </div>
+      )}
+      {!isDone && (
+        <div className={styles.taskImageContainer}>
+          {task.icon ? (
+            <motion.img
+              src={task.icon}
+              alt={task.name}
+              className={styles.taskImage}
+              animate={
+                isSelected && task.elapsedSeconds < task.plannedSeconds
+                  ? {
+                      scale: [1, 1.05, 1],
+                      rotate: [0, -2, 2, 0],
+                    }
+                  : {}
+              }
+              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+            />
+          ) : (
+            <div className={styles.placeholderIcon}>
+              <Camera size={48} color="var(--color-primary)" opacity={0.3} />
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className={styles.timerSlot} ref={timerSlotRef}>
+        {isDone ? (
+          <div className={`${styles.taskIcon} ${styles.isCompleted}`}>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', damping: 10 }}
+            >
+              <Check size={48} strokeWidth={4} />
+            </motion.div>
           </div>
+        ) : (
+          <DonutTimer
+            totalSeconds={task.plannedSeconds}
+            elapsedSeconds={task.elapsedSeconds}
+            isOverdue={isOverdue}
+            size={isSingleTaskFocus ? 170 : 100}
+            strokeWidth={isSingleTaskFocus ? 30 : 20}
+            shape={shape}
+            color={color}
+            maxDiameterPx={timerMaxDiameter}
+          />
         )}
       </div>
-    )}
 
-    {isDone ? (
-      <div className={`${styles.taskIcon} ${styles.isCompleted}`}>
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', damping: 10 }}
-        >
-          <Check size={48} strokeWidth={4} />
-        </motion.div>
-      </div>
-    ) : (
-      <DonutTimer
-        totalSeconds={task.plannedSeconds}
-        elapsedSeconds={task.elapsedSeconds}
-        isOverdue={isOverdue}
-        size={isSingleTaskFocus ? 170 : 100}
-        strokeWidth={isSingleTaskFocus ? 30 : 20}
-        shape={shape}
-        color={color}
-      />
-    )}
-
-    <div className={styles.taskName}>{task.name}</div>
-    <div className={styles.taskTime}>{isDone ? getStatusText(task) : formatTime(remaining)}</div>
-  </>
-);
+      <div className={styles.taskName}>{task.name}</div>
+      <div className={styles.taskTime}>{isDone ? getStatusText(task) : formatTime(remaining)}</div>
+    </>
+  );
+};
 /* eslint-enable complexity */
 
 /**
@@ -376,7 +383,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {completeButtonText}
         </button>
       )}
-      {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardNormal {...viewProps} />}
+      {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardBody {...viewProps} />}
     </motion.div>
   );
 };

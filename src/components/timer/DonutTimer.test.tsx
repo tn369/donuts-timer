@@ -41,4 +41,10 @@ describe('DonutTimer', () => {
     const overdueElement = container.querySelector('[class*="overdue"]');
     expect(overdueElement).toBeInTheDocument();
   });
+
+  it('should clamp chunk size to maxDiameterPx when provided', () => {
+    render(<DonutTimer totalSeconds={300} elapsedSeconds={0} size={120} maxDiameterPx={70} />);
+    const chunk = screen.getByTestId('timer-chunk');
+    expect(Number.parseFloat(chunk.style.width)).toBeLessThanOrEqual(58);
+  });
 });

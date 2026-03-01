@@ -1,7 +1,12 @@
 import React from 'react';
 
 import type { TimerColor, TimerShape } from '../../types';
-import { calculateChunkRemaining, calculateChunks, getBaseMetrics } from '../../utils/timerLogic';
+import {
+  calculateChunkRemaining,
+  calculateChunks,
+  fitDonutMetricsToBounds,
+  getBaseMetrics,
+} from '../../utils/timerLogic';
 import styles from './DonutTimer.module.css';
 import { TimerChunk } from './TimerChunk';
 
@@ -16,6 +21,7 @@ interface DonutTimerProps {
   isOverdue?: boolean; // 時間超過しているかどうか
   shape?: TimerShape; // 形状
   color?: TimerColor; // 色
+  maxDiameterPx?: number; // 利用可能な最大直径
   children?: React.ReactNode; // 中央に表示する要素
 }
 
@@ -31,6 +37,7 @@ const MAX_DISPLAY_CHUNKS = 10; // 最大表示チャンク数
  * @param root0.isOverdue 時間超過しているかどうか
  * @param root0.shape タイマーの形状
  * @param root0.color タイマーの色
+ * @param root0.maxDiameterPx 利用可能な最大直径
  * @param root0.children 中央に表示する子要素
  * @returns レンダリングされるJSX要素
  */
@@ -42,6 +49,7 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
   isOverdue = false,
   shape = 'circle',
   color = 'blue',
+  maxDiameterPx,
   children,
 }) => {
   const chunks = calculateChunks(totalSeconds);
@@ -64,9 +72,14 @@ export const DonutTimer: React.FC<DonutTimerProps> = ({
         const currentRemaining = displayChunkRemaining[i];
         const CHUNK_MAX = 300; // 5分 = 300秒
         const baseRadiusMultiplier = Math.sqrt(capacity / CHUNK_MAX);
-        const currentSize = baseSize * baseRadiusMultiplier;
+        const desiredSize = baseSize * baseRadiusMultiplier;
         const shapeStrokeMultiplier = shape === 'star' ? 0.8 : 1.0;
-        const currentStrokeWidth = baseStrokeWidth * baseRadiusMultiplier * shapeStrokeMultiplier;
+        const desiredStrokeWidth = baseStrokeWidth * baseRadiusMultiplier * shapeStrokeMultiplier;
+        const { size: currentSize, stroke: currentStrokeWidth } = fitDonutMetricsToBounds(
+          desiredSize,
+          desiredStrokeWidth,
+          maxDiameterPx
+        );
 
         return (
           <TimerChunk
