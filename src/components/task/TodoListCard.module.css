@@ -61,12 +61,6 @@
   color: var(--color-text-main);
 }
 
-.listSubtitle {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-}
-
 .listCardActions {
   display: flex;
   gap: 10px;
@@ -186,42 +180,6 @@
   min-height: 96px;
 }
 
-.taskSummaryList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.taskSummaryItem {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  padding: 4px 10px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-main);
-  background: rgb(0 0 0 / 4%);
-  border-radius: 999px;
-}
-
-.taskSummaryName {
-  font-weight: 700;
-}
-
-.taskSummaryTime {
-  color: var(--color-text-muted);
-}
-
-.rewardBadge {
-  padding: 2px 8px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--color-primary);
-  background: rgb(16 185 129 / 12%);
-  border-radius: 999px;
-}
-
 .simpleTaskPreview {
   display: flex;
   gap: 10px;
@@ -234,6 +192,12 @@
   gap: 8px;
   align-items: center;
   width: 100%;
+}
+
+.simpleTaskItem {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
 }
 
 .simpleTaskImageFrame {
@@ -258,26 +222,13 @@
   color: var(--color-text-muted);
 }
 
-.moreTasksBadge {
-  padding: 4px 10px;
+.simpleTaskMinutes {
   font-size: 14px;
-  font-weight: 800;
-  color: var(--color-text-main);
-  background: rgb(0 0 0 / 6%);
-  border-radius: 999px;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 
-.compact .listSubtitle {
-  margin-bottom: 8px;
-  font-size: 16px;
-}
-
-.compact .taskSummaryItem {
-  padding: 3px 8px;
-  font-size: 14px;
-}
-
-.compact .rewardBadge {
+.compact .simpleTaskMinutes {
   font-size: 12px;
 }
 

@@ -11,7 +11,6 @@ vi.mock('../../storage', () => ({
   saveExecutionState: vi.fn(),
   clearExecutionState: vi.fn(),
   loadUiSettings: vi.fn(() => ({
-    simpleListView: false,
     countdownWarningEnabled: true,
   })),
 }));

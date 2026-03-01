@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useWindowSize } from '../../hooks/useWindowSize';
-import { loadUiSettings, saveUiSettings } from '../../storage';
 import type { TodoList } from '../../types';
 import { ConfirmModal } from '../modals/ConfirmModal';
 import { TodoListCard } from './TodoListCard';
@@ -34,7 +33,6 @@ interface TodoListSelectionItemProps {
   list: TodoList;
   selectedIds: string[];
   isSiblingModeSelect: boolean;
-  isSimpleView: boolean;
   onCopy: (id: string) => void;
   onEdit: (id: string) => void;
   onDeleteRequest: (id: string) => void;
@@ -42,32 +40,12 @@ interface TodoListSelectionItemProps {
   isCompact: boolean;
 }
 
-interface SimpleViewToggleButtonProps {
-  isSimpleView: boolean;
-  onToggle: () => void;
-}
-
-const SimpleViewToggleButton: React.FC<SimpleViewToggleButtonProps> = ({
-  isSimpleView,
-  onToggle,
-}) => (
-  <button
-    className={`${styles.simpleToggleBtn} ${isSimpleView ? styles.active : ''}`}
-    aria-label="かんたん ひょうじ"
-    aria-pressed={isSimpleView}
-    onClick={onToggle}
-  >
-    かんたん ひょうじ
-  </button>
-);
-
 /**
  * リスト選択画面の個別アイテムコンポーネント
  * @param root0 プロパティオブジェクト
  * @param root0.list 表示するリスト
  * @param root0.selectedIds 選択中のリストIDリスト
  * @param root0.isSiblingModeSelect 2人モード選択中かどうか
- * @param root0.isSimpleView シンプル表示かどうか
  * @param root0.onCopy コピー時のコールバック
  * @param root0.onEdit 編集時のコールバック
  * @param root0.onDeleteRequest 削除リクエスト時のコールバック
@@ -79,7 +57,6 @@ const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
   list,
   selectedIds,
   isSiblingModeSelect,
-  isSimpleView,
   onCopy,
   onEdit,
   onDeleteRequest,
@@ -110,7 +87,6 @@ const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
           onDeleteRequest(list.id);
         }}
         isCompact={isCompact}
-        isSimpleView={isSimpleView}
         dragControls={!isSiblingModeSelect ? dragControls : undefined}
       />
     </Reorder.Item>
@@ -130,8 +106,6 @@ const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
  * @param root0.onReorder リストの順番が変更された時のコールバック
  * @returns レンダリングされるJSX要素
  */
-/* eslint-disable complexity */
-// シンプル表示とふたりモードのUI分岐が多いため、このコンポーネントのみ複雑度制約を緩和する
 export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   lists,
   onSelect,
@@ -145,7 +119,6 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [deleteConfirmListId, setDeleteConfirmListId] = useState<string | null>(null);
-  const [isSimpleView, setIsSimpleView] = useState<boolean>(() => loadUiSettings().simpleListView);
   const { height } = useWindowSize();
   const isCompact = height > 0 && height < 600;
 
@@ -156,12 +129,6 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
       setSelectedIds([]);
     }
   }, [isCompact, isSiblingModeSelect]);
-
-  const toggleSimpleView = () => {
-    const nextValue = !isSimpleView;
-    setIsSimpleView(nextValue);
-    saveUiSettings({ ...loadUiSettings(), simpleListView: nextValue });
-  };
 
   /**
    * カードがクリックされた際のハンドラ
@@ -194,7 +161,6 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
 
         {!isCompact && (
           <div className={styles.headerControls}>
-            <SimpleViewToggleButton isSimpleView={isSimpleView} onToggle={toggleSimpleView} />
             <div className={styles.modeToggleContainer}>
               <button
                 className={`${styles.modeToggleBtn} ${!isSiblingModeSelect ? styles.active : ''}`}
@@ -217,10 +183,6 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
               </button>
             </div>
           </div>
-        )}
-
-        {isCompact && (
-          <SimpleViewToggleButton isSimpleView={isSimpleView} onToggle={toggleSimpleView} />
         )}
       </div>
 
@@ -248,7 +210,6 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
             list={list}
             selectedIds={selectedIds}
             isSiblingModeSelect={isSiblingModeSelect}
-            isSimpleView={isSimpleView}
             onCopy={onCopy}
             onEdit={onEdit}
             onDeleteRequest={setDeleteConfirmListId}
@@ -299,4 +260,3 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
     </div>
   );
 };
-/* eslint-enable complexity */

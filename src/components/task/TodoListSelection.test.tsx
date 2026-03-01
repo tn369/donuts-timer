@@ -7,19 +7,9 @@ import { TodoListSelection } from './TodoListSelection';
 
 // useWindowSize のモック
 const mockUseWindowSize = vi.fn<() => { width: number; height: number }>();
-const mockLoadUiSettings =
-  vi.fn<() => { simpleListView: boolean; countdownWarningEnabled: boolean }>();
-const mockSaveUiSettings =
-  vi.fn<(settings: { simpleListView: boolean; countdownWarningEnabled: boolean }) => void>();
 
 vi.mock('../../hooks/useWindowSize', () => ({
   useWindowSize: () => mockUseWindowSize(),
-}));
-vi.mock('../../storage', () => ({
-  loadUiSettings: () => mockLoadUiSettings(),
-  saveUiSettings: (settings: { simpleListView: boolean; countdownWarningEnabled: boolean }) => {
-    mockSaveUiSettings(settings);
-  },
 }));
 
 const mockLists: TodoList[] = [
@@ -61,8 +51,7 @@ describe('TodoListSelection', () => {
   };
 
   beforeEach(() => {
-    mockLoadUiSettings.mockReturnValue({ simpleListView: false, countdownWarningEnabled: true });
-    mockSaveUiSettings.mockReset();
+    vi.clearAllMocks();
   });
 
   it('リストが正しく表示されること', () => {
@@ -187,24 +176,10 @@ describe('TodoListSelection', () => {
     expect(screen.getAllByLabelText(/リストをえらぶ/)).toHaveLength(3);
   });
 
-  it('保存済み設定がONのとき、シンプル表示トグルがONで表示されること', () => {
-    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
-    mockLoadUiSettings.mockReturnValue({ simpleListView: true, countdownWarningEnabled: true });
-    render(<TodoListSelection {...defaultProps} />);
-
-    const simpleToggle = screen.getByRole('button', { name: /かんたん ひょうじ/ });
-    expect(simpleToggle.getAttribute('aria-pressed')).toBe('true');
-  });
-
-  it('シンプル表示トグルを押すと、設定が保存されること', () => {
+  it('シンプル表示トグルが表示されないこと', () => {
     mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
     render(<TodoListSelection {...defaultProps} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /かんたん ひょうじ/ }));
-
-    expect(mockSaveUiSettings).toHaveBeenCalledWith({
-      simpleListView: true,
-      countdownWarningEnabled: true,
-    });
+    expect(screen.queryByRole('button', { name: /かんたん ひょうじ/ })).not.toBeInTheDocument();
   });
 });

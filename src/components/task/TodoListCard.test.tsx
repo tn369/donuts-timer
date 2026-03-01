@@ -47,23 +47,17 @@ describe('TodoListCard', () => {
     onDeleteRequest: vi.fn(),
   };
 
-  it('リストのタイトルと各タスクの内容が正しく表示されること', () => {
+  it('リストのタイトルと各タスクの分表示が正しく表示されること', () => {
     render(<TodoListCard {...defaultProps} />);
     expect(screen.getByText('朝の準備')).toBeInTheDocument();
-    expect(screen.getByText('顔を洗う')).toBeInTheDocument();
     expect(screen.getByText('5ふん')).toBeInTheDocument();
-    expect(screen.getByText('あそぶ')).toBeInTheDocument();
-    expect(screen.getByText('ごほうび')).toBeInTheDocument();
     expect(screen.getByText('15ふん')).toBeInTheDocument();
   });
 
-  it('ごほうびタスクは「ごほうび」バッジが内容より先に表示されること', () => {
+  it('シンプル表示としてタスク画像が表示されること', () => {
     render(<TodoListCard {...defaultProps} />);
-    const rewardBadge = screen.getByText('ごほうび');
-    const rewardContent = screen.getByText('あそぶ');
-    expect(
-      rewardBadge.compareDocumentPosition(rewardContent) & Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy();
+    expect(screen.getByAltText('顔を洗う')).toBeInTheDocument();
+    expect(screen.getByAltText('あそぶ')).toBeInTheDocument();
   });
 
   it('旧タスク数テキストが表示されないこと', () => {
@@ -134,7 +128,7 @@ describe('TodoListCard', () => {
     expect(card?.className).toContain('compact');
   });
 
-  it('isSimpleView が true のとき、表示可能な画像をすべて表示すること', () => {
+  it('表示可能な画像をすべて表示すること', () => {
     const listWithMoreTasks: TodoList = {
       ...mockList,
       tasks: [
@@ -152,7 +146,7 @@ describe('TodoListCard', () => {
       ],
     };
 
-    render(<TodoListCard {...defaultProps} list={listWithMoreTasks} isSimpleView={true} />);
+    render(<TodoListCard {...defaultProps} list={listWithMoreTasks} />);
 
     expect(screen.getByAltText('顔を洗う')).toBeInTheDocument();
     expect(screen.getByAltText('あそぶ')).toBeInTheDocument();
@@ -160,11 +154,10 @@ describe('TodoListCard', () => {
     expect(screen.queryByText('+1')).not.toBeInTheDocument();
   });
 
-  it('isSimpleView が true のとき、タスク名と時間は表示されないこと', () => {
-    render(<TodoListCard {...defaultProps} isSimpleView={true} />);
+  it('タスク名テキストやごほうびバッジが表示されないこと', () => {
+    render(<TodoListCard {...defaultProps} />);
 
     expect(screen.queryByText('顔を洗う')).not.toBeInTheDocument();
-    expect(screen.queryByText('5ふん')).not.toBeInTheDocument();
     expect(screen.queryByText('ごほうび')).not.toBeInTheDocument();
   });
 });

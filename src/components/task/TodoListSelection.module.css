@@ -102,24 +102,6 @@
   border-radius: 24px;
 }
 
-.simpleToggleBtn {
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  background: rgb(0 0 0 / 4%);
-  border: none;
-  border-radius: 20px;
-  transition: var(--transition-smooth);
-}
-
-.simpleToggleBtn.active {
-  color: var(--color-primary);
-  background: white;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
-}
-
 .modeToggleBtn {
   display: flex;
   gap: 10px;
@@ -213,9 +195,4 @@
 .compact .selectionInstruction {
   margin-top: 8px;
   font-size: 18px;
-}
-
-.compact .simpleToggleBtn {
-  padding: 8px 14px;
-  font-size: 14px;
 }

@@ -11,6 +11,7 @@
 | **やること**         | Todo, `Task(kind='todo')`               | 子どもが順番に進める通常タスク。予定時間を持つ。                                   | `src/types.ts`, `src/domain/...` |
 | **ごほうび**         | Reward, `Task(kind='reward')`           | リスト内で最後に配置する特別タスク。やることが早く終わると、実行可能時間が増える。 | `src/types.ts`, `src/domain/...` |
 | **どーなつタイマー** | Donut Timer, `TimerSettings`            | 残り時間を形と色つきのゲージで表現する視覚タイマー。                               | `src/components/timer/*`         |
+| **シンプル表示**     | Simple List View                        | やることリストをアイコンと分表示で確認する、リスト選択画面の表示方式。             | `src/components/task/*`          |
 
 ## 実行モード
 

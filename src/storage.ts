@@ -9,7 +9,6 @@ const EXECUTION_STATE_KEY = 'task-timer-execution-state';
 const UI_SETTINGS_KEY = 'task-timer-ui-settings';
 
 export interface UiSettings {
-  simpleListView: boolean;
   countdownWarningEnabled: boolean;
 }
 
@@ -217,17 +216,16 @@ export const loadUiSettings = (): UiSettings => {
   try {
     const stored = localStorage.getItem(UI_SETTINGS_KEY);
     if (!stored) {
-      return { simpleListView: false, countdownWarningEnabled: true };
+      return { countdownWarningEnabled: true };
     }
 
     const parsed = JSON.parse(stored) as Partial<UiSettings>;
     return {
-      simpleListView: parsed.simpleListView ?? false,
       countdownWarningEnabled: parsed.countdownWarningEnabled ?? true,
     };
   } catch (error) {
     console.error('Failed to load ui settings:', error);
-    return { simpleListView: false, countdownWarningEnabled: true };
+    return { countdownWarningEnabled: true };
   }
 };
 
