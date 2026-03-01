@@ -65,6 +65,25 @@ describe('TaskCard', () => {
     expect(onSelect).toHaveBeenCalledWith('task-1');
   });
 
+  it('実行中カードの完了ボタンはタスク情報の後ろに描画される', () => {
+    const { container } = render(
+      <TaskCard
+        task={{ ...baseTask, status: 'running' }}
+        isSelected={true}
+        isSelectable={true}
+        onSelect={vi.fn()}
+      />
+    );
+
+    const taskTime = container.querySelector('[class*="taskTime"]');
+    const completeButton = screen.getByRole('button', { name: /できたにする/ });
+
+    expect(taskTime).toBeTruthy();
+    expect(completeButton.compareDocumentPosition(taskTime as Node)).toBe(
+      Node.DOCUMENT_POSITION_PRECEDING
+    );
+  });
+
   it('ごほうびタスク実行中は「おわり」ボタンを表示する', () => {
     render(
       <TaskCard

@@ -370,6 +370,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {getRewardGainMessage(rewardGainNotice.deltaSeconds)}
         </motion.div>
       )}
+      {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardBody {...viewProps} />}
       {shouldShowCompleteButton && (
         <button
           type="button"
@@ -383,7 +384,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {completeButtonText}
         </button>
       )}
-      {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardBody {...viewProps} />}
     </motion.div>
   );
 };
