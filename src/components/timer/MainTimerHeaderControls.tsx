@@ -9,6 +9,7 @@ import type { TimerColor, TimerShape, TodoList } from '../../types';
 import { ShapeIcon } from '../common/ShapeIcon';
 import { Controls } from './Controls';
 import styles from './MainTimerView.module.css';
+import { TimerAppearancePopup } from './TimerAppearancePopup';
 
 /**
  * タイマーのカラーコード定義
@@ -25,30 +26,6 @@ const TIMER_COLORS: Record<string, string> = {
   cyan: '#06b6d4',
   lime: '#84cc16',
 };
-
-const SHAPES: (
-  | 'circle'
-  | 'square'
-  | 'triangle'
-  | 'diamond'
-  | 'pentagon'
-  | 'hexagon'
-  | 'star'
-  | 'heart'
-)[] = ['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon', 'star', 'heart'];
-
-const COLORS: (
-  | 'red'
-  | 'blue'
-  | 'yellow'
-  | 'green'
-  | 'pink'
-  | 'purple'
-  | 'orange'
-  | 'indigo'
-  | 'cyan'
-  | 'lime'
-)[] = ['red', 'blue', 'yellow', 'green', 'pink', 'purple', 'orange', 'indigo', 'cyan', 'lime'];
 
 /**
  * MainTimerHeaderControlsのプロパティ
@@ -93,6 +70,8 @@ interface HeaderControlsProps {
  * @param root0.isCompact コンパクト表示かどうか
  * @returns レンダリングされるJSX要素
  */
+// ヘッダー操作の分岐が集中するため、このコンポーネントのみ複雑度を緩和する
+/* eslint-disable complexity */
 export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   showSelectionButton,
   onBackToSelection,
@@ -112,23 +91,44 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
   isCompact = false,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const handleNextShape = useCallback(() => {
-    const currentShapeIndex = SHAPES.indexOf(timerSettings.shape);
-    const nextShape = SHAPES[(currentShapeIndex + 1) % SHAPES.length];
-    setTimerSettings({ ...timerSettings, shape: nextShape });
-  }, [setTimerSettings, timerSettings]);
-
-  const handleNextColor = useCallback(() => {
-    const currentColorIndex = COLORS.indexOf(timerSettings.color);
-    const nextColor = COLORS[(currentColorIndex + 1) % COLORS.length];
-    setTimerSettings({ ...timerSettings, color: nextColor });
-  }, [setTimerSettings, timerSettings]);
+  const [openAppearancePopup, setOpenAppearancePopup] = useState<'shape' | 'color' | null>(null);
 
   const handleEditSettings = useCallback(() => {
     if (activeList) {
       onEditSettings(activeList.id);
     }
   }, [activeList, onEditSettings]);
+
+  const toggleShapePopup = useCallback(() => {
+    setIsMenuOpen(false);
+    setOpenAppearancePopup((prev) => (prev === 'shape' ? null : 'shape'));
+  }, []);
+
+  const toggleColorPopup = useCallback(() => {
+    setIsMenuOpen(false);
+    setOpenAppearancePopup((prev) => (prev === 'color' ? null : 'color'));
+  }, []);
+
+  const toggleMenu = useCallback(() => {
+    setOpenAppearancePopup(null);
+    setIsMenuOpen((prev) => !prev);
+  }, []);
+
+  const handleSelectShape = useCallback(
+    (shape: TimerShape) => {
+      setTimerSettings({ ...timerSettings, shape });
+      setOpenAppearancePopup(null);
+    },
+    [setTimerSettings, timerSettings]
+  );
+
+  const handleSelectColor = useCallback(
+    (color: TimerColor) => {
+      setTimerSettings({ ...timerSettings, color });
+      setOpenAppearancePopup(null);
+    },
+    [setTimerSettings, timerSettings]
+  );
 
   const renderDebugButton = () => {
     if (!import.meta.env.DEV) return null;
@@ -181,8 +181,10 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         <motion.button
           whileHover={{ scale: 1.05, translateY: -2 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleNextShape}
-          className={styles.settingsButton}
+          onClick={toggleShapePopup}
+          className={`${styles.settingsButton} ${
+            openAppearancePopup === 'shape' ? styles.active : ''
+          }`}
           aria-label="タイマーのかたちをかえる"
         >
           <ShapeIcon shape={timerSettings.shape} size={isSiblingMode || isCompact ? 20 : 28} />
@@ -190,8 +192,10 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         <motion.button
           whileHover={{ scale: 1.05, translateY: -2 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleNextColor}
-          className={styles.settingsButton}
+          onClick={toggleColorPopup}
+          className={`${styles.settingsButton} ${
+            openAppearancePopup === 'color' ? styles.active : ''
+          }`}
           aria-label="タイマーのいろをかえる"
         >
           <Palette
@@ -203,6 +207,7 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
         <HeaderMenu
           isMenuOpen={isMenuOpen}
           setIsMenuOpen={setIsMenuOpen}
+          toggleMenu={toggleMenu}
           isSiblingMode={isSiblingMode}
           onEnterSiblingMode={onEnterSiblingMode}
           onExitSiblingMode={onExitSiblingMode}
@@ -211,9 +216,22 @@ export const MainTimerHeaderControls: React.FC<HeaderControlsProps> = ({
           isCompact={isCompact}
         />
       </div>
+      <TimerAppearancePopup
+        show={openAppearancePopup !== null}
+        kind={openAppearancePopup ?? 'shape'}
+        currentShape={timerSettings.shape}
+        currentColor={timerSettings.color}
+        isCompact={isSiblingMode || isCompact}
+        onClose={() => {
+          setOpenAppearancePopup(null);
+        }}
+        onSelectShape={handleSelectShape}
+        onSelectColor={handleSelectColor}
+      />
     </div>
   );
 };
+/* eslint-enable complexity */
 
 /**
  * ひとり/ふたりモード切り替えボタンのラッパーコンポーネント
@@ -317,6 +335,7 @@ const ModeToggleButton: React.FC<ModeToggleButtonProps> = ({
 interface HeaderMenuProps {
   isMenuOpen: boolean;
   setIsMenuOpen: (open: boolean) => void;
+  toggleMenu: () => void;
   isSiblingMode: boolean;
   onEnterSiblingMode?: () => void;
   onExitSiblingMode?: () => void;
@@ -330,6 +349,7 @@ interface HeaderMenuProps {
  * @param root0 プロパティオブジェクト
  * @param root0.isMenuOpen メニューが開いているかどうか
  * @param root0.setIsMenuOpen メニューの開閉制御
+ * @param root0.toggleMenu メニューボタン押下時の開閉ハンドラ
  * @param root0.isSiblingMode 2人モードかどうか
  * @param root0.onEnterSiblingMode 2人モードへ切り替えるコールバック
  * @param root0.onExitSiblingMode 1人モードへ切り替えるコールバック
@@ -341,6 +361,7 @@ interface HeaderMenuProps {
 const HeaderMenu: React.FC<HeaderMenuProps> = ({
   isMenuOpen,
   setIsMenuOpen,
+  toggleMenu,
   isSiblingMode,
   onEnterSiblingMode,
   onExitSiblingMode,
@@ -353,9 +374,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({
       <motion.button
         whileHover={{ scale: 1.05, translateY: -2 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          setIsMenuOpen(!isMenuOpen);
-        }}
+        onClick={toggleMenu}
         className={`${styles.settingsButton} ${isMenuOpen ? styles.active : ''}`}
         aria-label="メニューをひらく"
       >

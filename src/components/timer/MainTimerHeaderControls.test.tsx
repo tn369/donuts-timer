@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TimerColor, TimerShape, TodoList } from '../../types';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
@@ -29,6 +29,10 @@ describe('MainTimerHeaderControls', () => {
     onExitSiblingMode: vi.fn(),
   };
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('レンダリングされること', () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
     expect(screen.getByLabelText(/リストをえらびなおす/)).toBeInTheDocument();
@@ -47,16 +51,82 @@ describe('MainTimerHeaderControls', () => {
     expect(defaultProps.onBackToSelection).toHaveBeenCalled();
   });
 
-  it('形変更ボタンをクリックすると setTimerSettings が呼ばれること', () => {
+  it('形変更ボタンをクリックすると setTimerSettings が呼ばれること', async () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
     fireEvent.click(screen.getByLabelText(/タイマーのかたちをかえる/));
-    expect(defaultProps.setTimerSettings).toHaveBeenCalled();
+    expect(screen.getByRole('dialog', { name: /タイマーのかたちをえらぶ/ })).toBeInTheDocument();
+    expect(defaultProps.setTimerSettings).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByLabelText(/かたち: しかく/));
+    expect(defaultProps.setTimerSettings).toHaveBeenCalledWith({ shape: 'square', color: 'blue' });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: /タイマーのかたちをえらぶ/ })
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it('色変更ボタンをクリックすると setTimerSettings が呼ばれること', () => {
+  it('色変更ボタンをクリックすると setTimerSettings が呼ばれること', async () => {
     render(<MainTimerHeaderControls {...defaultProps} />);
     fireEvent.click(screen.getByLabelText(/タイマーのいろをかえる/));
-    expect(defaultProps.setTimerSettings).toHaveBeenCalled();
+    expect(screen.getByRole('dialog', { name: /タイマーのいろをえらぶ/ })).toBeInTheDocument();
+    expect(defaultProps.setTimerSettings).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByLabelText(/いろ: あか/));
+    expect(defaultProps.setTimerSettings).toHaveBeenCalledWith({ shape: 'circle', color: 'red' });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: /タイマーのいろをえらぶ/ })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('表示中のかたちポップアップはメニューを開くと閉じること', async () => {
+    render(<MainTimerHeaderControls {...defaultProps} />);
+
+    fireEvent.click(screen.getByLabelText(/タイマーのかたちをかえる/));
+    expect(screen.getByRole('dialog', { name: /タイマーのかたちをえらぶ/ })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText(/メニューをひらく/));
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: /タイマーのかたちをえらぶ/ })
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByLabelText(/リセットする/)).toBeInTheDocument();
+  });
+
+  it('ポップアップの背景をクリックすると閉じること', async () => {
+    const { container } = render(<MainTimerHeaderControls {...defaultProps} />);
+    fireEvent.click(screen.getByLabelText(/タイマーのいろをかえる/));
+    expect(screen.getByRole('dialog', { name: /タイマーのいろをえらぶ/ })).toBeInTheDocument();
+
+    const backdrop =
+      container.ownerDocument.body.querySelector('[class*="popupBackdrop"]') ??
+      container.querySelector('[class*="popupBackdrop"]');
+    expect(backdrop).toBeTruthy();
+    if (backdrop) {
+      fireEvent.click(backdrop);
+    }
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: /タイマーのいろをえらぶ/ })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('Escapeキーでポップアップが閉じること', async () => {
+    render(<MainTimerHeaderControls {...defaultProps} />);
+    fireEvent.click(screen.getByLabelText(/タイマーのかたちをかえる/));
+    expect(screen.getByRole('dialog', { name: /タイマーのかたちをえらぶ/ })).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: /タイマーのかたちをえらぶ/ })
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('メニューを開いてふたりモード切り替えボタンをクリックすると onEnterSiblingMode が呼ばれること', () => {
