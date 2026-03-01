@@ -268,8 +268,8 @@ const formatRewardGainText = (seconds: number): string => {
   return `${secs}びょう`;
 };
 
-const getRewardGainMessage = (rewardTaskName: string, deltaSeconds: number): string => {
-  return `${rewardTaskName}の じかんが ${formatRewardGainText(deltaSeconds)} ふえたよ！`;
+const getRewardGainMessage = (deltaSeconds: number): string => {
+  return `${formatRewardGainText(deltaSeconds)} ふえたよ！`;
 };
 
 /**
@@ -367,7 +367,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           transition={{ duration: 0.25, ease: 'easeOut' }}
           aria-live="polite"
         >
-          {getRewardGainMessage(task.name, rewardGainNotice.deltaSeconds)}
+          {getRewardGainMessage(rewardGainNotice.deltaSeconds)}
         </motion.div>
       )}
       {shouldShowCompleteButton && (

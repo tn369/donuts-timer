@@ -213,13 +213,13 @@ describe('MainTimerView Integration', () => {
         screen.getByRole('button', { name: /はみがきをできたにする/ }).click();
       });
 
-      expect(screen.getByText(/あそぶの じかんが 10びょう ふえたよ！/)).toBeInTheDocument();
+      expect(screen.getByText(/10びょう ふえたよ！/)).toBeInTheDocument();
 
       act(() => {
         vi.advanceTimersByTime(2500);
       });
 
-      expect(screen.queryByText(/あそぶの じかんが 10びょう ふえたよ！/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/10びょう ふえたよ！/)).not.toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
