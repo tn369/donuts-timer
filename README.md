@@ -30,6 +30,8 @@
 ## 📚 ドキュメント
 
 - [ペルソナ分析](docs/persona.md)
+- [アーキテクチャ設計](docs/architecture.md)
+- [ADR 一覧](docs/decisions/README.md)
 - [ユビキタス言語定義](UBIQUITOUS_LANGUAGE.md)
 
 ## 📦 開発
