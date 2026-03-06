@@ -94,5 +94,18 @@ export default tseslint.config(
       },
     },
   },
+  {
+    files: ['src/components/task/**/*.tsx'],
+    rules: {
+      'max-lines': [
+        'error',
+        {
+          max: 400,
+          skipBlankLines: false,
+          skipComments: false,
+        },
+      ],
+    },
+  },
   prettierConfig
 );

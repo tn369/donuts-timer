@@ -58,6 +58,69 @@ describe('TodoListSettings', () => {
     );
   });
 
+  describe('リスト名の選択チップ', () => {
+    it('手入力後に別の名前を選ぶと確認ダイアログが表示されること', () => {
+      render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+      const titleInput = screen.getByPlaceholderText('なまえ');
+      fireEvent.change(titleInput, { target: { value: 'じぶんのなまえ' } });
+
+      fireEvent.click(screen.getByRole('button', { name: 'よる' }));
+
+      expect(screen.getByText(/いま いれた なまえが きえちゃうよ。/)).toBeInTheDocument();
+      expect(screen.getByText(/この なまえに かえても いい？/)).toBeInTheDocument();
+      expect(screen.getByDisplayValue('じぶんのなまえ')).toBeInTheDocument();
+    });
+
+    it('確認ダイアログで「この なまえに する」を押すと上書きされること', async () => {
+      render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+      const titleInput = screen.getByPlaceholderText('なまえ');
+      fireEvent.change(titleInput, { target: { value: 'じぶんのなまえ' } });
+      fireEvent.click(screen.getByRole('button', { name: 'よる' }));
+      fireEvent.click(screen.getByRole('button', { name: 'この なまえに する' }));
+
+      await waitFor(() => {
+        expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+      });
+      expect(screen.getByDisplayValue('よる')).toBeInTheDocument();
+    });
+
+    it('確認ダイアログで「そのままに する」を押すと手入力が保持されること', async () => {
+      render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+      const titleInput = screen.getByPlaceholderText('なまえ');
+      fireEvent.change(titleInput, { target: { value: 'じぶんのなまえ' } });
+      fireEvent.click(screen.getByRole('button', { name: 'よる' }));
+      fireEvent.click(screen.getByRole('button', { name: 'そのままに する' }));
+
+      await waitFor(() => {
+        expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+      });
+      expect(screen.getByDisplayValue('じぶんのなまえ')).toBeInTheDocument();
+    });
+
+    it('手入力がない場合は確認なしで名前が切り替わること', () => {
+      render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'よる' }));
+
+      expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+      expect(screen.getByDisplayValue('よる')).toBeInTheDocument();
+    });
+
+    it('手入力後でも同じ名前を選んだ場合は確認を出さないこと', () => {
+      render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+      const titleInput = screen.getByPlaceholderText('なまえ');
+      fireEvent.change(titleInput, { target: { value: 'よる' } });
+      fireEvent.click(screen.getByRole('button', { name: 'よる' }));
+
+      expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+      expect(screen.getByDisplayValue('よる')).toBeInTheDocument();
+    });
+  });
+
   describe('戻るボタンの確認ダイアログ', () => {
     it('変更がない場合、確認ダイアログを出さずにonBackを呼ぶこと', () => {
       const onBack = vi.fn();
