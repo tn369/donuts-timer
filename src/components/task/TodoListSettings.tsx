@@ -1,5 +1,5 @@
 /**
- * やることリストの詳細設定（名前、形状、色、タスク構成、目標時刻）を行うコンポーネント
+ * やることリストの詳細設定（名前、タスク構成、形状、色、目標時刻）を行うコンポーネント
  */
 import { ArrowLeft, Save } from 'lucide-react';
 import React, { useState } from 'react';
@@ -180,13 +180,6 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           onPresetConfirmRequest={handlePresetConfirmRequest}
         />
 
-        <TodoListAppearanceSection
-          shape={editedList.timerSettings?.shape}
-          color={editedList.timerSettings?.color}
-          onShapeChange={handleShapeChange}
-          onColorChange={handleColorChange}
-        />
-
         <TodoListTasksSection
           tasks={editedList.tasks}
           allExistingIcons={allExistingIcons}
@@ -195,6 +188,13 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
           onRewardSettingsChange={handleRewardSettingsChange}
           onReorderTasks={handleReorderTasks}
           onAddTask={addTask}
+        />
+
+        <TodoListAppearanceSection
+          shape={editedList.timerSettings?.shape}
+          color={editedList.timerSettings?.color}
+          onShapeChange={handleShapeChange}
+          onColorChange={handleColorChange}
         />
       </div>
 

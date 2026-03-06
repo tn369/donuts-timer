@@ -24,6 +24,23 @@ describe('TodoListSettings', () => {
     expect(screen.getByText('ほぞんする')).toBeInTheDocument();
   });
 
+  it('設定セクションが なまえ → やること → かたち → いろ の順で表示されること', () => {
+    render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
+
+    const nameHeading = screen.getByRole('heading', { name: 'リストのなまえ' });
+    const tasksHeading = screen.getByRole('heading', { name: 'やること の せってい' });
+    const shapeHeading = screen.getByRole('heading', { name: 'どーなつタイマー の かたち' });
+    const colorHeading = screen.getByRole('heading', { name: 'どーなつタイマー の いろ' });
+
+    const namePos = nameHeading.compareDocumentPosition(tasksHeading);
+    const tasksPos = tasksHeading.compareDocumentPosition(shapeHeading);
+    const shapePos = shapeHeading.compareDocumentPosition(colorHeading);
+
+    expect(namePos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(tasksPos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(shapePos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('タスクが追加できること', async () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
