@@ -77,17 +77,13 @@ export const TodoListSettingsDialogs: React.FC<TodoListSettingsDialogsProps> = (
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className={styles.confirmDialog}
               >
-                <div className={styles.confirmDialogMessage}>
-                  いま いれた なまえが きえちゃうよ。
-                  <br />
-                  この なまえに かえても いい？
-                </div>
+                <div className={styles.confirmDialogMessage}>なまえを かえても いい？</div>
                 <div className={styles.confirmDialogActions}>
                   <button
                     className={`${styles.confirmDialogBtn} ${styles.cancelBtn}`}
                     onClick={onClosePresetConfirm}
                   >
-                    そのままに する
+                    そのまま
                   </button>
                   <button
                     className={`${styles.confirmDialogBtn} ${styles.leaveBtn}`}
@@ -98,7 +94,7 @@ export const TodoListSettingsDialogs: React.FC<TodoListSettingsDialogsProps> = (
                       onClosePresetConfirm();
                     }}
                   >
-                    この なまえに する
+                    かえる
                   </button>
                 </div>
               </motion.div>

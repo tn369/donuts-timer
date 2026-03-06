@@ -67,35 +67,34 @@ describe('TodoListSettings', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'よる' }));
 
-      expect(screen.getByText(/いま いれた なまえが きえちゃうよ。/)).toBeInTheDocument();
-      expect(screen.getByText(/この なまえに かえても いい？/)).toBeInTheDocument();
+      expect(screen.getByText(/なまえを かえても いい？/)).toBeInTheDocument();
       expect(screen.getByDisplayValue('じぶんのなまえ')).toBeInTheDocument();
     });
 
-    it('確認ダイアログで「この なまえに する」を押すと上書きされること', async () => {
+    it('確認ダイアログで「かえる」を押すと上書きされること', async () => {
       render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
       const titleInput = screen.getByPlaceholderText('なまえ');
       fireEvent.change(titleInput, { target: { value: 'じぶんのなまえ' } });
       fireEvent.click(screen.getByRole('button', { name: 'よる' }));
-      fireEvent.click(screen.getByRole('button', { name: 'この なまえに する' }));
+      fireEvent.click(screen.getByRole('button', { name: 'かえる' }));
 
       await waitFor(() => {
-        expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/なまえを かえても いい？/)).not.toBeInTheDocument();
       });
       expect(screen.getByDisplayValue('よる')).toBeInTheDocument();
     });
 
-    it('確認ダイアログで「そのままに する」を押すと手入力が保持されること', async () => {
+    it('確認ダイアログで「そのまま」を押すと手入力が保持されること', async () => {
       render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
       const titleInput = screen.getByPlaceholderText('なまえ');
       fireEvent.change(titleInput, { target: { value: 'じぶんのなまえ' } });
       fireEvent.click(screen.getByRole('button', { name: 'よる' }));
-      fireEvent.click(screen.getByRole('button', { name: 'そのままに する' }));
+      fireEvent.click(screen.getByRole('button', { name: 'そのまま' }));
 
       await waitFor(() => {
-        expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/なまえを かえても いい？/)).not.toBeInTheDocument();
       });
       expect(screen.getByDisplayValue('じぶんのなまえ')).toBeInTheDocument();
     });
@@ -105,7 +104,7 @@ describe('TodoListSettings', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'よる' }));
 
-      expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/なまえを かえても いい？/)).not.toBeInTheDocument();
       expect(screen.getByDisplayValue('よる')).toBeInTheDocument();
     });
 
@@ -116,7 +115,7 @@ describe('TodoListSettings', () => {
       fireEvent.change(titleInput, { target: { value: 'よる' } });
       fireEvent.click(screen.getByRole('button', { name: 'よる' }));
 
-      expect(screen.queryByText(/いま いれた なまえが きえちゃうよ。/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/なまえを かえても いい？/)).not.toBeInTheDocument();
       expect(screen.getByDisplayValue('よる')).toBeInTheDocument();
     });
   });
