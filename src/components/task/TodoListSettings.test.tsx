@@ -33,7 +33,7 @@ describe('TodoListSettings', () => {
     });
 
     // 新しく追加されたタスクのデフォルト名が表示されていることを確認
-    expect(await screen.findByDisplayValue('新しいやること')).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('あたらしいやること')).toBeInTheDocument();
   });
 
   it('保存時にタイトルからサフィックスが除去されること', () => {

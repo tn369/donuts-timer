@@ -169,7 +169,7 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   const addTask = () => {
     const newTask: Task = {
       id: uuidv4(),
-      name: '新しいやること',
+      name: 'あたらしいやること',
       icon: '',
       plannedSeconds: 5 * 60,
       kind: 'todo',
