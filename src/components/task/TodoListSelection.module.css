@@ -1,4 +1,5 @@
 .selectionScreen {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -123,6 +124,49 @@
   box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
 }
 
+.parentGuideButton {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 2;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgb(15 118 110 / 92%);
+  cursor: pointer;
+  background: rgb(255 255 255 / 82%);
+  border: 1px solid rgb(255 255 255 / 72%);
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
+  backdrop-filter: blur(12px);
+  transition: var(--transition-smooth);
+}
+
+.parentGuideButton:hover {
+  box-shadow: 0 14px 28px rgb(15 23 42 / 14%);
+  transform: translateY(-1px);
+}
+
+.parentGuideLabel {
+  letter-spacing: 0.01em;
+}
+
+.parentGuideButtonCompact {
+  top: 12px;
+  right: 12px;
+  padding: 10px 12px;
+}
+
+.parentGuideButtonCompact .parentGuideLabel {
+  display: none;
+}
+
 .selectionInstruction {
   margin-top: 16px;
   font-size: 22px;
@@ -195,4 +239,9 @@
 .compact .selectionInstruction {
   margin-top: 8px;
   font-size: 18px;
+}
+
+.compact .parentGuideButton {
+  top: 10px;
+  right: 10px;
 }

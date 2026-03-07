@@ -68,4 +68,15 @@ describe('useAppScreen', () => {
     expect(result.current.editingListId).toBeNull();
     expect(storage.saveActiveListId).toHaveBeenCalledWith(null);
   });
+
+  it('should open parent guide screen', () => {
+    const { result } = renderHook(() => useAppScreen());
+
+    act(() => {
+      result.current.showParentGuide();
+    });
+
+    expect(result.current.currentScreen).toBe('parent-guide');
+    expect(result.current.editingListId).toBeNull();
+  });
 });

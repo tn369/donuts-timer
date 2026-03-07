@@ -9,7 +9,7 @@ import { loadActiveListId, loadTodoLists, saveActiveListId } from '../storage';
 /**
  * 現在表示中の画面
  */
-export type CurrentScreen = 'selection' | 'main' | 'settings';
+export type CurrentScreen = 'selection' | 'main' | 'settings' | 'parent-guide';
 /**
  * 設定画面を開いた元の画面
  */
@@ -66,6 +66,14 @@ export const useAppScreen = () => {
     saveActiveListId(null);
   };
 
+  /**
+   * 保護者向け説明ページを表示する
+   */
+  const showParentGuide = () => {
+    setCurrentScreen('parent-guide');
+    setEditingListId(null);
+  };
+
   return {
     backFromSettings,
     backToSelection,
@@ -75,6 +83,7 @@ export const useAppScreen = () => {
     setEditingListId,
     setSettingsSource,
     settingsSource,
+    showParentGuide,
     showSettings,
   };
 };

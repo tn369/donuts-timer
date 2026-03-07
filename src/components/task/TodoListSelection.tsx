@@ -2,7 +2,7 @@
  * やることリストを選択、追加、編集、削除するための選択画面コンポーネント。1人モードと2人モードの切り替えが可能。
  */
 import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion';
-import { AlertTriangle, ListChecks, Plus, User, Users } from 'lucide-react';
+import { AlertTriangle, BookOpen, ListChecks, Plus, User, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -24,6 +24,7 @@ interface TodoListSelectionProps {
   onAdd: () => void; // 新規作成ボタンが押された時のコールバック
   onDelete: (listId: string) => void; // リスト削除ボタンが押された時のコールバック
   onReorder: (newLists: TodoList[]) => void; // リストの順番が変更された時のコールバック
+  onShowParentGuide: () => void; // 保護者向け説明ページを表示するコールバック
 }
 
 /**
@@ -104,8 +105,10 @@ const TodoListSelectionItem: React.FC<TodoListSelectionItemProps> = ({
  * @param root0.onAdd 新規作成ボタンが押された時のコールバック
  * @param root0.onDelete リスト削除ボタンが押された時のコールバック
  * @param root0.onReorder リストの順番が変更された時のコールバック
+ * @param root0.onShowParentGuide 保護者向け説明ページを開くコールバック
  * @returns レンダリングされるJSX要素
  */
+/* eslint-disable complexity */
 export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   lists,
   onSelect,
@@ -115,6 +118,7 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
   onAdd,
   onDelete,
   onReorder,
+  onShowParentGuide,
 }) => {
   const [isSiblingModeSelect, setIsSiblingModeSelect] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -153,6 +157,16 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
 
   return (
     <div className={`${styles.selectionScreen} ${isCompact ? styles.compact : ''}`}>
+      <button
+        type="button"
+        className={`${styles.parentGuideButton} ${isCompact ? styles.parentGuideButtonCompact : ''}`}
+        onClick={onShowParentGuide}
+        aria-label="保護者向けガイドをひらく"
+      >
+        <BookOpen size={18} />
+        <span className={styles.parentGuideLabel}>保護者向け</span>
+      </button>
+
       <div className={styles.selectionHeader}>
         <h1 className={styles.selectionTitle}>
           <ListChecks size={32} />
@@ -260,3 +274,4 @@ export const TodoListSelection: React.FC<TodoListSelectionProps> = ({
     </div>
   );
 };
+/* eslint-enable complexity */

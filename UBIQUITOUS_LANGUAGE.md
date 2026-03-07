@@ -12,6 +12,7 @@
 | **ごほうび**         | Reward, `Task(kind='reward')`           | リスト内で最後に配置する特別タスク。やることが早く終わると、実行可能時間が増える。 | `src/types.ts`, `src/domain/...` |
 | **どーなつタイマー** | Donut Timer, `TimerSettings`            | 残り時間を形と色つきのゲージで表現する視覚タイマー。                               | `src/components/timer/*`         |
 | **シンプル表示**     | Simple List View                        | やることリストをアイコンと分表示で確認する、リスト選択画面の表示方式。             | `src/components/task/*`          |
+| **保護者向けガイド** | Parent Guide, `parent-guide` screen     | 保護者がコンセプトや主な機能、安心して使える点を確認するための説明ページ。         | `src/components/info/*`          |
 
 ## 実行モード
 

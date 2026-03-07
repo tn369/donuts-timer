@@ -48,6 +48,7 @@ describe('TodoListSelection', () => {
     onAdd: vi.fn(),
     onDelete: vi.fn(),
     onReorder: vi.fn(),
+    onShowParentGuide: vi.fn(),
   };
 
   beforeEach(() => {
@@ -181,5 +182,21 @@ describe('TodoListSelection', () => {
     render(<TodoListSelection {...defaultProps} />);
 
     expect(screen.queryByRole('button', { name: /かんたん ひょうじ/ })).not.toBeInTheDocument();
+  });
+
+  it('保護者向けガイド導線を押すと onShowParentGuide が呼ばれること', () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+    render(<TodoListSelection {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '保護者向けガイドをひらく' }));
+
+    expect(defaultProps.onShowParentGuide).toHaveBeenCalled();
+  });
+
+  it('コンパクト表示でも保護者向けガイド導線が表示されること', () => {
+    mockUseWindowSize.mockReturnValue({ width: 1024, height: 500 });
+    render(<TodoListSelection {...defaultProps} />);
+
+    expect(screen.getByRole('button', { name: '保護者向けガイドをひらく' })).toBeInTheDocument();
   });
 });

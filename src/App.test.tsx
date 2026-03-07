@@ -25,6 +25,7 @@ const listB: TodoList = {
 const mainTimerViewMock = vi.fn();
 const todoListSelectionMock = vi.fn();
 const todoListSettingsMock = vi.fn();
+const parentGuidePageMock = vi.fn();
 
 vi.mock('./components/timer/MainTimerView', () => ({
   MainTimerView: (props: unknown) => {
@@ -47,6 +48,13 @@ vi.mock('./components/task/TodoListSettings', () => ({
   },
 }));
 
+vi.mock('./components/info/ParentGuidePage', () => ({
+  ParentGuidePage: (props: unknown) => {
+    parentGuidePageMock(props);
+    return <div data-testid="parent-guide-page" />;
+  },
+}));
+
 vi.mock('./hooks/useAppScreen', () => ({
   useAppScreen: vi.fn(),
 }));
@@ -64,6 +72,7 @@ const defaultAppScreen: {
   setEditingListId: Dispatch<SetStateAction<string | null>>;
   setSettingsSource: Dispatch<SetStateAction<SettingsSource>>;
   settingsSource: SettingsSource;
+  showParentGuide: () => void;
   showSettings: (listId: string, source: SettingsSource) => void;
 } = {
   backFromSettings: vi.fn(),
@@ -75,6 +84,7 @@ const defaultAppScreen: {
   setSettingsSource: vi.fn(),
   settingsSource: 'selection',
   showSettings: vi.fn(),
+  showParentGuide: vi.fn(),
 };
 
 const defaultTodoLists = {
@@ -165,6 +175,11 @@ describe('App', () => {
 
     expect(screen.getByTestId('todo-list-selection')).toBeInTheDocument();
     expect(mainTimerViewMock).not.toHaveBeenCalled();
+
+    const [selectionProps] = todoListSelectionMock.mock.calls[0] as [
+      { onShowParentGuide: () => void },
+    ];
+    expect(selectionProps.onShowParentGuide).toEqual(expect.any(Function));
   });
 
   it('renders settings screen for editing list', () => {
@@ -184,5 +199,21 @@ describe('App', () => {
         list: listA,
       })
     );
+  });
+
+  it('renders parent guide page when current screen is parent-guide', () => {
+    vi.mocked(useAppScreen).mockReturnValue(
+      makeAppScreenState({
+        currentScreen: 'parent-guide',
+      })
+    );
+    vi.mocked(useTodoLists).mockReturnValue(defaultTodoLists);
+
+    render(<App />);
+
+    expect(screen.getByTestId('parent-guide-page')).toBeInTheDocument();
+
+    const [parentGuideProps] = parentGuidePageMock.mock.calls[0] as [{ onBack: () => void }];
+    expect(parentGuideProps.onBack).toEqual(expect.any(Function));
   });
 });
