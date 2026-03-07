@@ -81,6 +81,30 @@ describe('TodoListCard', () => {
     expect(screen.getByText('0ふん')).toBeInTheDocument();
   });
 
+  it('目標時刻モードのごほうびは時刻表示になること', () => {
+    const targetTimeRewardList: TodoList = {
+      ...mockList,
+      tasks: [
+        mockList.tasks[0],
+        {
+          ...mockList.tasks[1],
+          plannedSeconds: 300,
+          rewardSettings: {
+            mode: 'target-time',
+            targetHour: 15,
+            targetMinute: 5,
+          },
+        },
+      ],
+    };
+
+    render(<TodoListCard {...defaultProps} list={targetTimeRewardList} />);
+
+    expect(screen.getByText('5ふん')).toBeInTheDocument();
+    expect(screen.getByText('15じ5ふん')).toBeInTheDocument();
+    expect(screen.queryByText('300ふん')).not.toBeInTheDocument();
+  });
+
   it('カードをクリックしたときに onClick が呼ばれること', () => {
     render(<TodoListCard {...defaultProps} />);
     fireEvent.click(screen.getByLabelText(/朝の準備 リストをえらぶ/));

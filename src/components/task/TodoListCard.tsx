@@ -2,7 +2,7 @@ import { type DragControls } from 'framer-motion';
 import { Copy, Edit2, GripVertical, ListChecks, Trash2 } from 'lucide-react';
 import React from 'react';
 
-import type { TodoList } from '../../types';
+import type { Task, TodoList } from '../../types';
 import styles from './TodoListCard.module.css';
 
 interface TodoListCardProps {
@@ -28,6 +28,17 @@ const SimpleTaskPreview: React.FC<SimpleTaskPreviewProps> = ({ list }) => {
     return `${minutes}ふん`;
   };
 
+  const formatTaskPreview = (task: Task): string => {
+    if (task.kind === 'reward' && task.rewardSettings?.mode === 'target-time') {
+      const { targetHour, targetMinute } = task.rewardSettings;
+      if (targetHour !== undefined && targetMinute !== undefined) {
+        return `${targetHour}じ${targetMinute}ふん`;
+      }
+    }
+
+    return formatMinutes(task.plannedSeconds);
+  };
+
   return (
     <div className={styles.simpleTaskPreview}>
       <div className={styles.simpleTaskImages}>
@@ -40,7 +51,7 @@ const SimpleTaskPreview: React.FC<SimpleTaskPreviewProps> = ({ list }) => {
                 <ListChecks size={20} className={styles.simpleTaskFallbackIcon} />
               )}
             </div>
-            <span className={styles.simpleTaskMinutes}>{formatMinutes(task.plannedSeconds)}</span>
+            <span className={styles.simpleTaskMinutes}>{formatTaskPreview(task)}</span>
           </div>
         ))}
       </div>
