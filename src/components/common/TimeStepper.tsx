@@ -6,6 +6,7 @@ interface TimeStepperProps {
   value: number;
   onChange: (val: number) => void;
   unit: string;
+  className?: string;
   disabled?: boolean;
   step?: number;
   min?: number;
@@ -19,6 +20,7 @@ interface TimeStepperProps {
  * @param root0.value 現在の値
  * @param root0.onChange 値変更時のイベントハンドラ
  * @param root0.unit 単位（分など）
+ * @param root0.className 追加のスタイルクラス
  * @param root0.disabled 無効フラグ
  * @param root0.step 増減幅
  * @param root0.min 最小値
@@ -30,6 +32,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
   value,
   onChange,
   unit,
+  className,
   disabled,
   step = 5,
   min = 0,
@@ -130,7 +133,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
   };
 
   return (
-    <div className={styles.stepperContainer}>
+    <div className={`${styles.stepperContainer} ${className ?? ''}`.trim()}>
       <button
         type="button"
         className={styles.stepperBtn}

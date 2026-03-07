@@ -23,8 +23,16 @@ vi.mock('../common/IconSelectorPopup', () => ({
 }));
 
 vi.mock('../common/TimeStepper', () => ({
-  TimeStepper: ({ value, unit }: { value: number; unit: string }) => (
-    <div>
+  TimeStepper: ({
+    value,
+    unit,
+    className,
+  }: {
+    value: number;
+    unit: string;
+    className?: string;
+  }) => (
+    <div className={className}>
       {value}
       {unit}
     </div>
@@ -55,7 +63,24 @@ const renderTaskEditorItem = (task: Task) =>
   );
 
 describe('TaskEditorItem', () => {
-  it('ごほうびタスクは名前入力欄と時間設定を横並びコンテナで表示する', () => {
+  it('通常タスクは共通の1行レイアウトで名前欄と時間設定を表示する', () => {
+    const { container } = renderTaskEditorItem(
+      createTask({
+        id: 'todo-1',
+        name: 'しゅくだい',
+        kind: 'todo',
+      })
+    );
+
+    const primaryRow = container.querySelector(`.${styles.taskPrimaryRow}`);
+    const timeStepper = container.querySelector(`.${styles.todoTimeStepper}`);
+
+    expect(primaryRow).toBeInTheDocument();
+    expect(timeStepper).toBeInTheDocument();
+    expect(container.querySelector(`.${styles.rewardInlineFields}`)).not.toBeInTheDocument();
+  });
+
+  it('ごほうびタスクは共通ヘッダーの下に専用設定エリアを表示する', () => {
     const { container } = renderTaskEditorItem(
       createTask({
         id: 'reward-1',
@@ -65,27 +90,17 @@ describe('TaskEditorItem', () => {
     );
 
     const inlineFields = container.querySelector(`.${styles.rewardInlineFields}`);
+    const primaryRow = container.querySelector(`.${styles.taskPrimaryRow}`);
     const nameGroup = container.querySelector(`.${styles.rewardNameInputGroup}`);
+    const settings = container.querySelector(`.${styles.rewardTimeSettings}`);
     const info = container.querySelector(`.${styles.taskEditorInfo}`);
 
     expect(inlineFields).toBeInTheDocument();
+    expect(primaryRow).toBeInTheDocument();
     expect(nameGroup).toBeInTheDocument();
+    expect(settings).toBeInTheDocument();
     expect(info).toHaveClass(styles.rewardTaskEditorInfo);
     expect(screen.getByDisplayValue('ごほうび')).toBeInTheDocument();
-  });
-
-  it('通常タスクではごほうび専用の横並びレイアウトを適用しない', () => {
-    const { container } = renderTaskEditorItem(
-      createTask({
-        id: 'todo-1',
-        name: 'しゅくだい',
-        kind: 'todo',
-      })
-    );
-
-    const info = container.querySelector(`.${styles.taskEditorInfo}`);
-    expect(container.querySelector(`.${styles.rewardInlineFields}`)).not.toBeInTheDocument();
-    expect(info).not.toHaveClass(styles.rewardTaskEditorInfo);
   });
 
   it('ごほうびタスクではバッジを表示する', () => {
@@ -97,7 +112,7 @@ describe('TaskEditorItem', () => {
       })
     );
 
-    expect(screen.getByText('ごほうび')).toBeInTheDocument();
+    expect(screen.getByText('ごほうび', { selector: 'div' })).toBeInTheDocument();
   });
 
   it('デフォルトでは「きまった じかん」が有効で「おわる じかん」は無効表示になる', () => {

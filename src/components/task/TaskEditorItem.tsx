@@ -20,14 +20,6 @@ interface TaskEditorItemProps {
   dragControls?: DragControls;
 }
 
-/**
- * 時間指定モードのエディタ
- * @param root0 プロパティオブジェクト
- * @param root0.task 対象のタスク
- * @param root0.onTaskChange タスク変更時のイベントハンドラ
- * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
- * @returns レンダリングされるJSX要素
- */
 const DurationModeEditor: React.FC<{
   task: Task;
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
@@ -48,12 +40,14 @@ const DurationModeEditor: React.FC<{
       <span className={styles.rewardModeLabel}>きまった じかん</span>
       <div className={styles.rewardModeInput}>
         <TimeStepper
+          className={styles.rewardTimeStepper}
           value={Math.floor(task.plannedSeconds / 60)}
           onChange={(val) => {
             onTaskChange(task.id, { plannedSeconds: val * 60 });
           }}
           unit="ふん"
           disabled={task.rewardSettings?.mode === 'target-time'}
+          min={1}
           step={5}
         />
       </div>
@@ -61,13 +55,6 @@ const DurationModeEditor: React.FC<{
   );
 };
 
-/**
- * 目標時刻モードのエディタ
- * @param root0 プロパティオブジェクト
- * @param root0.task 対象のタスク
- * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
- * @returns レンダリングされるJSX要素
- */
 const TargetTimeModeEditor: React.FC<{
   task: Task;
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
@@ -87,6 +74,7 @@ const TargetTimeModeEditor: React.FC<{
       <span className={styles.rewardModeLabel}>おわる じかん</span>
       <div className={`${styles.rewardModeInput} ${styles.targetTimeInputs}`}>
         <TimeStepper
+          className={styles.targetTimeStepper}
           value={task.rewardSettings?.targetHour ?? 9}
           onChange={(val) => {
             onRewardSettingsChange(task.id, { targetHour: val % 24 });
@@ -98,6 +86,7 @@ const TargetTimeModeEditor: React.FC<{
           options={Array.from({ length: 24 }, (_, i) => i)}
         />
         <TimeStepper
+          className={styles.targetTimeStepper}
           value={task.rewardSettings?.targetMinute ?? 0}
           onChange={(val) => {
             onRewardSettingsChange(task.id, { targetMinute: val % 60 });
@@ -113,14 +102,6 @@ const TargetTimeModeEditor: React.FC<{
   );
 };
 
-/**
- * 報酬設定エディタコンポーネント
- * @param root0 プロパティオブジェクト
- * @param root0.task 対象のタスク
- * @param root0.onTaskChange タスク変更時のイベントハンドラ
- * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
- * @returns レンダリングされるJSX要素
- */
 const RewardSettingsEditor: React.FC<{
   task: Task;
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
@@ -136,17 +117,6 @@ const RewardSettingsEditor: React.FC<{
   </div>
 );
 
-/**
- * 個別のタスク（または目標時刻）を編集するためのコンポーネント
- * @param root0 プロパティオブジェクト
- * @param root0.task 対象のタスク
- * @param root0.onTaskChange タスク変更時のイベントハンドラ
- * @param root0.onRemoveTask タスク削除時のイベントハンドラ
- * @param root0.onRewardSettingsChange 報酬設定変更時のイベントハンドラ
- * @param root0.allExistingIcons 既存の全アイコンURLリスト
- * @param root0.dragControls ドラッグ制御用
- * @returns レンダリングされるJSX要素
- */
 export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   task,
   onTaskChange,
@@ -169,7 +139,6 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       reader.onloadend = async () => {
         const base64String = reader.result as string;
         try {
-          // どんなサイズでも 200x200 程度に圧縮して保存する
           const resizedImage = await resizeImage(base64String, 200, 200);
           onTaskChange(task.id, { icon: resizedImage });
         } catch (error) {
@@ -212,6 +181,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           <GripVertical size={20} />
         </div>
       )}
+
       <button
         type="button"
         className={styles.taskEditorImage}
@@ -263,10 +233,11 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
         className={`${styles.taskEditorInfo} ${task.kind === 'reward' ? styles.rewardTaskEditorInfo : ''}`}
       >
         {task.kind === 'todo' ? (
-          <div className={styles.taskInlineFields}>
-            {taskNameInput}
+          <div className={styles.taskPrimaryRow}>
+            <div className={styles.taskNameField}>{taskNameInput}</div>
             <div className={styles.taskTimeInputGroup}>
               <TimeStepper
+                className={styles.todoTimeStepper}
                 value={Math.floor(task.plannedSeconds / 60)}
                 onChange={(val) => {
                   onTaskChange(task.id, { plannedSeconds: val * 60 });
@@ -279,7 +250,10 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
           </div>
         ) : (
           <div className={styles.rewardInlineFields}>
-            <div className={styles.rewardNameInputGroup}>{taskNameInput}</div>
+            <div className={styles.taskPrimaryRow}>
+              <div className={styles.rewardNameInputGroup}>{taskNameInput}</div>
+              <div className={styles.rewardBadge}>ごほうび</div>
+            </div>
             <RewardSettingsEditor
               task={task}
               onTaskChange={onTaskChange}
@@ -296,11 +270,11 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             onRemoveTask(task.id);
           }}
           title="けす"
+          aria-label="けす"
         >
           <Trash2 size={20} />
         </button>
       )}
-      {task.kind === 'reward' && <div className={styles.rewardBadge}>ごほうび</div>}
     </motion.div>
   );
 };
