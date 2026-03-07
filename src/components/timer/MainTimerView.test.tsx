@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as storage from '../../storage';
@@ -269,6 +269,39 @@ describe('MainTimerView Integration', () => {
     });
 
     expect(screen.getAllByLabelText('タスクをならびかえる')).toHaveLength(2);
+  });
+
+  it('should hide the reorder handle on reward cards', () => {
+    const listWithReward: TodoList = {
+      ...mockList,
+      tasks: [
+        mockList.tasks[0],
+        {
+          id: 'reward-1',
+          name: 'あそぶ',
+          icon: 'i2',
+          plannedSeconds: 60,
+          actualSeconds: 0,
+          elapsedSeconds: 0,
+          kind: 'reward',
+          status: 'todo',
+        },
+      ],
+    };
+
+    render(
+      <MainTimerView
+        initialList={listWithReward}
+        onBackToSelection={vi.fn()}
+        onEditSettings={vi.fn()}
+      />
+    );
+
+    const rewardCard = screen.getByText('あそぶ').closest('[data-task-kind="reward"]');
+
+    expect(screen.getAllByLabelText('タスクをならびかえる')).toHaveLength(1);
+    expect(rewardCard).toBeInTheDocument();
+    expect(within(rewardCard as HTMLElement).queryByLabelText('タスクをならびかえる')).toBeNull();
   });
 
   it('should resume from previous session when resume modal confirm is clicked', async () => {

@@ -68,7 +68,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
         color={color}
         isCompact={isCompact}
         isSingleTaskFocus={isSingleTaskFocus}
-        dragControls={dragControls}
+        dragControls={task.kind === 'reward' ? undefined : dragControls}
         rewardGainVisualState={task.kind === 'reward' ? rewardGainVisualState : null}
       />
     </Reorder.Item>
