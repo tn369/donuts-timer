@@ -3,6 +3,9 @@ import {
   ArrowLeft,
   Clock3,
   HeartHandshake,
+  ImageIcon,
+  ListTodo,
+  Palette,
   PartyPopper,
   ShieldCheck,
   Sparkles,
@@ -48,6 +51,39 @@ const reassurancePoints = [
   'やることリストは保存してくり返し使えるので、毎回ゼロから決め直さずにご家庭の約束を続けやすくなります。',
   'タイマーの形や色を変えられるので、お子さまに合う「楽しい」「やってみたい」を見つけやすくなります。',
   'データはブラウザ内の LocalStorage のみに保存され、外部送信されないため、ご家庭の中で安心して使えます。',
+];
+
+const decisionGuideSteps = [
+  {
+    icon: Palette,
+    title: '1. どーなつタイマーの色や形を決める',
+    description:
+      'やることリストを実行中でも変更できるため、その日の気分に合わせて自由に変えられます。お子様が自分で選び、小さな決定を積み重ねていく体験を大切にしています。',
+  },
+  {
+    icon: ImageIcon,
+    title: '2. 画像（アイコン）を決める',
+    description:
+      'お子様自身の写真や、好きなキャラクターの画像など、自由な発想で設定していただくのがおすすめです。少しふざけた決め方でも、すぐに直さず、まずはそのまま使ってみることで「自分で決めた」実感につながります。',
+  },
+  {
+    icon: PartyPopper,
+    title: '3. ごほうびを決める',
+    description:
+      'やることが終わった後のごほうびも、お子様自身に決めてもらうことをおすすめします。「これを楽しみにがんばりたい」と思える内容にすることで、やることへの意欲が高まりやすくなります。',
+  },
+  {
+    icon: Clock3,
+    title: '4. やることの時間を決める',
+    description:
+      '「おきがえは何分くらいでできるかな？」「いつもなら大体5分くらいかかってるかな？」のようにヒントを出しながら、いっしょに時間を決めてみてください。ごほうび時間が増えすぎる場合は、目標時刻モードで調整しやすくなります。',
+  },
+  {
+    icon: ListTodo,
+    title: '5. やることを決める',
+    description:
+      'お子様自身が「次に何をするのか」を考えながら、やることを決めていきます。迷っているときは答えを先に伝えるより、「この後なにをするんだっけ？」「あさはいつも何しているかな？」と、思い出すきっかけを渡してあげてください。',
+  },
 ];
 
 export const ParentGuidePage: React.FC<ParentGuidePageProps> = ({ onBack }) => (
@@ -144,6 +180,46 @@ export const ParentGuidePage: React.FC<ParentGuidePageProps> = ({ onBack }) => (
             <li key={point}>{point}</li>
           ))}
         </ul>
+      </motion.section>
+
+      <motion.section
+        className={styles.coachingPanel}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.42, duration: 0.45 }}
+      >
+        <div className={styles.sectionHeading}>
+          <HeartHandshake size={20} />
+          <h2>保護者の方へのおすすめの関わり方</h2>
+        </div>
+        <div className={styles.coachingIntro}>
+          <p>
+            お子様の成長に合わせて、お子様自身が決めていく領域を少しずつ増やしていくことをおすすめします。つい口を出したくなる場面でも、できるだけ見守り、お子様の決めた内容を尊重してあげてください。
+          </p>
+          <p>
+            このアプリは、お子様が小さな決定を積み重ねながら主体的に行動できるように設計されています。完璧にできることよりも、「自分で決める経験」を増やしていくことを大切にしています。
+          </p>
+        </div>
+
+        <div className={styles.decisionGuideGrid}>
+          {decisionGuideSteps.map(({ icon: Icon, title, description }, index) => (
+            <motion.article
+              key={title}
+              className={styles.decisionCard}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.48 + index * 0.05, duration: 0.4 }}
+            >
+              <div className={styles.decisionCardHeader}>
+                <div className={styles.decisionIcon}>
+                  <Icon size={22} />
+                </div>
+                <h3>{title}</h3>
+              </div>
+              <p>{description}</p>
+            </motion.article>
+          ))}
+        </div>
       </motion.section>
     </div>
   </div>

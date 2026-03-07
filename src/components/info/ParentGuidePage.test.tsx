@@ -21,13 +21,26 @@ describe('ParentGuidePage', () => {
         /どーなつタイマーは、お子様が目標に対して前向きに取り組むためのタイマーです。/
       )
     ).toBeInTheDocument();
-    expect(screen.getByText(/ポジティブなコミュニケーション/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/協力しながら毎日の支度や宿題に取り組めることを目指しています/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/自己決定理論/)).toBeInTheDocument();
     expect(screen.getByText(/お子様が自ら目標を選んだり決めたりする補助/)).toBeInTheDocument();
     expect(screen.getByText('時間が見えるビジュアルタイマー')).toBeInTheDocument();
-    expect(screen.getByText(/設定画面もお子様が関わりやすい見た目/)).toBeInTheDocument();
-    expect(screen.getByText(/できたことをしっかりほめる伴走役/)).toBeInTheDocument();
     expect(screen.getByText(/ご家庭の中で安心して使えます/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: '保護者の方へのおすすめの関わり方' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/お子様自身が決めていく領域を少しずつ増やしていく/)
+    ).toBeInTheDocument();
+    expect(screen.getByText('1. どーなつタイマーの色や形を決める')).toBeInTheDocument();
+    expect(screen.getByText('2. 画像（アイコン）を決める')).toBeInTheDocument();
+    expect(screen.getByText('3. ごほうびを決める')).toBeInTheDocument();
+    expect(screen.getByText('4. やることの時間を決める')).toBeInTheDocument();
+    expect(screen.getByText('5. やることを決める')).toBeInTheDocument();
+    expect(screen.getByText(/「この後なにをするんだっけ？」/)).toBeInTheDocument();
+    expect(screen.getByText(/「自分で決める経験」を増やしていく/)).toBeInTheDocument();
   });
 
   it('calls onBack when the back button is pressed', () => {
