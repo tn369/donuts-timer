@@ -2,17 +2,27 @@ import { motion, Reorder, useDragControls } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import React from 'react';
 
-import type { RewardTaskSettings, Task } from '../../types';
+import type { RewardTaskSettings, Task, TodoList } from '../../types';
 import { TaskEditorItem } from './TaskEditorItem';
 import styles from './TodoListSettings.module.css';
 
 const ReorderableTaskItem: React.FC<{
   task: Task;
+  currentListId: string;
+  allTodoLists: TodoList[];
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
   onRemoveTask: (taskId: string) => void;
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
   allExistingIcons: string[];
-}> = ({ task, onTaskChange, onRemoveTask, onRewardSettingsChange, allExistingIcons }) => {
+}> = ({
+  task,
+  currentListId,
+  allTodoLists,
+  onTaskChange,
+  onRemoveTask,
+  onRewardSettingsChange,
+  allExistingIcons,
+}) => {
   const dragControls = useDragControls();
 
   return (
@@ -23,6 +33,8 @@ const ReorderableTaskItem: React.FC<{
         onRemoveTask={onRemoveTask}
         onRewardSettingsChange={onRewardSettingsChange}
         allExistingIcons={allExistingIcons}
+        allTodoLists={allTodoLists}
+        currentListId={currentListId}
         dragControls={dragControls}
       />
     </Reorder.Item>
@@ -32,6 +44,8 @@ const ReorderableTaskItem: React.FC<{
 interface TodoListTasksSectionProps {
   todoTasks: Task[];
   allExistingIcons: string[];
+  allTodoLists: TodoList[];
+  currentListId: string;
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
   onRemoveTask: (taskId: string) => void;
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
@@ -42,6 +56,8 @@ interface TodoListTasksSectionProps {
 export const TodoListTasksSection: React.FC<TodoListTasksSectionProps> = ({
   todoTasks,
   allExistingIcons,
+  allTodoLists,
+  currentListId,
   onTaskChange,
   onRemoveTask,
   onRewardSettingsChange,
@@ -62,6 +78,8 @@ export const TodoListTasksSection: React.FC<TodoListTasksSectionProps> = ({
           <ReorderableTaskItem
             key={task.id}
             task={task}
+            currentListId={currentListId}
+            allTodoLists={allTodoLists}
             onTaskChange={onTaskChange}
             onRemoveTask={onRemoveTask}
             onRewardSettingsChange={onRewardSettingsChange}

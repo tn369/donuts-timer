@@ -19,6 +19,7 @@ import { TodoListTasksSection } from './TodoListTasksSection';
  */
 interface TodoListSettingsProps {
   list: TodoList;
+  allTodoLists?: TodoList[];
   allExistingIcons?: string[];
   onSave: (list: TodoList) => void;
   onBack: () => void;
@@ -28,6 +29,7 @@ interface TodoListSettingsProps {
  * やることリストの設定画面コンポーネント
  * @param root0 プロパティオブジェクト
  * @param root0.list 編集対象のリスト
+ * @param root0.allTodoLists 名称補完に利用する全やることリスト
  * @param root0.allExistingIcons 既存の全アイコンURLリスト
  * @param root0.onSave 保存時のコールバック
  * @param root0.onBack 戻るボタンのコールバック
@@ -35,6 +37,7 @@ interface TodoListSettingsProps {
  */
 export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   list,
+  allTodoLists = [],
   allExistingIcons = [],
   onSave,
   onBack,
@@ -130,6 +133,10 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   const hasChanges = JSON.stringify(list) !== JSON.stringify(editedList);
   const todoTasks = editedList.tasks.filter((task) => task.kind === 'todo');
   const rewardTask = editedList.tasks.find((task) => task.kind === 'reward') ?? null;
+  const todoListsForNameLookup = [
+    editedList,
+    ...allTodoLists.filter((todoList) => todoList.id !== editedList.id),
+  ];
 
   const handleBack = () => {
     if (hasChanges) {
@@ -186,6 +193,8 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <TodoListTasksSection
           todoTasks={todoTasks}
           allExistingIcons={allExistingIcons}
+          allTodoLists={todoListsForNameLookup}
+          currentListId={editedList.id}
           onTaskChange={handleTaskChange}
           onRemoveTask={removeTask}
           onRewardSettingsChange={handleRewardSettingsChange}
@@ -199,6 +208,8 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         <RewardSettingsSection
           rewardTask={rewardTask}
           allExistingIcons={allExistingIcons}
+          allTodoLists={todoListsForNameLookup}
+          currentListId={editedList.id}
           onTaskChange={handleTaskChange}
           onRemoveTask={removeTask}
           onRewardSettingsChange={handleRewardSettingsChange}

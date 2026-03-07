@@ -126,6 +126,7 @@ export const DEFAULT_TODO_LISTS: TodoList[] = [
   {
     id: 'default-morning',
     title: 'あさ',
+    updatedAt: 0,
     tasks: INITIAL_TASKS,
     // targetTimeSettings は削除(ごほうびタスクのrewardSettingsに移行)
     timerSettings: { shape: 'square', color: 'blue' },

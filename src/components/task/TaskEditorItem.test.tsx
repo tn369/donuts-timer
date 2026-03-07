@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { Task } from '../../types';
+import type { Task, TodoList } from '../../types';
 import { TaskEditorItem } from './TaskEditorItem';
 import styles from './TaskEditorItem.module.css';
 
@@ -19,7 +19,23 @@ vi.mock('framer-motion', () => ({
 }));
 
 vi.mock('../common/IconSelectorPopup', () => ({
-  IconSelectorPopup: () => null,
+  IconSelectorPopup: ({
+    onIconSelect,
+    show,
+  }: {
+    onIconSelect: (icon: string) => void;
+    show: boolean;
+  }) =>
+    show ? (
+      <div
+        role="presentation"
+        onClick={() => {
+          onIconSelect('shared-icon');
+        }}
+      >
+        select-shared-icon
+      </div>
+    ) : null,
 }));
 
 vi.mock('../common/TimeStepper', () => ({
@@ -51,16 +67,32 @@ const createTask = (partial: Partial<Task>): Task => ({
   rewardSettings: partial.rewardSettings,
 });
 
-const renderTaskEditorItem = (task: Task) =>
+const renderTaskEditorItem = (
+  task: Task,
+  options?: {
+    allTodoLists?: TodoList[];
+    onTaskChange?: ReturnType<typeof vi.fn>;
+  }
+) =>
   render(
     <TaskEditorItem
       task={task}
-      onTaskChange={vi.fn()}
+      onTaskChange={options?.onTaskChange ?? vi.fn()}
       onRemoveTask={vi.fn()}
       onRewardSettingsChange={vi.fn()}
       allExistingIcons={[]}
+      allTodoLists={options?.allTodoLists ?? []}
+      currentListId="current-list"
     />
   );
+
+const getTaskImageButton = (container: HTMLElement) => {
+  const button = container.querySelector(`.${styles.taskEditorImage}`);
+  if (!(button instanceof HTMLElement)) {
+    throw new Error('Task image button not found');
+  }
+  return button;
+};
 
 describe('TaskEditorItem', () => {
   it('通常タスクは共通の1行レイアウトで名前欄と時間設定を表示する', () => {
@@ -149,5 +181,76 @@ describe('TaskEditorItem', () => {
     expect(targetInputs).toBeInTheDocument();
     expect(targetInputs).toHaveTextContent('23じ');
     expect(targetInputs).toHaveTextContent('15ふん');
+  });
+
+  it('画像選択時に同じ画像の最新リスト名を未編集テキストへ補完する', () => {
+    const onTaskChange = vi.fn();
+    const task = createTask({
+      id: 'todo-1',
+      name: 'あたらしいやること',
+      kind: 'todo',
+    });
+    const allTodoLists: TodoList[] = [
+      {
+        id: 'older-list',
+        title: 'older',
+        updatedAt: 10,
+        tasks: [createTask({ id: 'old-task', name: 'はみがき', icon: 'shared-icon' })],
+      },
+      {
+        id: 'newer-list',
+        title: 'newer',
+        updatedAt: 20,
+        tasks: [createTask({ id: 'new-task', name: 'しゅくだい', icon: 'shared-icon' })],
+      },
+    ];
+
+    const { container } = renderTaskEditorItem(task, { allTodoLists, onTaskChange });
+
+    fireEvent.click(getTaskImageButton(container));
+    fireEvent.click(screen.getByText('select-shared-icon'));
+
+    expect(onTaskChange).toHaveBeenCalledWith('todo-1', {
+      icon: 'shared-icon',
+      name: 'しゅくだい',
+    });
+  });
+
+  it('名前が初期値から編集済みなら画像選択しても補完しない', () => {
+    const onTaskChange = vi.fn();
+    const task = createTask({
+      id: 'todo-1',
+      name: 'あたらしいやること',
+      kind: 'todo',
+    });
+    const allTodoLists: TodoList[] = [
+      {
+        id: 'saved-list',
+        title: 'saved',
+        updatedAt: 20,
+        tasks: [createTask({ id: 'saved-task', name: 'しゅくだい', icon: 'shared-icon' })],
+      },
+    ];
+
+    const { container, rerender } = renderTaskEditorItem(task, { allTodoLists, onTaskChange });
+
+    rerender(
+      <TaskEditorItem
+        task={{ ...task, name: 'じぶんでいれたなまえ' }}
+        onTaskChange={onTaskChange}
+        onRemoveTask={vi.fn()}
+        onRewardSettingsChange={vi.fn()}
+        allExistingIcons={[]}
+        allTodoLists={allTodoLists}
+        currentListId="current-list"
+      />
+    );
+
+    fireEvent.click(getTaskImageButton(container));
+    fireEvent.click(screen.getByText('select-shared-icon'));
+
+    expect(onTaskChange).toHaveBeenLastCalledWith('todo-1', {
+      icon: 'shared-icon',
+    });
   });
 });

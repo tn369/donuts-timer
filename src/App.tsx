@@ -101,6 +101,7 @@ function App() {
         <TodoListSettings
           list={listToEdit}
           allExistingIcons={getAllUniqueIcons()}
+          allTodoLists={todoLists}
           onSave={handleSaveList}
           onBack={() => {
             setTemporaryList(null);

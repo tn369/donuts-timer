@@ -25,6 +25,7 @@ describe('storage utility', () => {
         {
           id: '1',
           title: 'Test',
+          updatedAt: 1,
           tasks: [],
           targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
         },
@@ -38,6 +39,7 @@ describe('storage utility', () => {
         {
           id: 'stored',
           title: 'Stored',
+          updatedAt: 5,
           tasks: [],
           targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
         },
@@ -45,6 +47,28 @@ describe('storage utility', () => {
       localStorage.setItem('task-timer-lists', JSON.stringify(stored));
       const result = loadTodoLists();
       expect(result).toEqual(stored);
+    });
+
+    it('should add default updatedAt when loading legacy lists', () => {
+      localStorage.setItem(
+        'task-timer-lists',
+        JSON.stringify([
+          {
+            id: 'legacy',
+            title: 'Legacy',
+            tasks: [],
+          },
+        ])
+      );
+
+      expect(loadTodoLists()).toEqual([
+        {
+          id: 'legacy',
+          title: 'Legacy',
+          updatedAt: 0,
+          tasks: [],
+        },
+      ]);
     });
 
     it('should return fallbackLists and log error when JSON is invalid', () => {
@@ -64,6 +88,7 @@ describe('storage utility', () => {
         {
           id: '1',
           title: 'Test',
+          updatedAt: 1,
           tasks: [],
           targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
         },

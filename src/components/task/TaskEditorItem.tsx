@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { Camera, GripVertical, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
-import type { RewardTaskSettings, Task } from '../../types';
+import type { RewardTaskSettings, Task, TodoList } from '../../types';
 import { resizeImage } from '../../utils/image';
+import { findTaskNameByIcon } from '../../utils/todoListUtils';
 import { IconSelectorPopup } from '../common/IconSelectorPopup';
 import { TimeStepper } from '../common/TimeStepper';
 import styles from './TaskEditorItem.module.css';
@@ -17,6 +18,8 @@ interface TaskEditorItemProps {
   onRemoveTask: (taskId: string) => void;
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
   allExistingIcons: string[];
+  allTodoLists?: TodoList[];
+  currentListId?: string;
   dragControls?: DragControls;
 }
 
@@ -138,10 +141,32 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
   onRemoveTask,
   onRewardSettingsChange,
   allExistingIcons,
+  allTodoLists = [],
+  currentListId = '',
   dragControls,
 }) => {
   const [showIconSelector, setShowIconSelector] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initialTaskNameRef = useRef(task.name);
+
+  const applySelectedIcon = (icon: string) => {
+    const updates: Partial<Task> = { icon };
+
+    if (task.name === initialTaskNameRef.current) {
+      const suggestedName = findTaskNameByIcon({
+        currentListId,
+        currentTaskId: task.id,
+        icon,
+        todoLists: allTodoLists,
+      });
+
+      if (suggestedName) {
+        updates.name = suggestedName;
+      }
+    }
+
+    onTaskChange(task.id, updates);
+  };
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -155,7 +180,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
         const base64String = reader.result as string;
         try {
           const resizedImage = await resizeImage(base64String, 200, 200);
-          onTaskChange(task.id, { icon: resizedImage });
+          applySelectedIcon(resizedImage);
         } catch (error) {
           console.error('Failed to resize image:', error);
           alert('画像の処理に失敗しました。');
@@ -237,7 +262,7 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
             setShowIconSelector(false);
           }}
           onIconSelect={(icon) => {
-            onTaskChange(task.id, { icon });
+            applySelectedIcon(icon);
             setShowIconSelector(false);
           }}
           onImageUpload={handleImageClick}

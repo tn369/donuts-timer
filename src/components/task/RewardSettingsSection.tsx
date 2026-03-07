@@ -1,12 +1,14 @@
 import React from 'react';
 
-import type { RewardTaskSettings, Task } from '../../types';
+import type { RewardTaskSettings, Task, TodoList } from '../../types';
 import { TaskEditorItem } from './TaskEditorItem';
 import styles from './TodoListSettings.module.css';
 
 interface RewardSettingsSectionProps {
   rewardTask: Task | null;
   allExistingIcons: string[];
+  allTodoLists: TodoList[];
+  currentListId: string;
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
   onRemoveTask: (taskId: string) => void;
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
@@ -15,6 +17,8 @@ interface RewardSettingsSectionProps {
 export const RewardSettingsSection: React.FC<RewardSettingsSectionProps> = ({
   rewardTask,
   allExistingIcons,
+  allTodoLists,
+  currentListId,
   onTaskChange,
   onRemoveTask,
   onRewardSettingsChange,
@@ -34,6 +38,8 @@ export const RewardSettingsSection: React.FC<RewardSettingsSectionProps> = ({
         onRemoveTask={onRemoveTask}
         onRewardSettingsChange={onRewardSettingsChange}
         allExistingIcons={allExistingIcons}
+        allTodoLists={allTodoLists}
+        currentListId={currentListId}
       />
     ) : (
       <div className={styles.rewardEmptyState}>ごほうび が まだ ありません</div>

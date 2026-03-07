@@ -22,10 +22,12 @@ vi.mock('../storage', async () => {
 describe('useTodoLists', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(Date, 'now').mockReturnValue(1234);
     vi.mocked(storage.loadTodoLists).mockReturnValue([
       {
         id: 'list-1',
         title: 'List 1',
+        updatedAt: 1,
         tasks: [],
         targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
       },
@@ -51,12 +53,14 @@ describe('useTodoLists', () => {
       {
         id: 'list-1',
         title: 'L1',
+        updatedAt: 1,
         tasks: [],
         targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
       },
       {
         id: 'list-2',
         title: 'L2',
+        updatedAt: 2,
         tasks: [],
         targetTimeSettings: { mode: 'duration', targetHour: 0, targetMinute: 0 },
       },
@@ -118,7 +122,9 @@ describe('useTodoLists', () => {
     });
 
     // todoListsに追加されていること
-    expect(result.current.todoLists).toContainEqual(tempList);
+    expect(result.current.todoLists).toContainEqual(
+      expect.objectContaining({ ...tempList, updatedAt: 1234 })
+    );
 
     // saveTodoListsが呼ばれていること
     expect(storage.saveTodoLists).toHaveBeenCalled();
@@ -153,7 +159,7 @@ describe('useTodoLists', () => {
       result.current.saveList(updated);
     });
 
-    expect(result.current.todoLists[0].title).toBe('Updated Title');
+    expect(result.current.todoLists[0]).toMatchObject({ title: 'Updated Title', updatedAt: 1234 });
     expect(storage.saveTodoLists).toHaveBeenCalled();
   });
 
@@ -173,6 +179,7 @@ describe('useTodoLists', () => {
       {
         id: 'list-1',
         title: 'L1',
+        updatedAt: 1,
         tasks: [
           {
             id: 't1',

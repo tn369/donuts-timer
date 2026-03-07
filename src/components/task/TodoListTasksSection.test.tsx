@@ -60,6 +60,8 @@ describe('TodoListTasksSection', () => {
       <TodoListTasksSection
         todoTasks={todoTasks}
         allExistingIcons={[]}
+        allTodoLists={[]}
+        currentListId="current-list"
         onTaskChange={vi.fn()}
         onRemoveTask={vi.fn()}
         onRewardSettingsChange={vi.fn()}

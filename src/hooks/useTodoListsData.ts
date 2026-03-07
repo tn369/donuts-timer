@@ -45,13 +45,17 @@ export const useTodoListsData = () => {
   };
 
   const saveList = (updatedList: TodoList) => {
+    const nextUpdatedList = {
+      ...updatedList,
+      updatedAt: Date.now(),
+    };
     const existingIndex = todoLists.findIndex((list) => list.id === updatedList.id);
     let updatedLists: TodoList[];
 
     if (existingIndex === -1) {
-      updatedLists = [...todoLists, updatedList];
+      updatedLists = [...todoLists, nextUpdatedList];
     } else {
-      updatedLists = todoLists.map((list) => (list.id === updatedList.id ? updatedList : list));
+      updatedLists = todoLists.map((list) => (list.id === updatedList.id ? nextUpdatedList : list));
     }
 
     setTodoLists(updatedLists);

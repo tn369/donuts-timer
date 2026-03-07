@@ -100,6 +100,7 @@ export interface TodoList {
   id: string;
   title: string;
   tasks: Task[];
+  updatedAt?: number; // 最終更新時刻（名称補完の優先順位判定に使用）
   targetTimeSettings?: TargetTimeSettings; // オプショナル（後方互換性のため、将来的に削除予定）
   timerSettings?: TimerSettings; // オプショナル（互換性のため）
 }

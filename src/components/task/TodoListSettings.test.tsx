@@ -16,6 +16,7 @@ describe('TodoListSettings', () => {
   const mockList: TodoList = {
     id: '1',
     title: 'あさ',
+    updatedAt: 0,
     tasks: [],
     timerSettings: { shape: 'circle', color: 'blue' },
   };

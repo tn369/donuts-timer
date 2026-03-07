@@ -73,6 +73,7 @@ const migrateTodoList = (list: TodoList): TodoList => {
     return {
       ...list,
       title: migratedTitle,
+      updatedAt: list.updatedAt ?? 0,
       tasks: migratedTasks,
       // targetTimeSettingsは保持(後方互換性のため)
     };
@@ -81,6 +82,7 @@ const migrateTodoList = (list: TodoList): TodoList => {
   return {
     ...list,
     title: migratedTitle,
+    updatedAt: list.updatedAt ?? 0,
   };
 };
 

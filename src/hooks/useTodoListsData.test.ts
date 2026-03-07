@@ -13,11 +13,12 @@ vi.mock('../storage', () => ({
 describe('useTodoListsData', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(Date, 'now').mockReturnValue(1234);
   });
 
   it('should load lists from storage on initialization', () => {
     // 初期化時にストレージからリストを読み込むこと
-    const mockLists = [{ id: 'l1', title: 'L1', tasks: [] }];
+    const mockLists = [{ id: 'l1', title: 'L1', updatedAt: 1, tasks: [] }];
     vi.mocked(storage.loadTodoLists).mockReturnValue(mockLists);
 
     const { result } = renderHook(() => useTodoListsData());
@@ -40,7 +41,7 @@ describe('useTodoListsData', () => {
   });
 
   it('should delete a list', () => {
-    const mockLists = [{ id: 'l1', title: 'L1', tasks: [] }];
+    const mockLists = [{ id: 'l1', title: 'L1', updatedAt: 1, tasks: [] }];
     vi.mocked(storage.loadTodoLists).mockReturnValue(mockLists);
     const { result } = renderHook(() => useTodoListsData());
 
@@ -61,11 +62,11 @@ describe('useTodoListsData', () => {
       result.current.saveList(newList);
     });
 
-    expect(result.current.todoLists).toContainEqual(newList);
+    expect(result.current.todoLists).toContainEqual({ ...newList, updatedAt: 1234 });
   });
 
   it('should save a list (update if exists)', () => {
-    const mockLists = [{ id: 'l1', title: 'L1', tasks: [] }];
+    const mockLists = [{ id: 'l1', title: 'L1', updatedAt: 1, tasks: [] }];
     vi.mocked(storage.loadTodoLists).mockReturnValue(mockLists);
     const { result } = renderHook(() => useTodoListsData());
     const updatedList = { id: 'l1', title: 'Updated', tasks: [] };
@@ -74,13 +75,13 @@ describe('useTodoListsData', () => {
       result.current.saveList(updatedList);
     });
 
-    expect(result.current.todoLists[0].title).toBe('Updated');
+    expect(result.current.todoLists[0]).toMatchObject({ title: 'Updated', updatedAt: 1234 });
   });
 
   it('should reorder lists', () => {
     const mockLists = [
-      { id: 'l1', title: 'L1', tasks: [] },
-      { id: 'l2', title: 'L2', tasks: [] },
+      { id: 'l1', title: 'L1', updatedAt: 1, tasks: [] },
+      { id: 'l2', title: 'L2', updatedAt: 2, tasks: [] },
     ];
     vi.mocked(storage.loadTodoLists).mockReturnValue(mockLists);
     const { result } = renderHook(() => useTodoListsData());
