@@ -48,6 +48,7 @@ const DurationModeEditor: React.FC<{
           unit="ふん"
           disabled={task.rewardSettings?.mode === 'target-time'}
           min={1}
+          max={60}
           step={5}
         />
       </div>

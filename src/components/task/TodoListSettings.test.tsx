@@ -22,13 +22,11 @@ describe('TodoListSettings', () => {
 
   it('ヘッダーが表示されること', () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
-
     expect(screen.getByText('やることリスト の せってい')).toBeInTheDocument();
   });
 
   it('保存ボタンが表示されること', () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
-
     expect(screen.getByText('ほぞんする')).toBeInTheDocument();
   });
 
@@ -54,13 +52,10 @@ describe('TodoListSettings', () => {
 
   it('タスクが追加できること', async () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
-
     const addButton = screen.getByText('やること を ついか');
     act(() => {
       addButton.click();
     });
-
-    // 新しく追加されたタスクのデフォルト名が表示されていることを確認
     expect(await screen.findByDisplayValue('あたらしいやること')).toBeInTheDocument();
   });
 
@@ -191,21 +186,53 @@ describe('TodoListSettings', () => {
     });
   });
 
+  it('ごほうびの固定時間は60分を超えて入力しても60分で保存されること', () => {
+    const onSave = vi.fn();
+    const listWithDurationReward: TodoList = {
+      ...mockList,
+      tasks: [
+        {
+          id: 'reward-task',
+          name: 'あそぶ',
+          icon: '',
+          plannedSeconds: 900,
+          kind: 'reward',
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+          rewardSettings: {
+            mode: 'duration',
+          },
+        },
+      ],
+    };
+
+    render(<TodoListSettings list={listWithDurationReward} onSave={onSave} onBack={vi.fn()} />);
+
+    const rewardMinutesInput = screen.getByDisplayValue('15');
+    fireEvent.change(rewardMinutesInput, { target: { value: '99' } });
+    fireEvent.click(screen.getByText('ほぞんする'));
+
+    const savedList = onSave.mock.calls[0]?.[0] as TodoList | undefined;
+
+    expect(savedList?.tasks[0]).toMatchObject({
+      id: 'reward-task',
+      plannedSeconds: 60 * 60,
+      rewardSettings: {
+        mode: 'duration',
+      },
+    });
+  });
+
   it('保存時にタイトルからサフィックスが除去されること', () => {
     const onSave = vi.fn();
     render(<TodoListSettings list={mockList} onSave={onSave} onBack={vi.fn()} />);
-
-    // タイトル入力欄を変更
     const titleInput = screen.getByPlaceholderText('なまえ');
     fireEvent.change(titleInput, { target: { value: 'よる' } });
-
-    // 保存ボタンをクリック
     const saveButton = screen.getByText('ほぞんする');
     act(() => {
       saveButton.click();
     });
-
-    // onSaveが呼ばれ、titleにサフィックスが含まれていないことを確認
     expect(onSave).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'よる',
@@ -294,8 +321,6 @@ describe('TodoListSettings', () => {
     it('変更がある場合、確認ダイアログを表示すること', () => {
       const onBack = vi.fn();
       render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={onBack} />);
-
-      // タスクを追加して変更状態にする
       const addButton = screen.getByText('やること を ついか');
       act(() => {
         addButton.click();
@@ -305,8 +330,6 @@ describe('TodoListSettings', () => {
       act(() => {
         backButton.click();
       });
-
-      // カスタムダイアログが表示されていることを確認
       expect(
         screen.getByText('へんこう されています。ほぞんせずに もどりますか？')
       ).toBeInTheDocument();

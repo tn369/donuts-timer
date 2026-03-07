@@ -220,4 +220,32 @@ describe('TimeStepper', () => {
       expect(input).toHaveValue('1');
     });
   });
+
+  describe('max プロパティ', () => {
+    it('maxが指定されている時、それ以上には増やせないこと', () => {
+      const onChange = vi.fn();
+      const { rerender } = render(
+        <TimeStepper value={55} onChange={onChange} unit="ふん" max={60} step={5} />
+      );
+
+      const plusButton = screen.getByText('+');
+      expect(plusButton).not.toBeDisabled();
+
+      fireEvent.click(plusButton);
+      expectLastOnChange(onChange, 60, { source: 'increment', wrapped: false });
+
+      rerender(<TimeStepper value={60} onChange={onChange} unit="ふん" max={60} step={5} />);
+      expect(plusButton).toBeDisabled();
+    });
+
+    it('maxが指定されている時、直接入力でもmaxを超えないこと', () => {
+      const onChange = vi.fn();
+      render(<TimeStepper value={10} onChange={onChange} unit="ふん" max={60} />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '99' } });
+
+      expectLastOnChange(onChange, 60, { source: 'input', wrapped: false });
+    });
+  });
 });
