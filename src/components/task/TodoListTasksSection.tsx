@@ -30,7 +30,7 @@ const ReorderableTaskItem: React.FC<{
 };
 
 interface TodoListTasksSectionProps {
-  tasks: Task[];
+  todoTasks: Task[];
   allExistingIcons: string[];
   onTaskChange: (taskId: string, updates: Partial<Task>) => void;
   onRemoveTask: (taskId: string) => void;
@@ -40,7 +40,7 @@ interface TodoListTasksSectionProps {
 }
 
 export const TodoListTasksSection: React.FC<TodoListTasksSectionProps> = ({
-  tasks,
+  todoTasks,
   allExistingIcons,
   onTaskChange,
   onRemoveTask,
@@ -49,16 +49,16 @@ export const TodoListTasksSection: React.FC<TodoListTasksSectionProps> = ({
   onAddTask,
 }) => (
   <section className={styles.settingsSection}>
-    <h2 className={styles.sectionTitle}>やること の せってい</h2>
+    <h2 className={styles.sectionTitle}>やること の いちらん</h2>
 
     <div className={styles.taskEditorList}>
       <Reorder.Group
         axis="y"
-        values={tasks}
+        values={todoTasks}
         onReorder={onReorderTasks}
         className={styles.reorderGroup}
       >
-        {tasks.map((task) => (
+        {todoTasks.map((task) => (
           <ReorderableTaskItem
             key={task.id}
             task={task}

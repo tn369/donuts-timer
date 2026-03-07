@@ -28,16 +28,19 @@ describe('TodoListSettings', () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
     const nameHeading = screen.getByRole('heading', { name: 'リストのなまえ' });
-    const tasksHeading = screen.getByRole('heading', { name: 'やること の せってい' });
+    const tasksHeading = screen.getByRole('heading', { name: 'やること の いちらん' });
+    const rewardHeading = screen.getByRole('heading', { name: 'ごほうび の せってい' });
     const shapeHeading = screen.getByRole('heading', { name: 'どーなつタイマー の かたち' });
     const colorHeading = screen.getByRole('heading', { name: 'どーなつタイマー の いろ' });
 
     const namePos = nameHeading.compareDocumentPosition(tasksHeading);
-    const tasksPos = tasksHeading.compareDocumentPosition(shapeHeading);
+    const tasksPos = tasksHeading.compareDocumentPosition(rewardHeading);
+    const rewardPos = rewardHeading.compareDocumentPosition(shapeHeading);
     const shapePos = shapeHeading.compareDocumentPosition(colorHeading);
 
     expect(namePos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(tasksPos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(rewardPos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(shapePos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -51,6 +54,43 @@ describe('TodoListSettings', () => {
 
     // 新しく追加されたタスクのデフォルト名が表示されていることを確認
     expect(await screen.findByDisplayValue('あたらしいやること')).toBeInTheDocument();
+  });
+
+  it('ごほうび設定がやること一覧と別セクションで表示されること', () => {
+    const listWithReward: TodoList = {
+      ...mockList,
+      tasks: [
+        {
+          id: 'task-1',
+          name: 'はみがき',
+          icon: '',
+          plannedSeconds: 300,
+          kind: 'todo',
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+        },
+        {
+          id: 'reward-task',
+          name: 'あそぶ',
+          icon: '',
+          plannedSeconds: 900,
+          kind: 'reward',
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+        },
+      ],
+    };
+
+    render(<TodoListSettings list={listWithReward} onSave={vi.fn()} onBack={vi.fn()} />);
+
+    expect(screen.getByRole('heading', { name: 'やること の いちらん' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'ごほうび の せってい' })).toBeInTheDocument();
+    expect(
+      screen.getByText('やること が おわった あとに さいごに する ごほうび を きめよう')
+    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue('あそぶ')).toBeInTheDocument();
   });
 
   it('保存時にタイトルからサフィックスが除去されること', () => {

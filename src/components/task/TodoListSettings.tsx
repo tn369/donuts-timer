@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RewardTaskSettings, Task, TimerColor, TimerShape, TodoList } from '../../types';
+import { RewardSettingsSection } from './RewardSettingsSection';
 import { TodoListAppearanceSection } from './TodoListAppearanceSection';
 import { TodoListNameSection } from './TodoListNameSection';
 import { TITLE_SUFFIX } from './TodoListSettings.constants';
@@ -127,6 +128,8 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
   };
 
   const hasChanges = JSON.stringify(list) !== JSON.stringify(editedList);
+  const todoTasks = editedList.tasks.filter((task) => task.kind === 'todo');
+  const rewardTask = editedList.tasks.find((task) => task.kind === 'reward') ?? null;
 
   const handleBack = () => {
     if (hasChanges) {
@@ -181,13 +184,24 @@ export const TodoListSettings: React.FC<TodoListSettingsProps> = ({
         />
 
         <TodoListTasksSection
-          tasks={editedList.tasks}
+          todoTasks={todoTasks}
           allExistingIcons={allExistingIcons}
           onTaskChange={handleTaskChange}
           onRemoveTask={removeTask}
           onRewardSettingsChange={handleRewardSettingsChange}
-          onReorderTasks={handleReorderTasks}
+          onReorderTasks={(newTodoOrder) => {
+            const nextTasks = rewardTask ? [...newTodoOrder, rewardTask] : newTodoOrder;
+            handleReorderTasks(nextTasks);
+          }}
           onAddTask={addTask}
+        />
+
+        <RewardSettingsSection
+          rewardTask={rewardTask}
+          allExistingIcons={allExistingIcons}
+          onTaskChange={handleTaskChange}
+          onRemoveTask={removeTask}
+          onRewardSettingsChange={handleRewardSettingsChange}
         />
 
         <TodoListAppearanceSection

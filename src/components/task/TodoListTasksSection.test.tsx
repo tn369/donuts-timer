@@ -42,7 +42,7 @@ vi.mock('./TaskEditorItem', () => ({
 }));
 
 describe('TodoListTasksSection', () => {
-  const tasks: Task[] = [
+  const todoTasks: Task[] = [
     {
       id: 'task-1',
       name: 'はみがき',
@@ -58,7 +58,7 @@ describe('TodoListTasksSection', () => {
   it('やることの並び替え軸が縦方向であること', () => {
     render(
       <TodoListTasksSection
-        tasks={tasks}
+        todoTasks={todoTasks}
         allExistingIcons={[]}
         onTaskChange={vi.fn()}
         onRemoveTask={vi.fn()}
