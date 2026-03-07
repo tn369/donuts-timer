@@ -84,7 +84,6 @@
 }
 
 .hero h1 {
-  max-width: 780px;
   margin-bottom: 18px;
   font-size: clamp(2rem, 4vw, 3.5rem);
   line-height: 1.1;
@@ -92,7 +91,6 @@
 }
 
 .heroText {
-  max-width: 720px;
   font-size: 1.05rem;
   line-height: 1.8;
   color: var(--color-text-muted);
@@ -123,7 +121,6 @@
 }
 
 .conceptPanel p {
-  max-width: 760px;
   font-size: 1rem;
   line-height: 1.9;
   color: var(--color-text-muted);
