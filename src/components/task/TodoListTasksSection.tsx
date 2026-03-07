@@ -49,7 +49,7 @@ export const TodoListTasksSection: React.FC<TodoListTasksSectionProps> = ({
   onAddTask,
 }) => (
   <section className={styles.settingsSection}>
-    <h2 className={styles.sectionTitle}>やること の いちらん</h2>
+    <h2 className={styles.sectionTitle}>やること</h2>
 
     <div className={styles.taskEditorList}>
       <Reorder.Group

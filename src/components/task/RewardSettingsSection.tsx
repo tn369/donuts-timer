@@ -21,7 +21,7 @@ export const RewardSettingsSection: React.FC<RewardSettingsSectionProps> = ({
 }) => (
   <section className={styles.settingsSection}>
     <div className={styles.rewardSectionHeader}>
-      <h2 className={styles.sectionTitle}>ごほうび の せってい</h2>
+      <h2 className={styles.sectionTitle}>ごほうび</h2>
       <p className={styles.sectionDescription}>
         やること が おわった あとに さいごに する ごほうび を きめよう
       </p>

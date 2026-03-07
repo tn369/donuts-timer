@@ -28,8 +28,8 @@ describe('TodoListSettings', () => {
     render(<TodoListSettings list={mockList} onSave={vi.fn()} onBack={vi.fn()} />);
 
     const nameHeading = screen.getByRole('heading', { name: 'リストのなまえ' });
-    const tasksHeading = screen.getByRole('heading', { name: 'やること の いちらん' });
-    const rewardHeading = screen.getByRole('heading', { name: 'ごほうび の せってい' });
+    const tasksHeading = screen.getByRole('heading', { name: 'やること' });
+    const rewardHeading = screen.getByRole('heading', { name: 'ごほうび' });
     const shapeHeading = screen.getByRole('heading', { name: 'どーなつタイマー の かたち' });
     const colorHeading = screen.getByRole('heading', { name: 'どーなつタイマー の いろ' });
 
@@ -85,8 +85,8 @@ describe('TodoListSettings', () => {
 
     render(<TodoListSettings list={listWithReward} onSave={vi.fn()} onBack={vi.fn()} />);
 
-    expect(screen.getByRole('heading', { name: 'やること の いちらん' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'ごほうび の せってい' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'やること' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'ごほうび' })).toBeInTheDocument();
     expect(
       screen.getByText('やること が おわった あとに さいごに する ごほうび を きめよう')
     ).toBeInTheDocument();
