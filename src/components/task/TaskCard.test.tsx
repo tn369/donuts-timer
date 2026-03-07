@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Task } from '../../types';
-import { TaskCard } from './TaskCard';
+import { type RewardGainVisualState, TaskCard } from './TaskCard';
 
 const baseTask: Task = {
   id: 'task-1',
@@ -16,6 +16,12 @@ const baseTask: Task = {
 };
 
 describe('TaskCard', () => {
+  const rewardGainVisualState: RewardGainVisualState = {
+    deltaSeconds: 30,
+    previousPlannedSeconds: 90,
+    phase: 'message',
+  };
+
   it('選択中かつ実行中のタスクでは「できた！」ボタンを表示する', () => {
     render(
       <TaskCard
@@ -98,24 +104,47 @@ describe('TaskCard', () => {
     expect(screen.getByText('おわり')).toBeInTheDocument();
   });
 
-  it('ごほうび増加通知があると補助ラベルと計測用属性を表示する', () => {
+  it('ごほうび増加メッセージphaseで補助ラベルを表示する', () => {
     const { container } = render(
       <TaskCard
         task={{ ...baseTask, id: 'reward-1', kind: 'reward' }}
         isSelected={false}
         isSelectable={true}
         onSelect={vi.fn()}
-        rewardGainNotice={{
-          taskId: 'task-1',
-          taskName: 'はみがき',
-          deltaSeconds: 30,
-          occurredAt: 1000,
-        }}
+        rewardGainVisualState={rewardGainVisualState}
       />
     );
 
     expect(screen.getByText('30びょう ふえたよ！')).toBeInTheDocument();
     expect(container.querySelector('[data-task-id="reward-1"]')).toBeInTheDocument();
     expect(container.querySelector('[data-timer-anchor="true"]')).toBeInTheDocument();
+  });
+
+  it('ごほうび増加メッセージphase以外では補助ラベルを表示しない', () => {
+    render(
+      <TaskCard
+        task={{ ...baseTask, id: 'reward-1', kind: 'reward' }}
+        isSelected={false}
+        isSelectable={true}
+        onSelect={vi.fn()}
+        rewardGainVisualState={{ ...rewardGainVisualState, phase: 'overlay' }}
+      />
+    );
+
+    expect(screen.queryByText('30びょう ふえたよ！')).not.toBeInTheDocument();
+  });
+
+  it('ごほうびカードでは表示用plannedSecondsを優先する', () => {
+    const { container } = render(
+      <TaskCard
+        task={{ ...baseTask, id: 'reward-1', kind: 'reward', plannedSeconds: 1200 }}
+        isSelected={false}
+        isSelectable={true}
+        onSelect={vi.fn()}
+        rewardGainVisualState={{ ...rewardGainVisualState, phase: 'overlay' }}
+      />
+    );
+
+    expect(container.querySelectorAll('[data-testid="timer-chunk"]')).toHaveLength(1);
   });
 });

@@ -8,10 +8,16 @@ import { Camera, Check, GripVertical } from 'lucide-react';
 import React from 'react';
 
 import { useElementSize } from '../../hooks/useElementSize';
-import type { RewardGainNotice, Task, TimerColor, TimerShape } from '../../types';
+import type { Task, TimerColor, TimerShape } from '../../types';
 import { formatTime } from '../../utils/time';
 import { DonutTimer } from '../timer/DonutTimer';
 import styles from './TaskCard.module.css';
+
+export interface RewardGainVisualState {
+  deltaSeconds: number;
+  previousPlannedSeconds: number;
+  phase: 'overlay' | 'lazy-add' | 'message';
+}
 
 /**
  * TaskCardのプロパティ
@@ -26,7 +32,7 @@ interface TaskCardProps {
   isCompact?: boolean; // コンパクト表示にするかどうか
   dragControls?: DragControls; // ドラッグ制御用
   isSingleTaskFocus?: boolean; // 実行中フォーカス表示かどうか
-  rewardGainNotice?: RewardGainNotice | null; // ごほうび増加通知
+  rewardGainVisualState?: RewardGainVisualState | null; // ごほうび増加の表示状態
 }
 
 /**
@@ -34,6 +40,7 @@ interface TaskCardProps {
  */
 interface TaskCardViewProps extends TaskCardProps {
   remaining: number; // 残り時間
+  displayPlannedSeconds: number; // 表示用の予定時間
   isDone: boolean; // 完了しているか
   isOverdue: boolean; // 時間超過しているか
   isRewardGainHighlighted: boolean; // ごほうび増加の強調状態か
@@ -59,11 +66,13 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   shape,
   color,
   remaining,
+  displayPlannedSeconds,
   isDone,
   isOverdue,
   dragControls,
   isSingleTaskFocus = false,
   isRewardGainHighlighted,
+  rewardGainVisualState,
 }) => {
   const { ref: compactBottomRef, size: compactBottomSize } = useElementSize<HTMLDivElement>();
   const compactTimerMaxDiameter =
@@ -109,7 +118,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
           </div>
         ) : (
           <DonutTimer
-            totalSeconds={task.plannedSeconds}
+            totalSeconds={displayPlannedSeconds}
             elapsedSeconds={task.elapsedSeconds}
             isOverdue={isOverdue}
             size={isSingleTaskFocus ? 120 : 80}
@@ -117,6 +126,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
             shape={shape}
             color={color}
             maxDiameterPx={compactTimerMaxDiameter}
+            rewardGainAnimation={getDonutRewardGainAnimation(rewardGainVisualState ?? null)}
           />
         )}
       </div>
@@ -133,11 +143,13 @@ const TaskCardBody: React.FC<TaskCardViewProps> = ({
   shape,
   color,
   remaining,
+  displayPlannedSeconds,
   isDone,
   isOverdue,
   dragControls,
   isSingleTaskFocus = false,
   isRewardGainHighlighted,
+  rewardGainVisualState,
 }) => {
   const { ref: timerSlotRef, size: timerSlotSize } = useElementSize<HTMLDivElement>();
   const timerMaxDiameter =
@@ -201,7 +213,7 @@ const TaskCardBody: React.FC<TaskCardViewProps> = ({
           </div>
         ) : (
           <DonutTimer
-            totalSeconds={task.plannedSeconds}
+            totalSeconds={displayPlannedSeconds}
             elapsedSeconds={task.elapsedSeconds}
             isOverdue={isOverdue}
             size={isSingleTaskFocus ? 170 : 100}
@@ -209,6 +221,7 @@ const TaskCardBody: React.FC<TaskCardViewProps> = ({
             shape={shape}
             color={color}
             maxDiameterPx={timerMaxDiameter}
+            rewardGainAnimation={getDonutRewardGainAnimation(rewardGainVisualState ?? null)}
           />
         )}
       </div>
@@ -289,6 +302,38 @@ const getRewardGainMessage = (deltaSeconds: number): string => {
   return `${formatRewardGainText(deltaSeconds)} ふえたよ！`;
 };
 
+const getDonutRewardGainAnimation = (rewardGainVisualState: RewardGainVisualState | null) => {
+  if (rewardGainVisualState?.phase !== 'lazy-add') {
+    return null;
+  }
+
+  return {
+    previousTotalSeconds: rewardGainVisualState.previousPlannedSeconds,
+    deltaSeconds: rewardGainVisualState.deltaSeconds,
+    phase: 'lazy-add' as const,
+  };
+};
+
+const getRewardGainDisplay = (task: Task, rewardGainVisualState: RewardGainVisualState | null) => {
+  if (task.kind !== 'reward' || !rewardGainVisualState) {
+    return {
+      displayPlannedSeconds: task.plannedSeconds,
+      shouldShowRewardGainNotice: false,
+      isRewardGainHighlighted: false,
+    };
+  }
+
+  return {
+    displayPlannedSeconds:
+      rewardGainVisualState.phase === 'overlay'
+        ? rewardGainVisualState.previousPlannedSeconds
+        : task.plannedSeconds,
+    shouldShowRewardGainNotice:
+      rewardGainVisualState.phase === 'message' && rewardGainVisualState.deltaSeconds > 0,
+    isRewardGainHighlighted: rewardGainVisualState.phase === 'lazy-add',
+  };
+};
+
 /**
  * タスクカードコンポーネント
  * @param root0 プロパティオブジェクト
@@ -301,7 +346,7 @@ const getRewardGainMessage = (deltaSeconds: number): string => {
  * @param root0.isCompact コンパクト表示かどうか
  * @param root0.dragControls ドラッグ制御用
  * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
- * @param root0.rewardGainNotice ごほうび時間増加の通知データ
+ * @param root0.rewardGainVisualState ごほうび時間増加の表示状態
  * @returns レンダリングされるJSX要素
  */
 // 複数の表示状態とアニメーション条件をまとめるため、このコンポーネントのみ複雑度を緩和する
@@ -316,18 +361,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   isCompact = false,
   dragControls,
   isSingleTaskFocus = false,
-  rewardGainNotice = null,
+  rewardGainVisualState = null,
 }) => {
-  const remaining = task.plannedSeconds - task.elapsedSeconds;
+  const rewardGainDisplay = getRewardGainDisplay(task, rewardGainVisualState);
+  const { displayPlannedSeconds, shouldShowRewardGainNotice, isRewardGainHighlighted } =
+    rewardGainDisplay;
+  const remaining = Math.max(0, displayPlannedSeconds - task.elapsedSeconds);
   const isDone = task.status === 'done';
-  const isOverdue = !isDone && task.elapsedSeconds > task.plannedSeconds;
+  const isOverdue = !isDone && task.elapsedSeconds > displayPlannedSeconds;
   const isReward = task.kind === 'reward';
-  const shouldShowRewardGainNotice =
-    isReward && rewardGainNotice && rewardGainNotice.deltaSeconds > 0;
-  const isRewardGainHighlighted = Boolean(shouldShowRewardGainNotice);
   const shouldShowCompleteButton = isSelected && task.status === 'running';
   const completeButtonText = isReward ? 'おわり' : 'できた！';
   const completeAriaLabel = isReward ? `${task.name}をおわりにする` : `${task.name}をできたにする`;
+  const rewardGainMessage =
+    shouldShowRewardGainNotice && rewardGainVisualState
+      ? getRewardGainMessage(rewardGainVisualState.deltaSeconds)
+      : null;
 
   const cardClassName = getCardClassName(
     isSelected,
@@ -353,11 +402,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     shape,
     color,
     remaining,
+    displayPlannedSeconds,
     isDone,
     isOverdue,
     dragControls,
     isSingleTaskFocus,
     isRewardGainHighlighted,
+    rewardGainVisualState,
   };
 
   return (
@@ -389,7 +440,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           transition={{ duration: 0.28, ease: 'easeOut' }}
           aria-live="polite"
         >
-          {getRewardGainMessage(rewardGainNotice.deltaSeconds)}
+          {rewardGainMessage}
         </motion.div>
       )}
       {isCompact ? <TaskCardCompact {...viewProps} /> : <TaskCardBody {...viewProps} />}

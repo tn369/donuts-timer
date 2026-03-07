@@ -21,7 +21,33 @@ interface TimerChunkProps {
   color: TimerColor; // カラー
   isOverdue: boolean; // 時間超過しているかどうか
   children?: React.ReactNode; // 中央に表示する要素
+  rewardGainMode?: 'none' | 'added' | 'expanded';
+  chunkIndex?: number;
 }
+
+const getChunkAnimateProps = (rewardGainMode: TimerChunkProps['rewardGainMode']) => {
+  if (rewardGainMode === 'added') {
+    return {
+      initial: { opacity: 0, scale: 0.4, y: 14 },
+      animate: { opacity: 1, scale: [0.4, 1.14, 1], y: [14, -6, 0] },
+      transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+    };
+  }
+
+  if (rewardGainMode === 'expanded') {
+    return {
+      initial: false,
+      animate: { scale: [1, 1.08, 1], rotate: [0, -3, 0] },
+      transition: { duration: 0.42, ease: 'easeOut' as const },
+    };
+  }
+
+  return {
+    initial: false,
+    animate: { opacity: 1, scale: 1, y: 0 },
+    transition: undefined,
+  };
+};
 
 /**
  * カラー名からCSSクラス名を取得する
@@ -142,6 +168,8 @@ const OuterBorder: React.FC<{ renderer: ShapeRenderer }> = ({ renderer }) => {
  * @param root0.color カラー
  * @param root0.isOverdue 時間超過しているかどうか
  * @param root0.children 中央に表示する要素
+ * @param root0.rewardGainMode ごほうび増加時のチャンク演出モード
+ * @param root0.chunkIndex 表示順インデックス
  * @returns レンダリングされるJSX要素
  */
 export const TimerChunk: React.FC<TimerChunkProps> = ({
@@ -153,6 +181,8 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
   color,
   isOverdue,
   children,
+  rewardGainMode = 'none',
+  chunkIndex = 0,
 }) => {
   const renderer = useMemo(
     () => createRenderer(shape, size, strokeWidth),
@@ -163,6 +193,7 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
   const offset = perimeter * (1 - progress);
   const ticksCount = renderer.getTicksCount();
   const rotationDegree = 360 / ticksCount;
+  const chunkAnimationProps = getChunkAnimateProps(rewardGainMode);
 
   const fillClassName = `
     ${styles.donutTimerFill} 
@@ -171,10 +202,15 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
   `.trim();
 
   return (
-    <div
+    <motion.div
       className={styles.donutTimer}
       style={{ width: size, height: size }}
       data-testid="timer-chunk"
+      data-chunk-index={chunkIndex}
+      data-reward-gain-mode={rewardGainMode}
+      initial={chunkAnimationProps.initial}
+      animate={chunkAnimationProps.animate}
+      transition={chunkAnimationProps.transition}
     >
       <svg
         width={size}
@@ -218,6 +254,6 @@ export const TimerChunk: React.FC<TimerChunkProps> = ({
           ))}
       </svg>
       {children && <div className={styles.donutTimerHole}>{children}</div>}
-    </div>
+    </motion.div>
   );
 };

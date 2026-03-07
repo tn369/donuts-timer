@@ -217,15 +217,35 @@ describe('MainTimerView Integration', () => {
         vi.advanceTimersByTime(16);
       });
 
-      expect(screen.getByText(/10びょう ふえたよ！/)).toBeInTheDocument();
+      const getRewardChunks = () =>
+        document.querySelectorAll('[data-task-kind="reward"] [data-testid="timer-chunk"]');
+
       expect(screen.getByTestId('reward-gain-overlay')).toBeInTheDocument();
+      expect(screen.queryByText(/10びょう ふえたよ！/)).not.toBeInTheDocument();
+      expect(getRewardChunks()).toHaveLength(1);
 
       act(() => {
-        vi.advanceTimersByTime(2500);
+        vi.advanceTimersByTime(1200);
       });
 
       expect(screen.queryByText(/10びょう ふえたよ！/)).not.toBeInTheDocument();
+      expect(screen.getByTestId('donut-timer-group')).toHaveAttribute(
+        'data-reward-gain-phase',
+        'lazy-add'
+      );
+
+      act(() => {
+        vi.advanceTimersByTime(500);
+      });
+
+      expect(screen.getByText(/10びょう ふえたよ！/)).toBeInTheDocument();
       expect(screen.queryByTestId('reward-gain-overlay')).not.toBeInTheDocument();
+
+      act(() => {
+        vi.advanceTimersByTime(1200);
+      });
+
+      expect(screen.queryByText(/10びょう ふえたよ！/)).not.toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

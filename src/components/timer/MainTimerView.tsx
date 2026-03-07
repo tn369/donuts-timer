@@ -12,6 +12,7 @@ import type { Task, TodoList } from '../../types';
 import { useTaskTimer } from '../../useTaskTimer';
 import { ResetModal } from '../modals/ResetModal';
 import { ResumeModal } from '../modals/ResumeModal';
+import type { RewardGainVisualState } from '../task/TaskCard';
 import { TaskList } from '../task/TaskList';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
@@ -45,6 +46,12 @@ const getVisibleTasksForDisplay = (
 };
 
 const REWARD_GAIN_OVERLAY_MS = 1200;
+const REWARD_GAIN_LAZY_ADD_MS = 500;
+const REWARD_GAIN_MESSAGE_MS = 1200;
+
+interface RewardGainPresentation {
+  visualState: RewardGainVisualState;
+}
 
 const getTimerAnchorSnapshot = (
   container: HTMLDivElement,
@@ -136,6 +143,10 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
   const [rewardGainAnimation, setRewardGainAnimation] =
     useState<RewardGainAnimationSnapshot | null>(null);
+  const [rewardGainSequence, setRewardGainSequence] = useState<{
+    occurredAt: number;
+    phase: RewardGainVisualState['phase'];
+  } | null>(null);
   const timerViewRef = useRef<HTMLDivElement>(null);
   const [countdownWarningEnabled] = useState<boolean>(
     () => loadUiSettings().countdownWarningEnabled
@@ -176,6 +187,32 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   );
 
   const isSingleTaskFocus = isTimerRunning && visibleTasks.length === 1;
+  const rewardGainPresentation = useMemo<RewardGainPresentation | null>(() => {
+    if (!rewardGainNotice) {
+      return null;
+    }
+
+    const rewardTask = tasks.find((task) => task.kind === 'reward');
+    if (!rewardTask) {
+      return null;
+    }
+
+    const previousPlannedSeconds = Math.max(
+      rewardTask.elapsedSeconds,
+      rewardTask.plannedSeconds - rewardGainNotice.deltaSeconds
+    );
+
+    return {
+      visualState: {
+        deltaSeconds: rewardGainNotice.deltaSeconds,
+        previousPlannedSeconds,
+        phase:
+          rewardGainSequence?.occurredAt === rewardGainNotice.occurredAt
+            ? rewardGainSequence.phase
+            : 'overlay',
+      },
+    };
+  }, [rewardGainNotice, rewardGainSequence, tasks]);
 
   useEffect(() => {
     if (!rewardGainNotice) {
@@ -198,18 +235,28 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
       });
     });
 
-    const timerId = window.setTimeout(() => {
-      clearRewardGainNotice();
-    }, 2500);
-
-    const overlayTimerId = window.setTimeout(() => {
+    const lazyAddTimerId = window.setTimeout(() => {
       setRewardGainAnimation(null);
+      setRewardGainSequence({ occurredAt: rewardGainNotice.occurredAt, phase: 'lazy-add' });
     }, REWARD_GAIN_OVERLAY_MS);
+
+    const messageTimerId = window.setTimeout(() => {
+      setRewardGainSequence({ occurredAt: rewardGainNotice.occurredAt, phase: 'message' });
+    }, REWARD_GAIN_OVERLAY_MS + REWARD_GAIN_LAZY_ADD_MS);
+
+    const clearTimerId = window.setTimeout(
+      () => {
+        setRewardGainSequence(null);
+        clearRewardGainNotice();
+      },
+      REWARD_GAIN_OVERLAY_MS + REWARD_GAIN_LAZY_ADD_MS + REWARD_GAIN_MESSAGE_MS
+    );
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      window.clearTimeout(timerId);
-      window.clearTimeout(overlayTimerId);
+      window.clearTimeout(lazyAddTimerId);
+      window.clearTimeout(messageTimerId);
+      window.clearTimeout(clearTimerId);
     };
   }, [rewardGainNotice, clearRewardGainNotice]);
 
@@ -256,7 +303,7 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         onReorderTasks={reorderTasks}
         isReorderEnabled={!isTimerRunning}
         isSingleTaskFocus={isSingleTaskFocus}
-        rewardGainNotice={rewardGainNotice}
+        rewardGainVisualState={rewardGainPresentation?.visualState ?? null}
       />
 
       {rewardGainNotice && rewardGainAnimation && (

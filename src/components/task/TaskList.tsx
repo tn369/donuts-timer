@@ -4,8 +4,8 @@
 import { Reorder, useDragControls } from 'framer-motion';
 import React from 'react';
 
-import type { RewardGainNotice, Task, TimerColor, TimerShape } from '../../types';
-import { TaskCard } from './TaskCard';
+import type { Task, TimerColor, TimerShape } from '../../types';
+import { type RewardGainVisualState, TaskCard } from './TaskCard';
 import styles from './TaskList.module.css';
 
 /**
@@ -22,7 +22,7 @@ interface TaskListProps {
   onReorderTasks?: (fromIndex: number, toIndex: number) => void; // タスクを並び替える時のコールバック
   isReorderEnabled?: boolean; // タスクの並び替えが可能かどうか
   isSingleTaskFocus?: boolean; // 実行中フォーカス表示かどうか
-  rewardGainNotice?: RewardGainNotice | null;
+  rewardGainVisualState?: RewardGainVisualState | null;
 }
 
 interface ReorderableTaskItemProps {
@@ -34,7 +34,7 @@ interface ReorderableTaskItemProps {
   color?: TimerColor;
   isCompact: boolean;
   isSingleTaskFocus: boolean;
-  rewardGainNotice?: RewardGainNotice | null;
+  rewardGainVisualState?: RewardGainVisualState | null;
 }
 
 const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
@@ -46,7 +46,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
   color,
   isCompact,
   isSingleTaskFocus,
-  rewardGainNotice,
+  rewardGainVisualState,
 }) => {
   const dragControls = useDragControls();
 
@@ -69,7 +69,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
         isCompact={isCompact}
         isSingleTaskFocus={isSingleTaskFocus}
         dragControls={dragControls}
-        rewardGainNotice={rewardGainNotice}
+        rewardGainVisualState={task.kind === 'reward' ? rewardGainVisualState : null}
       />
     </Reorder.Item>
   );
@@ -88,7 +88,7 @@ const ReorderableTaskItem: React.FC<ReorderableTaskItemProps> = ({
  * @param root0.onReorderTasks タスクを並び替える時のコールバック
  * @param root0.isReorderEnabled タスクの並び替えが可能かどうか
  * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
- * @param root0.rewardGainNotice ごほうび時間増加の通知データ
+ * @param root0.rewardGainVisualState ごほうび時間増加の表示状態
  * @returns レンダリングされるJSX要素
  */
 // 通常表示と並び替え表示の分岐を含むため、このコンポーネントのみ複雑度を緩和する
@@ -104,7 +104,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   onReorderTasks,
   isReorderEnabled = true,
   isSingleTaskFocus = false,
-  rewardGainNotice = null,
+  rewardGainVisualState = null,
 }) => {
   const handleReorder = (newTasks: Task[]) => {
     if (!onReorderTasks) return;
@@ -140,7 +140,7 @@ export const TaskList: React.FC<TaskListProps> = ({
               color={color}
               isCompact={isCompact}
               isSingleTaskFocus={isSingleTaskFocus}
-              rewardGainNotice={rewardGainNotice}
+              rewardGainVisualState={task.kind === 'reward' ? rewardGainVisualState : null}
             />
           </div>
         ))}
@@ -169,7 +169,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           color={color}
           isCompact={isCompact}
           isSingleTaskFocus={isSingleTaskFocus}
-          rewardGainNotice={rewardGainNotice}
+          rewardGainVisualState={task.kind === 'reward' ? rewardGainVisualState : null}
         />
       ))}
     </Reorder.Group>

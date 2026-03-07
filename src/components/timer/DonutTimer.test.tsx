@@ -47,4 +47,46 @@ describe('DonutTimer', () => {
     const chunk = screen.getByTestId('timer-chunk');
     expect(Number.parseFloat(chunk.style.width)).toBeLessThanOrEqual(58);
   });
+
+  it('should mark newly added chunks during reward gain animation', () => {
+    const { container } = render(
+      <DonutTimer
+        totalSeconds={600}
+        elapsedSeconds={0}
+        rewardGainAnimation={{
+          previousTotalSeconds: 300,
+          deltaSeconds: 300,
+          phase: 'lazy-add',
+        }}
+      />
+    );
+
+    expect(screen.getByTestId('donut-timer-group')).toHaveAttribute(
+      'data-reward-gain-phase',
+      'lazy-add'
+    );
+    expect(container.querySelector('[data-chunk-index="1"]')).toHaveAttribute(
+      'data-reward-gain-mode',
+      'added'
+    );
+  });
+
+  it('should mark existing donut as expanded when reward gain does not add a chunk', () => {
+    const { container } = render(
+      <DonutTimer
+        totalSeconds={180}
+        elapsedSeconds={0}
+        rewardGainAnimation={{
+          previousTotalSeconds: 150,
+          deltaSeconds: 30,
+          phase: 'lazy-add',
+        }}
+      />
+    );
+
+    expect(container.querySelector('[data-chunk-index="0"]')).toHaveAttribute(
+      'data-reward-gain-mode',
+      'expanded'
+    );
+  });
 });
