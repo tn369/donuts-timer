@@ -8,10 +8,19 @@ describe('ParentGuidePage', () => {
     render(<ParentGuidePage onBack={vi.fn()} />);
 
     expect(screen.getByText('保護者向けガイド')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        name: '「やりたくない」から「楽しい」「うれしい」「やってみたい」へ',
+      })
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'コンセプト' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'できること' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '安心して使える点' })).toBeInTheDocument();
-    expect(screen.getByText(/お子様が目標に対して前向きに取り組む/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /どーなつタイマーは、お子様が目標に対して前向きに取り組むためのタイマーです。/
+      )
+    ).toBeInTheDocument();
     expect(screen.getByText(/ポジティブなコミュニケーション/)).toBeInTheDocument();
     expect(screen.getByText(/自己決定理論/)).toBeInTheDocument();
     expect(screen.getByText(/お子様が自ら目標を選んだり決めたりする補助/)).toBeInTheDocument();
