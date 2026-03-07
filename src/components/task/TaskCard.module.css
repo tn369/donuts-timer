@@ -199,6 +199,7 @@
 }
 
 .compactBottom {
+  position: relative;
   display: flex;
   flex: 1;
   align-items: center;
@@ -208,6 +209,7 @@
 }
 
 .timerSlot {
+  position: relative;
   display: flex;
   flex: 1;
   align-items: center;
@@ -255,9 +257,9 @@
   right: 12px;
   left: 12px;
   z-index: 30;
-  padding: 8px 12px;
+  padding: 6px 10px;
   font-family: Outfit, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
   line-height: 1.25;
   color: #9d174d;
@@ -265,9 +267,9 @@
   word-break: keep-all;
   background: linear-gradient(135deg, #fff1f7 0%, #ffe4f1 100%);
   border: 3px solid #f472b6;
-  border-radius: 16px;
+  border-radius: 999px;
   box-shadow:
-    0 10px 20px rgb(244 114 182 / 22%),
+    0 10px 20px rgb(244 114 182 / 18%),
     0 2px 0 rgb(255 255 255 / 80%) inset;
 }
 
@@ -275,9 +277,24 @@
   top: 6px;
   right: 8px;
   left: 8px;
-  padding: 5px 8px;
-  font-size: 12px;
+  padding: 4px 8px;
+  font-size: 11px;
   border-width: 2px;
+}
+
+.rewardGainTarget {
+  animation: reward-gain-target 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.rewardGainTarget::after {
+  position: absolute;
+  inset: 12%;
+  pointer-events: none;
+  content: '';
+  background: radial-gradient(circle, rgb(255 255 255 / 0%) 35%, rgb(255 122 162 / 22%) 100%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: reward-gain-glow 0.85s ease-out 0.58s both;
 }
 
 .completeButton {
@@ -335,6 +352,36 @@
 
   75% {
     transform: translateY(5px) rotate(1deg);
+  }
+}
+
+@keyframes reward-gain-target {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes reward-gain-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.24);
   }
 }
 

@@ -213,13 +213,19 @@ describe('MainTimerView Integration', () => {
         screen.getByRole('button', { name: /はみがきをできたにする/ }).click();
       });
 
+      act(() => {
+        vi.advanceTimersByTime(16);
+      });
+
       expect(screen.getByText(/10びょう ふえたよ！/)).toBeInTheDocument();
+      expect(screen.getByTestId('reward-gain-overlay')).toBeInTheDocument();
 
       act(() => {
         vi.advanceTimersByTime(2500);
       });
 
       expect(screen.queryByText(/10びょう ふえたよ！/)).not.toBeInTheDocument();
+      expect(screen.queryByTestId('reward-gain-overlay')).not.toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

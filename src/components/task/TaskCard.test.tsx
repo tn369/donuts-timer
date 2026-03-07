@@ -97,4 +97,25 @@ describe('TaskCard', () => {
     expect(screen.getByRole('button', { name: /おわりにする/ })).toBeInTheDocument();
     expect(screen.getByText('おわり')).toBeInTheDocument();
   });
+
+  it('ごほうび増加通知があると補助ラベルと計測用属性を表示する', () => {
+    const { container } = render(
+      <TaskCard
+        task={{ ...baseTask, id: 'reward-1', kind: 'reward' }}
+        isSelected={false}
+        isSelectable={true}
+        onSelect={vi.fn()}
+        rewardGainNotice={{
+          taskId: 'task-1',
+          taskName: 'はみがき',
+          deltaSeconds: 30,
+          occurredAt: 1000,
+        }}
+      />
+    );
+
+    expect(screen.getByText('30びょう ふえたよ！')).toBeInTheDocument();
+    expect(container.querySelector('[data-task-id="reward-1"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-timer-anchor="true"]')).toBeInTheDocument();
+  });
 });

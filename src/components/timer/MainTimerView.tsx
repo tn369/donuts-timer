@@ -2,7 +2,7 @@
  * タイマー実行画面のメインコンポーネント。タスク一覧とタイマー操作を統合する。
  */
 import { AnimatePresence } from 'framer-motion';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useCountdownWarning } from '../../hooks/useCountdownWarning';
 import { useTaskEffects } from '../../hooks/useTaskEffects';
@@ -15,6 +15,7 @@ import { ResumeModal } from '../modals/ResumeModal';
 import { TaskList } from '../task/TaskList';
 import { MainTimerHeaderControls } from './MainTimerHeaderControls';
 import styles from './MainTimerView.module.css';
+import { type RewardGainAnimationSnapshot, RewardGainOverlay } from './RewardGainOverlay';
 
 /**
  * MainTimerViewのプロパティ
@@ -41,6 +42,44 @@ const getVisibleTasksForDisplay = (
 
   const selected = tasks.find((task) => task.id === selectedTaskId);
   return selected ? [selected] : tasks;
+};
+
+const REWARD_GAIN_OVERLAY_MS = 1200;
+
+const getTimerAnchorSnapshot = (
+  container: HTMLDivElement,
+  sourceTaskId: string
+): RewardGainAnimationSnapshot | null => {
+  const sourceTimer = container.querySelector<HTMLElement>(
+    `[data-task-id="${sourceTaskId}"] [data-timer-anchor="true"]`
+  );
+  const rewardTimer = container.querySelector<HTMLElement>(
+    '[data-task-kind="reward"] [data-timer-anchor="true"]'
+  );
+
+  if (!sourceTimer || !rewardTimer) {
+    return null;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  const sourceRect = sourceTimer.getBoundingClientRect();
+  const rewardRect = rewardTimer.getBoundingClientRect();
+  const sourceSize = Math.min(
+    sourceRect.width || 72,
+    sourceRect.height || 72,
+    rewardRect.width || 72,
+    rewardRect.height || 72,
+    88
+  );
+
+  return {
+    fromX: sourceRect.left - containerRect.left + sourceRect.width / 2,
+    fromY: sourceRect.top - containerRect.top + sourceRect.height / 2,
+    toX: rewardRect.left - containerRect.left + rewardRect.width / 2,
+    toY: rewardRect.top - containerRect.top + rewardRect.height / 2,
+    size: Math.max(48, sourceSize * 0.58),
+    deltaSeconds: 0,
+  };
 };
 
 /**
@@ -95,6 +134,9 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
   const isCompactLayout = isSiblingMode || isAutoCompact;
 
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+  const [rewardGainAnimation, setRewardGainAnimation] =
+    useState<RewardGainAnimationSnapshot | null>(null);
+  const timerViewRef = useRef<HTMLDivElement>(null);
   const [countdownWarningEnabled] = useState<boolean>(
     () => loadUiSettings().countdownWarningEnabled
   );
@@ -140,17 +182,40 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
       return;
     }
 
+    const frameId = window.requestAnimationFrame(() => {
+      if (!timerViewRef.current) {
+        return;
+      }
+
+      const snapshot = getTimerAnchorSnapshot(timerViewRef.current, rewardGainNotice.taskId);
+      if (!snapshot) {
+        return;
+      }
+
+      setRewardGainAnimation({
+        ...snapshot,
+        deltaSeconds: rewardGainNotice.deltaSeconds,
+      });
+    });
+
     const timerId = window.setTimeout(() => {
       clearRewardGainNotice();
     }, 2500);
 
+    const overlayTimerId = window.setTimeout(() => {
+      setRewardGainAnimation(null);
+    }, REWARD_GAIN_OVERLAY_MS);
+
     return () => {
+      window.cancelAnimationFrame(frameId);
       window.clearTimeout(timerId);
+      window.clearTimeout(overlayTimerId);
     };
   }, [rewardGainNotice, clearRewardGainNotice]);
 
   return (
     <div
+      ref={timerViewRef}
       className={`${styles.timerView} ${isSiblingMode ? styles.siblingMode : ''} ${
         isAutoCompact ? styles.compact : ''
       }`}
@@ -193,6 +258,14 @@ export const MainTimerView: React.FC<MainTimerViewProps> = ({
         isSingleTaskFocus={isSingleTaskFocus}
         rewardGainNotice={rewardGainNotice}
       />
+
+      {rewardGainNotice && rewardGainAnimation && (
+        <RewardGainOverlay
+          animation={rewardGainAnimation}
+          shape={timerSettings.shape}
+          color={timerSettings.color}
+        />
+      )}
 
       <Modals
         showResetConfirm={showResetConfirm}

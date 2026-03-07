@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * 個別のタスクを表示するカードコンポーネント。タイマー表示や進捗、完了状態を表示する。
  */
@@ -35,6 +36,7 @@ interface TaskCardViewProps extends TaskCardProps {
   remaining: number; // 残り時間
   isDone: boolean; // 完了しているか
   isOverdue: boolean; // 時間超過しているか
+  isRewardGainHighlighted: boolean; // ごほうび増加の強調状態か
 }
 
 /**
@@ -48,8 +50,10 @@ interface TaskCardViewProps extends TaskCardProps {
  * @param root0.isOverdue 時間超過しているか
  * @param root0.dragControls ドラッグ制御用
  * @param root0.isSingleTaskFocus 実行中フォーカス表示かどうか
+ * @param root0.isRewardGainHighlighted ごほうび増加の強調状態かどうか
  * @returns レンダリングされるJSX要素
  */
+/* eslint-disable complexity */
 const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   task,
   shape,
@@ -59,6 +63,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
   isOverdue,
   dragControls,
   isSingleTaskFocus = false,
+  isRewardGainHighlighted,
 }) => {
   const { ref: compactBottomRef, size: compactBottomSize } = useElementSize<HTMLDivElement>();
   const compactTimerMaxDiameter =
@@ -89,7 +94,13 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
           </div>
         </div>
       </div>
-      <div className={styles.compactBottom} ref={compactBottomRef}>
+      <div
+        className={`${styles.compactBottom} ${
+          isRewardGainHighlighted ? styles.rewardGainTarget : ''
+        }`}
+        ref={compactBottomRef}
+        data-timer-anchor="true"
+      >
         {isDone ? (
           <div className={`${styles.taskIcon} ${styles.isCompleted} ${styles.compactDone}`}>
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
@@ -112,6 +123,7 @@ const TaskCardCompact: React.FC<TaskCardViewProps> = ({
     </div>
   );
 };
+/* eslint-enable complexity */
 
 // 画像/完了/タイマーのUI分岐をまとめているため、この関数のみ複雑度を緩和する
 /* eslint-disable complexity */
@@ -125,6 +137,7 @@ const TaskCardBody: React.FC<TaskCardViewProps> = ({
   isOverdue,
   dragControls,
   isSingleTaskFocus = false,
+  isRewardGainHighlighted,
 }) => {
   const { ref: timerSlotRef, size: timerSlotSize } = useElementSize<HTMLDivElement>();
   const timerMaxDiameter =
@@ -171,7 +184,11 @@ const TaskCardBody: React.FC<TaskCardViewProps> = ({
         </div>
       )}
 
-      <div className={styles.timerSlot} ref={timerSlotRef}>
+      <div
+        className={`${styles.timerSlot} ${isRewardGainHighlighted ? styles.rewardGainTarget : ''}`}
+        ref={timerSlotRef}
+        data-timer-anchor="true"
+      >
         {isDone ? (
           <div className={`${styles.taskIcon} ${styles.isCompleted}`}>
             <motion.div
@@ -307,6 +324,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const isReward = task.kind === 'reward';
   const shouldShowRewardGainNotice =
     isReward && rewardGainNotice && rewardGainNotice.deltaSeconds > 0;
+  const isRewardGainHighlighted = Boolean(shouldShowRewardGainNotice);
   const shouldShowCompleteButton = isSelected && task.status === 'running';
   const completeButtonText = isReward ? 'おわり' : 'できた！';
   const completeAriaLabel = isReward ? `${task.name}をおわりにする` : `${task.name}をできたにする`;
@@ -339,6 +357,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     isOverdue,
     dragControls,
     isSingleTaskFocus,
+    isRewardGainHighlighted,
   };
 
   return (
@@ -354,6 +373,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       whileTap={isSelectable && !isDone ? { scale: 0.95 } : {}}
       className={cardClassName}
       style={{ flexGrow: cardFlexGrow }}
+      data-task-card="true"
+      data-task-id={task.id}
+      data-task-kind={task.kind}
       onClick={() => {
         if (isSelectable) onSelect(task.id);
       }}
@@ -361,10 +383,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       {shouldShowRewardGainNotice && (
         <motion.div
           className={styles.rewardGainBubble}
-          initial={{ opacity: 0, y: 16, scale: 0.9 }}
+          initial={{ opacity: 0, y: 10, scale: 0.94 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8, scale: 0.95 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
+          exit={{ opacity: 0, y: -6, scale: 0.98 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
           aria-live="polite"
         >
           {getRewardGainMessage(rewardGainNotice.deltaSeconds)}
