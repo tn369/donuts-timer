@@ -53,7 +53,7 @@ export const TodoListTasksSection: React.FC<TodoListTasksSectionProps> = ({
 
     <div className={styles.taskEditorList}>
       <Reorder.Group
-        axis="x"
+        axis="y"
         values={tasks}
         onReorder={onReorderTasks}
         className={styles.reorderGroup}

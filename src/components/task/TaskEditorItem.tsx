@@ -85,7 +85,7 @@ const TargetTimeModeEditor: React.FC<{
         }}
       />
       <span className={styles.rewardModeLabel}>おわる じかん</span>
-      <div className={styles.rewardModeInput}>
+      <div className={`${styles.rewardModeInput} ${styles.targetTimeInputs}`}>
         <TimeStepper
           value={task.rewardSettings?.targetHour ?? 9}
           onChange={(val) => {
@@ -127,7 +127,6 @@ const RewardSettingsEditor: React.FC<{
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
 }> = ({ task, onTaskChange, onRewardSettingsChange }) => (
   <div className={styles.rewardTimeSettings}>
-    <h4 className={styles.rewardTimeSettingsTitle}>じかんの けいさん</h4>
     <DurationModeEditor
       task={task}
       onTaskChange={onTaskChange}
@@ -181,6 +180,18 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
       reader.readAsDataURL(file);
     }
   };
+
+  const taskNameInput = (
+    <input
+      type="text"
+      className={styles.taskNameInput}
+      value={task.name}
+      onChange={(e) => {
+        onTaskChange(task.id, { name: e.target.value });
+      }}
+      maxLength={MAX_TASK_NAME_LENGTH}
+    />
+  );
 
   return (
     <motion.div
@@ -248,34 +259,33 @@ export const TaskEditorItem: React.FC<TaskEditorItemProps> = ({
         />
       </button>
 
-      <div className={styles.taskEditorInfo}>
-        <input
-          type="text"
-          className={styles.taskNameInput}
-          value={task.name}
-          onChange={(e) => {
-            onTaskChange(task.id, { name: e.target.value });
-          }}
-          maxLength={MAX_TASK_NAME_LENGTH}
-        />
+      <div
+        className={`${styles.taskEditorInfo} ${task.kind === 'reward' ? styles.rewardTaskEditorInfo : ''}`}
+      >
         {task.kind === 'todo' ? (
-          <div className={styles.taskTimeInputGroup}>
-            <TimeStepper
-              value={Math.floor(task.plannedSeconds / 60)}
-              onChange={(val) => {
-                onTaskChange(task.id, { plannedSeconds: val * 60 });
-              }}
-              unit="ふん"
-              min={1}
-              max={60}
-            />
+          <div className={styles.taskInlineFields}>
+            {taskNameInput}
+            <div className={styles.taskTimeInputGroup}>
+              <TimeStepper
+                value={Math.floor(task.plannedSeconds / 60)}
+                onChange={(val) => {
+                  onTaskChange(task.id, { plannedSeconds: val * 60 });
+                }}
+                unit="ふん"
+                min={1}
+                max={60}
+              />
+            </div>
           </div>
         ) : (
-          <RewardSettingsEditor
-            task={task}
-            onTaskChange={onTaskChange}
-            onRewardSettingsChange={onRewardSettingsChange}
-          />
+          <div className={styles.rewardInlineFields}>
+            <div className={styles.rewardNameInputGroup}>{taskNameInput}</div>
+            <RewardSettingsEditor
+              task={task}
+              onTaskChange={onTaskChange}
+              onRewardSettingsChange={onRewardSettingsChange}
+            />
+          </div>
         )}
       </div>
 

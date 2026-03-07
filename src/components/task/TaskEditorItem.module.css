@@ -1,11 +1,11 @@
 .taskEditorItem {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 16px;
   align-items: center;
-  min-width: 280px;
-  padding: 32px 12px 12px;
+  width: 100%;
+  padding: 16px 16px 16px 44px;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-md);
@@ -27,15 +27,15 @@
 
 .dragHandle {
   position: absolute;
-  top: 4px;
-  left: 50%;
+  top: 50%;
+  left: 10px;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #cbd5e1;
   touch-action: none;
-  transform: translateX(-50%);
+  transform: translateY(-50%);
 }
 
 .taskEditorItem:hover .dragHandle {
@@ -148,33 +148,46 @@
   flex-direction: column;
   gap: 12px;
   align-items: stretch;
-  width: 100%;
+  min-width: 0;
+}
+
+.rewardTaskEditorInfo {
+  padding-top: 8px;
+  padding-right: 92px;
 }
 
 .taskNameInput {
-  width: 100%;
+  flex: 1;
+  width: auto;
   padding: 8px 12px;
   font-size: 18px;
   font-weight: 600;
-  text-align: center;
+  text-align: left;
   cursor: text;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-sm);
 }
 
+.taskInlineFields {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
 .taskTimeInputGroup {
   display: flex;
+  flex-shrink: 0;
   gap: 8px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-weight: 600;
 }
 
 .deleteTaskBtn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
+  flex-shrink: 0;
   padding: 8px;
+  margin-left: 8px;
   color: #cbd5e1;
   cursor: pointer;
   background: none;
@@ -189,6 +202,7 @@
 .rewardBadge {
   position: absolute;
   top: 8px;
+  right: 8px;
   padding: 4px 12px;
   font-size: 12px;
   font-weight: 700;
@@ -197,29 +211,44 @@
   border-radius: 12px;
 }
 
+.rewardInlineFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.rewardNameInputGroup {
+  display: flex;
+  flex: 1 1 320px;
+  align-items: center;
+  min-width: 0;
+}
+
+.rewardNameInputGroup .taskNameInput {
+  width: 100%;
+}
+
 /* 報酬設定エディタのスタイル */
 .rewardTimeSettings {
+  flex: 2 1 540px;
+  width: 100%;
+  min-width: 460px;
+  max-width: none;
   padding: 12px;
-  margin-top: 8px;
+  margin-top: 0;
   background: linear-gradient(135deg, rgb(255 255 255 / 90%) 0%, rgb(255 250 240 / 90%) 100%);
   border: 1px solid rgb(245 158 11 / 30%);
   border-radius: 12px;
 }
 
-.rewardTimeSettingsTitle {
-  margin-bottom: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #d97706;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-
 .rewardModeOption {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: auto minmax(96px, 120px) minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 12px;
   margin-bottom: 6px;
   cursor: pointer;
   background: rgb(255 255 255 / 50%);
@@ -246,21 +275,65 @@
 .rewardModeOption input[type='radio'] {
   width: 18px;
   height: 18px;
-  margin-right: 0;
+  margin-right: 2px;
   cursor: pointer;
 }
 
 .rewardModeLabel {
-  min-width: 130px;
+  min-width: 0;
   font-size: 15px;
   font-weight: 600;
   color: #374151;
+  white-space: nowrap;
 }
 
 .rewardModeInput {
   display: flex;
   flex: 1;
-  flex-direction: column;
-  gap: 6px;
-  align-items: stretch;
+  flex-flow: row nowrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.targetTimeInputs {
+  flex-wrap: nowrap;
+}
+
+@media (width <= 980px) {
+  .rewardTaskEditorInfo {
+    padding-right: 0;
+  }
+
+  .rewardTimeSettings {
+    min-width: 0;
+  }
+}
+
+@media (width <= 720px) {
+  .rewardInlineFields {
+    flex-direction: column;
+  }
+
+  .rewardNameInputGroup {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .rewardTimeSettings {
+    flex-basis: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .rewardModeOption {
+    grid-template-columns: auto minmax(96px, 1fr);
+  }
+
+  .rewardModeInput {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-left: 26px;
+  }
 }
