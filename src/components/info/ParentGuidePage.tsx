@@ -49,8 +49,7 @@ const featureCards = [
 
 const reassurancePoints = [
   'やることリストは保存してくり返し使えるので、毎回ゼロから決め直さずにご家庭の約束を続けやすくなります。',
-  'タイマーの形や色を変えられるので、お子さまに合う「楽しい」「やってみたい」を見つけやすくなります。',
-  'データはブラウザ内の LocalStorage のみに保存され、外部送信されないため、ご家庭の中で安心して使えます。',
+  '画像や設定データはブラウザ内に保存され、外部送信されないため、ご家庭の中で安心して使えます。',
 ];
 
 const decisionGuideSteps = [
@@ -141,10 +140,13 @@ export const ParentGuidePage: React.FC<ParentGuidePageProps> = ({ onBack }) => (
         </p>
       </motion.section>
 
-      <section className={styles.section}>
+      <section
+        className={`${styles.section} ${styles.featurePanel}`}
+        aria-labelledby="parent-guide-features-heading"
+      >
         <div className={styles.sectionHeading}>
           <Target size={20} />
-          <h2>できること</h2>
+          <h2 id="parent-guide-features-heading">できること</h2>
         </div>
         <div className={styles.featureGrid}>
           {featureCards.map(({ icon: Icon, title, description }, index) => (
@@ -164,23 +166,6 @@ export const ParentGuidePage: React.FC<ParentGuidePageProps> = ({ onBack }) => (
           ))}
         </div>
       </section>
-
-      <motion.section
-        className={styles.reassurancePanel}
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.36, duration: 0.45 }}
-      >
-        <div className={styles.sectionHeading}>
-          <ShieldCheck size={20} />
-          <h2>安心して使える点</h2>
-        </div>
-        <ul className={styles.reassuranceList}>
-          {reassurancePoints.map((point) => (
-            <li key={point}>{point}</li>
-          ))}
-        </ul>
-      </motion.section>
 
       <motion.section
         className={styles.coachingPanel}
@@ -220,6 +205,23 @@ export const ParentGuidePage: React.FC<ParentGuidePageProps> = ({ onBack }) => (
             </motion.article>
           ))}
         </div>
+      </motion.section>
+
+      <motion.section
+        className={styles.reassurancePanel}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.36, duration: 0.45 }}
+      >
+        <div className={styles.sectionHeading}>
+          <ShieldCheck size={20} />
+          <h2>安心して使える点</h2>
+        </div>
+        <ul className={styles.reassuranceList}>
+          {reassurancePoints.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
       </motion.section>
     </div>
   </div>

@@ -45,6 +45,7 @@
 
 .hero,
 .conceptPanel,
+.featurePanel,
 .reassurancePanel,
 .coachingPanel {
   position: relative;
@@ -98,6 +99,7 @@
 }
 
 .conceptPanel,
+.featurePanel,
 .reassurancePanel,
 .coachingPanel {
   padding: 28px 30px;
@@ -108,6 +110,16 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.featurePanel::after {
+  position: absolute;
+  inset: auto auto -52px -36px;
+  width: 220px;
+  height: 220px;
+  pointer-events: none;
+  content: '';
+  background: radial-gradient(circle, rgb(0 210 255 / 16%) 0%, transparent 66%);
 }
 
 .sectionHeading {
@@ -263,6 +275,7 @@
 
   .hero,
   .conceptPanel,
+  .featurePanel,
   .reassurancePanel,
   .coachingPanel {
     padding: 22px 18px;

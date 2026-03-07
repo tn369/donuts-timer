@@ -15,6 +15,7 @@ describe('ParentGuidePage', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'コンセプト' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'できること' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'できること' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '安心して使える点' })).toBeInTheDocument();
     expect(
       screen.getByText(
