@@ -60,6 +60,8 @@ const TargetTimeModeEditor: React.FC<{
   onRewardSettingsChange: (taskId: string, settings: Partial<RewardTaskSettings>) => void;
 }> = ({ task, onRewardSettingsChange }) => {
   const isTargetTimeMode = task.rewardSettings?.mode === 'target-time';
+  const targetHour = task.rewardSettings?.targetHour ?? 9;
+  const targetMinute = task.rewardSettings?.targetMinute ?? 0;
 
   return (
     <label className={`${styles.rewardModeOption} ${isTargetTimeMode ? styles.active : ''}`}>
@@ -75,7 +77,7 @@ const TargetTimeModeEditor: React.FC<{
       <div className={`${styles.rewardModeInput} ${styles.targetTimeInputs}`}>
         <TimeStepper
           className={styles.targetTimeStepper}
-          value={task.rewardSettings?.targetHour ?? 9}
+          value={targetHour}
           onChange={(val) => {
             onRewardSettingsChange(task.id, { targetHour: val % 24 });
           }}
@@ -84,18 +86,30 @@ const TargetTimeModeEditor: React.FC<{
           step={1}
           max={23}
           options={Array.from({ length: 24 }, (_, i) => i)}
+          loopOptions
         />
         <TimeStepper
           className={styles.targetTimeStepper}
-          value={task.rewardSettings?.targetMinute ?? 0}
-          onChange={(val) => {
-            onRewardSettingsChange(task.id, { targetMinute: val % 60 });
+          value={targetMinute}
+          onChange={(val, context) => {
+            const nextSettings: Partial<RewardTaskSettings> = { targetMinute: val % 60 };
+
+            if (context?.wrapped && context.source === 'increment') {
+              nextSettings.targetHour = (targetHour + 1) % 24;
+            }
+
+            if (context?.wrapped && context.source === 'decrement') {
+              nextSettings.targetHour = (targetHour + 23) % 24;
+            }
+
+            onRewardSettingsChange(task.id, nextSettings);
           }}
           unit="ふん"
           disabled={!isTargetTimeMode}
           step={5}
           max={55}
           options={Array.from({ length: 12 }, (_, i) => i * 5)}
+          loopOptions
         />
       </div>
     </label>

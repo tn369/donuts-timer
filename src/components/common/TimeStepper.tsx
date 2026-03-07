@@ -4,7 +4,10 @@ import styles from './TimeStepper.module.css';
 
 interface TimeStepperProps {
   value: number;
-  onChange: (val: number) => void;
+  onChange: (
+    val: number,
+    context?: { source: 'increment' | 'decrement' | 'input' | 'select'; wrapped?: boolean }
+  ) => void;
   unit: string;
   className?: string;
   disabled?: boolean;
@@ -12,6 +15,7 @@ interface TimeStepperProps {
   min?: number;
   max?: number;
   options?: number[];
+  loopOptions?: boolean;
 }
 
 /**
@@ -26,6 +30,7 @@ interface TimeStepperProps {
  * @param root0.min 最小値
  * @param root0.max 最大値
  * @param root0.options 選択肢（あればプルダウン形式になる）
+ * @param root0.loopOptions 選択肢の先頭末尾で循環させるか
  * @returns レンダリングされるJSX要素
  */
 export const TimeStepper: React.FC<TimeStepperProps> = ({
@@ -38,6 +43,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
   min = 0,
   max,
   options,
+  loopOptions = false,
 }) => {
   const [displayValue, setDisplayValue] = React.useState<string>(value.toString());
 
@@ -49,31 +55,35 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
     if (options) {
       const currentIndex = options.indexOf(value);
       if (currentIndex > 0) {
-        onChange(options[currentIndex - 1]);
+        onChange(options[currentIndex - 1], { source: 'decrement', wrapped: false });
+      } else if (loopOptions && currentIndex === 0) {
+        onChange(options[options.length - 1], { source: 'decrement', wrapped: true });
       } else if (currentIndex === -1) {
         // 現在の値がオプションにない場合は、最も近い小さい値を探す
         const smallerOptions = options.filter((o) => o < value);
         if (smallerOptions.length > 0) {
-          onChange(Math.max(min, ...smallerOptions));
+          onChange(Math.max(min, ...smallerOptions), { source: 'decrement', wrapped: false });
         }
       }
       return;
     }
 
     const newValue = Math.max(min, value - step);
-    onChange(newValue);
+    onChange(newValue, { source: 'decrement', wrapped: false });
   };
 
   const handleIncrement = () => {
     if (options) {
       const currentIndex = options.indexOf(value);
       if (currentIndex !== -1 && currentIndex < options.length - 1) {
-        onChange(options[currentIndex + 1]);
+        onChange(options[currentIndex + 1], { source: 'increment', wrapped: false });
+      } else if (loopOptions && currentIndex === options.length - 1) {
+        onChange(options[0], { source: 'increment', wrapped: true });
       } else if (currentIndex === -1) {
         // 現在の値がオプションにない場合は、最も近い大きい値を探す
         const largerOptions = options.filter((o) => o > value);
         if (largerOptions.length > 0) {
-          onChange(Math.min(...largerOptions));
+          onChange(Math.min(...largerOptions), { source: 'increment', wrapped: false });
         }
       }
       return;
@@ -81,7 +91,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
 
     let newValue = value + step;
     if (max !== undefined && newValue > max) newValue = max;
-    onChange(newValue);
+    onChange(newValue, { source: 'increment', wrapped: false });
   };
 
   const handleInputChange = (val: string) => {
@@ -97,7 +107,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
       let num = parseInt(sanitizedValue, 10);
       if (num < min) num = min;
       if (max !== undefined && num > max) num = max;
-      onChange(num);
+      onChange(num, { source: 'input', wrapped: false });
     }
   };
 
@@ -105,20 +115,21 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
     if (displayValue === '') {
       const fallbackValue = Math.max(min, value);
       setDisplayValue(fallbackValue.toString());
-      onChange(fallbackValue);
+      onChange(fallbackValue, { source: 'input', wrapped: false });
     } else {
       // 最終的な値を確定させる
       let num = parseInt(displayValue, 10);
       if (num < min) num = min;
       if (max !== undefined && num > max) num = max;
       setDisplayValue(num.toString());
-      onChange(num);
+      onChange(num, { source: 'input', wrapped: false });
     }
   };
 
   const isDecrementDisabled = () => {
     if (disabled) return true;
     if (options) {
+      if (loopOptions) return false;
       return options.includes(value) && options.indexOf(value) <= 0;
     }
     return value <= min;
@@ -127,6 +138,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
   const isIncrementDisabled = () => {
     if (disabled) return true;
     if (options) {
+      if (loopOptions) return false;
       return options.includes(value) && options.indexOf(value) >= options.length - 1;
     }
     return max !== undefined && value >= max;
@@ -148,7 +160,7 @@ export const TimeStepper: React.FC<TimeStepperProps> = ({
             className={styles.stepperInput}
             value={value}
             onChange={(e) => {
-              onChange(parseInt(e.target.value));
+              onChange(parseInt(e.target.value, 10), { source: 'select', wrapped: false });
             }}
             disabled={disabled}
             style={{ appearance: 'none', background: 'transparent', textAlign: 'center' }}

@@ -1,8 +1,16 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { TodoList } from '../../types';
 import { TodoListSettings } from './TodoListSettings';
+
+const getStepperContainer = (element: HTMLElement): HTMLElement => {
+  const valueContainer = element.closest('div');
+  if (!valueContainer?.parentElement) {
+    throw new Error('TimeStepper container not found');
+  }
+  return valueContainer.parentElement;
+};
 
 describe('TodoListSettings', () => {
   const mockList: TodoList = {
@@ -91,6 +99,96 @@ describe('TodoListSettings', () => {
       screen.getByText('やること が おわった あとに さいごに する ごほうび を きめよう')
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue('あそぶ')).toBeInTheDocument();
+  });
+
+  it('目標時刻のふんステッパーは境界で循環し、じも繰り上がって保存されること', () => {
+    const onSave = vi.fn();
+    const listWithTargetTimeReward: TodoList = {
+      ...mockList,
+      tasks: [
+        {
+          id: 'reward-task',
+          name: 'あそぶ',
+          icon: '',
+          plannedSeconds: 900,
+          kind: 'reward',
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+          rewardSettings: {
+            mode: 'target-time',
+            targetHour: 1,
+            targetMinute: 55,
+          },
+        },
+      ],
+    };
+
+    render(<TodoListSettings list={listWithTargetTimeReward} onSave={onSave} onBack={vi.fn()} />);
+
+    const [, minuteSelect] = screen.getAllByRole('combobox');
+    const minuteStepper = getStepperContainer(minuteSelect);
+
+    fireEvent.click(within(minuteStepper).getByText('+'));
+    fireEvent.click(screen.getByText('ほぞんする'));
+
+    const savedList = onSave.mock.calls[0]?.[0] as TodoList | undefined;
+
+    expect(savedList).toBeDefined();
+    expect(savedList?.tasks).toHaveLength(1);
+    expect(savedList?.tasks[0]).toMatchObject({
+      id: 'reward-task',
+      rewardSettings: {
+        mode: 'target-time',
+        targetHour: 2,
+        targetMinute: 0,
+      },
+    });
+  });
+
+  it('目標時刻のふんステッパーは逆方向の循環で、じも繰り下がって保存されること', () => {
+    const onSave = vi.fn();
+    const listWithTargetTimeReward: TodoList = {
+      ...mockList,
+      tasks: [
+        {
+          id: 'reward-task',
+          name: 'あそぶ',
+          icon: '',
+          plannedSeconds: 900,
+          kind: 'reward',
+          status: 'todo',
+          elapsedSeconds: 0,
+          actualSeconds: 0,
+          rewardSettings: {
+            mode: 'target-time',
+            targetHour: 1,
+            targetMinute: 0,
+          },
+        },
+      ],
+    };
+
+    render(<TodoListSettings list={listWithTargetTimeReward} onSave={onSave} onBack={vi.fn()} />);
+
+    const [, minuteSelect] = screen.getAllByRole('combobox');
+    const minuteStepper = getStepperContainer(minuteSelect);
+
+    fireEvent.click(within(minuteStepper).getByText('-'));
+    fireEvent.click(screen.getByText('ほぞんする'));
+
+    const savedList = onSave.mock.calls[0]?.[0] as TodoList | undefined;
+
+    expect(savedList).toBeDefined();
+    expect(savedList?.tasks).toHaveLength(1);
+    expect(savedList?.tasks[0]).toMatchObject({
+      id: 'reward-task',
+      rewardSettings: {
+        mode: 'target-time',
+        targetHour: 0,
+        targetMinute: 55,
+      },
+    });
   });
 
   it('保存時にタイトルからサフィックスが除去されること', () => {

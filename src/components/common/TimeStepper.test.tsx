@@ -3,6 +3,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { TimeStepper } from './TimeStepper';
 
+const expectLastOnChange = (
+  onChange: ReturnType<typeof vi.fn>,
+  value: number,
+  context: { source: 'increment' | 'decrement' | 'input' | 'select'; wrapped?: boolean }
+) => {
+  expect(onChange).toHaveBeenLastCalledWith(value, context);
+};
+
 describe('TimeStepper', () => {
   it('数値入力時、値を表示すること', () => {
     const onChange = vi.fn();
@@ -19,7 +27,7 @@ describe('TimeStepper', () => {
     const plusButton = screen.getByText('+');
     fireEvent.click(plusButton);
 
-    expect(onChange).toHaveBeenCalledWith(15); // default step is 5
+    expectLastOnChange(onChange, 15, { source: 'increment', wrapped: false }); // default step is 5
   });
 
   it('-ボタンをクリックした時、値を減らすこと', () => {
@@ -29,7 +37,7 @@ describe('TimeStepper', () => {
     const minusButton = screen.getByText('-');
     fireEvent.click(minusButton);
 
-    expect(onChange).toHaveBeenCalledWith(5);
+    expectLastOnChange(onChange, 5, { source: 'decrement', wrapped: false });
   });
 
   describe('options プロパティ（新規要件）', () => {
@@ -51,7 +59,7 @@ describe('TimeStepper', () => {
       const select = screen.getByRole('combobox');
       fireEvent.change(select, { target: { value: '10' } });
 
-      expect(onChange).toHaveBeenCalledWith(10);
+      expectLastOnChange(onChange, 10, { source: 'select', wrapped: false });
     });
 
     it('optionsがある時の+ボタンは、次のオプション値に進むこと', () => {
@@ -62,7 +70,7 @@ describe('TimeStepper', () => {
       const plusButton = screen.getByText('+');
       fireEvent.click(plusButton);
 
-      expect(onChange).toHaveBeenCalledWith(20);
+      expectLastOnChange(onChange, 20, { source: 'increment', wrapped: false });
     });
 
     it('optionsがある時の-ボタンは、前のオプション値に戻ること', () => {
@@ -73,7 +81,42 @@ describe('TimeStepper', () => {
       const minusButton = screen.getByText('-');
       fireEvent.click(minusButton);
 
-      expect(onChange).toHaveBeenCalledWith(0);
+      expectLastOnChange(onChange, 0, { source: 'decrement', wrapped: false });
+    });
+
+    it('loopOptionsが有効な時、末尾で+ボタンを押すと先頭に戻ること', () => {
+      const options = [0, 10, 20];
+      const onChange = vi.fn();
+      render(
+        <TimeStepper value={20} onChange={onChange} unit="ふん" options={options} loopOptions />
+      );
+
+      fireEvent.click(screen.getByText('+'));
+
+      expectLastOnChange(onChange, 0, { source: 'increment', wrapped: true });
+    });
+
+    it('loopOptionsが有効な時、先頭で-ボタンを押すと末尾に戻ること', () => {
+      const options = [0, 10, 20];
+      const onChange = vi.fn();
+      render(
+        <TimeStepper value={0} onChange={onChange} unit="ふん" options={options} loopOptions />
+      );
+
+      fireEvent.click(screen.getByText('-'));
+
+      expectLastOnChange(onChange, 20, { source: 'decrement', wrapped: true });
+    });
+
+    it('loopOptionsが有効な時、境界値でもボタンが無効化されないこと', () => {
+      const options = [0, 10, 20];
+      const onChange = vi.fn();
+      render(
+        <TimeStepper value={0} onChange={onChange} unit="ふん" options={options} loopOptions />
+      );
+
+      expect(screen.getByText('-')).not.toBeDisabled();
+      expect(screen.getByText('+')).not.toBeDisabled();
     });
   });
 
@@ -98,7 +141,7 @@ describe('TimeStepper', () => {
       fireEvent.change(input, { target: { value: '5' } });
 
       expect(input).toHaveValue('5');
-      expect(onChange).toHaveBeenCalledWith(5);
+      expectLastOnChange(onChange, 5, { source: 'input', wrapped: false });
     });
 
     it('フォーカスが外れた時、空の場合は元の値に戻ること', () => {
@@ -120,7 +163,7 @@ describe('TimeStepper', () => {
       fireEvent.change(input, { target: { value: '0' } });
 
       expect(input).toHaveValue('0');
-      expect(onChange).toHaveBeenCalledWith(0);
+      expectLastOnChange(onChange, 0, { source: 'input', wrapped: false });
     });
   });
 
@@ -135,7 +178,7 @@ describe('TimeStepper', () => {
       expect(minusButton).not.toBeDisabled();
 
       fireEvent.click(minusButton);
-      expect(onChange).toHaveBeenCalledWith(1);
+      expectLastOnChange(onChange, 1, { source: 'decrement', wrapped: false });
 
       // 手動でプロップを更新して再レンダリング
       rerender(<TimeStepper value={1} onChange={onChange} unit="ふん" min={1} step={1} />);
@@ -150,7 +193,7 @@ describe('TimeStepper', () => {
       fireEvent.change(input, { target: { value: '0' } });
 
       // onChangeにはmin(1)が渡る
-      expect(onChange).toHaveBeenCalledWith(1);
+      expectLastOnChange(onChange, 1, { source: 'input', wrapped: false });
     });
 
     it('Blur時、空の場合はminが適用されること', () => {
